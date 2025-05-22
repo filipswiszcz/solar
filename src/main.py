@@ -8,6 +8,12 @@
 
 # pos of device and current time/date
 
+
+# get device pos and orientation
+# get all stars that should be visible
+# calc their pos on screen
+# display them
+
 import os
 import subprocess
 

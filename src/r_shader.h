@@ -13,7 +13,7 @@
 #include "util/math/matrix.h"
 #include "common.h" // change it later
 
-typedef struct {
+typedef struct shader {
     uint32_t ids[2]; // [0] = vert, [1] = frag
     uint32_t program;
 } shader_t;

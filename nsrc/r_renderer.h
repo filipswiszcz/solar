@@ -13,6 +13,8 @@
 #define ASSETS_DEFAULT_DIR_PATH "assets/default/"
 #define ASSETS_TEXTURE_DIR_PATH "assets/texture/"
 
+// MESH
+
 struct vertex {
     vec3_t position, normal;
     vec2_t uv;
@@ -53,5 +55,14 @@ typedef struct instance {
     object_t *object;
     transformation_t transformation;
 } instance_t;
+
+// SCENE
+
+typedef struct scene {
+    instance_array_t instances;
+    // ui, bg
+} scene_t;
+
+void r_scene_init(scene_t *scene);
 
 #endif // !__R_RENDERER_H__

@@ -12,11 +12,12 @@
 #endif
 #include <GLFW/glfw3.h>
 
+#include "common.h"
+
 void shread(char *filepath, char **shader) {
     FILE *file = fopen(filepath, "r");
-    if (file == NULL) {
-        printf("Failed to open file"); return;
-    }
+
+    ASSERT(file != NULL, "Failed to open the file: %s\n", filepath);
 
     fseek(file, 0, SEEK_END);
     size_t fsize = ftell(file);
@@ -67,4 +68,4 @@ uint32_t shlink(uint32_t vshader, uint32_t fshader) {
     return prog;
 }
 
-#endif
+#endif /* SHADER_LOAD_H */

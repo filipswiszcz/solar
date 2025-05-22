@@ -16,6 +16,12 @@ void mesh_load(mesh_t *mesh, const char *filepath) {
             farray_add(&mesh -> vertices, x);
             farray_add(&mesh -> vertices, y);
             farray_add(&mesh -> vertices, z);
+        } else if (strncmp(ln, "vn", 2) == 0) {
+            float x, y, z;
+            sscanf(ln, "vn %f %f %f", &x, &y, &z);
+            // farray_add(&mesh -> normals, x);
+            // farray_add(&mesh -> normals, y);
+            // farray_add(&mesh -> normals, z);
         } else if (strncmp(ln, "vt", 2) == 0) {
             float u, v;
             sscanf(ln, "vt %f %f", &u, &v);
@@ -24,6 +30,7 @@ void mesh_load(mesh_t *mesh, const char *filepath) {
         } else if (strncmp(ln, "mtllib", 6) == 0) {
             char prepath[256], path[128];
             sscanf(ln, "mtllib %s", path);
+            // mesh -> material.name = path;
             strcpy(prepath, ASSETS_DEFAULT_DIR_PATH);
             strcat(prepath, path);
             _mesh_get_material(mesh -> material, prepath);

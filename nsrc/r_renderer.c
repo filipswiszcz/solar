@@ -12,7 +12,7 @@ static void r_mesh_load_indices(uint32_array_t *array, char line[64]) {
             strncpy(sub, &line[i - offset], size);
             sub[size] = '\0';
             uint32_t value = strtoul(sub, NULL, 0);
-            // d_uint32_array_insert(array, value - 1);
+            d_uint32_array_insert(array, value - 1);
             free(sub);
             gate = 0; offset = 0;
         } else if (gate == 1) offset = 1;
@@ -77,8 +77,12 @@ void r_mesh_load(mesh_t *mesh, char *filepath) {
             strcat(prepath, path);
             r_mesh_load_material(mesh -> material, prepath);
         }
-        // d_vertex_array_insert(&mesh -> vertices, vertex);
+        d_vertex_array_insert(&mesh -> vertices, vertex);
     }
     
     fclose(file);
 }
+
+// SCENE
+
+void r_scene_init(scene_t *scene) {}

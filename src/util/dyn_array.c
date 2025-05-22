@@ -1,6 +1,6 @@
 #include "util/dyn_array.h"
 
-void hash_table_add(hash_table_t *tab, char *key, shape_t val) {}
+// void hash_table_add(hash_table_t *tab, char *key, shape_t val) {}
 
 void farray_add(farray_t *arr, float val) {
     do {
