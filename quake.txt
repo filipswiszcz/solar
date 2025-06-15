@@ -3,6 +3,23 @@
 
 
 
+* OBJECTIVES
+- posix
+- cubemaps (skybox)
+- textures support
+- lighting
+- camera (zooming)
+- interface and text objects
+- physics (movement acceleration and deceleration according to current)
+- models (eg size of the Sun = 1.0f, Earth size = 0.004) (orbits) (moons)
+- sound
+- data (descriptions, positions etc)
+- eggs
+
+TIME_FLOW_SPEEDS=[-1yr, -10mo, -1mo, -10d, -1d, -10h, -1h, -10m, -1m, -10s, -1s, 1s (LIVE), 10s, 1m, 10m, 1h, 10h, 1d, 10d, 1mo, 10mo, 1yr] // time has to match outside of simulation time (our world)
+MIN_DATE="31 DECEMBER 1949"
+MAX_DATE="31 DECEMBER 2049"
+
 
 INSTANCE:
 - MESH (shape?, material)
