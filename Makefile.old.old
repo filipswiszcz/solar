@@ -1,9 +1,9 @@
 CC = clang
-CFLAGS = -std=c99 -I./lib -I./nsrc -I./nsrc/object -I./nsrc/util -I./nsrc/util/math
+CFLAGS = -std=c99 -I./lib -I./src -I./src/object -I./src/util -I./src/util/math
 LDFLAGS = -Llib -lglfw -framework Cocoa -framework OpenGL -framework IOKit
 
 BUILD_DIR = build
-SRC_DIR = nsrc
+SRC_DIR = src
 LIB_DIR = lib
 
 $(BUILD_DIR):
@@ -11,7 +11,7 @@ $(BUILD_DIR):
 
 SRCS := $(wildcard $(SRC_DIR)/**/**/*.c $(SRC_DIR)/**/*.c $(SRC_DIR)/*.c)
 OBJS := $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
-TARGET = $(BUILD_DIR)/solar
+TARGET = $(BUILD_DIR)/starnet
 
 run: $(TARGET)
 
