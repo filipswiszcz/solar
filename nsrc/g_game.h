@@ -6,8 +6,11 @@
 #ifdef __APPLE__
     #define GL_SILENCE_DEPRECATION
     #define GLFW_INCLUDE_GLCOREARB
+    #include <GLFW/glfw3.h>
+#else
+    #include <GL/glew.h>
+    #include <GLFW/glfw3.h>
 #endif
-#include <GLFW/glfw3.h>
 
 #include "d_util.h"
 #include "r_math.h"

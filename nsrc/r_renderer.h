@@ -59,7 +59,7 @@ typedef struct instance {
 // SCENE
 
 typedef struct scene {
-    instance_array_t instances;
+    // instance_array_t instances;
     // ui, bg
 } scene_t;
 

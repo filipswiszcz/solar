@@ -1,6 +1,7 @@
 #ifndef __D_ARRAY_H__
 #define __D_ARRAY_H__
 
+#include <stdint.h>
 #include <stdlib.h>
 
 // BASE
@@ -32,11 +33,11 @@ void d_vertex_array_insert(vertex_array_t *array, vertex_t value);
 
 // SCENE
 
-typedef struct instance_array {
-    instance_t *values;
-    size_t size, capacity;
-} instance_array_t;
+// typedef struct instance_array {
+//     instance_t *values;
+//     size_t size, capacity;
+// } instance_array_t;
 
-void d_instance_array_insert(instance_array_t *array, instance_t instance);
+// void d_instance_array_insert(instance_array_t *array, instance_t instance);
 
 #endif // !__D_ARRAY_H__
