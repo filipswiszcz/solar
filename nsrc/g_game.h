@@ -12,13 +12,21 @@
     #include <GLFW/glfw3.h>
 #endif
 
-#include "d_util.h"
-#include "r_math.h"
+#include "r_renderer.h"
+// #include "d_util.h"
+// #include "r_math.h"
+#include "r_shader.h"
 
 // xycida
 
 static struct {
     GLFWwindow *window;
+
+    struct {
+        double time_of_last_frame;
+        double time_between_frames;
+        uint32_t frames;
+    } fps;
 
     struct {
       vec3_t position;
@@ -27,6 +35,18 @@ static struct {
       float yaw, pitch;
       float speed, sensitivity;
     } camera;
+
+    struct {
+        // object_t object;
+        shader_t shader;
+        uint32_t texture;
+        object_t object;
+        // uint32_t vao, vbo;
+        // float *vertices;
+    } skybox;
+
+    shader_t shader;
+    object_t object;
 
     // viewer
         // speed of movement, distances to other objects
@@ -48,7 +68,7 @@ static struct {
 
 void g_game_init();
 
-void g_game_loop();
+void g_game_update();
 
 void g_game_stop();
 
