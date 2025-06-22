@@ -1,0 +1,28 @@
+[HEADER]
+uint32_t vertices: {count} (4 bytes)
+uint32_t indices: {count} (4 bytes)
+
+[BODY]
+[vertex]
+<- vertex 0 ->
+float position: {x}, {y}, {z} (12 bytes)
+float normal: {x}, {y}, {z} (12 bytes)
+float uv: {x}, {y} (8 bytes)
+<- vertex n ->
+..
+
+[index]
+<- index 0 ->
+uint32_t index: {index} (4 bytes)
+<- index n ->
+..
+
+[material]
+float shininess: {value} (4 bytes)
+float ambient: {x}, {y}, {z} (12 bytes)
+float diffuse: {x}, {y}, {z} (12 bytes)
+float specular: {x}, {y}, {z} (12 bytes)
+float emissibity: {x}, {y}, {z} (12 bytes)
+float density: {value} (4 bytes)
+float transparency: {value} (4 bytes)
+uint32_t illumination: {value} (4 bytes)
