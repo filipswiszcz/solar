@@ -20,7 +20,18 @@ typedef struct vec3 {
     float x, y, z;
 } vec3_t;
 
-// arrays
+// vertex
+
+typedef struct vertex {
+    vec3_t position, normal;
+    vec2_t uv;
+} vertex_t;
+
+struct triplet {
+    uint32_t pix, nix, uix;
+};
+
+// array
 
 typedef struct uint32_array {
     uint32_t *values;
@@ -64,13 +75,6 @@ void vec3_array_insert(vec3_array_t *array, vec3_t value) {
     array -> values[array -> size++] = value;
 }
 
-// vertex
-
-typedef struct vertex {
-    vec3_t position, normal;
-    vec2_t uv;
-} vertex_t;
-
 typedef struct vertex_array {
     vertex_t *values;
     size_t size, capacity;
@@ -83,6 +87,148 @@ void vertex_array_insert(vertex_array_t *array, vertex_t value) {
         array -> values = (vertex_t*) realloc(array -> values, array -> capacity * sizeof(*array -> values));
     }
     array -> values[array -> size++] = value;
+}
+
+// hashmap
+
+#define MAP_DEFAULT_INITIAL_CAPACITY 16
+
+typedef struct map_item {
+    const void *key;
+    void *value;
+} map_item_t;
+
+typedef enum map_type {
+    MAP_KEY_CHAR = 0,
+    MAP_KEY_INT = 4,
+    MAP_KEY_FLOAT = 4,
+    MAP_KEY_TRIPLET = 12
+} map_type_t;
+
+typedef struct map {
+    map_item_t *items;
+    map_type_t type;
+    size_t size, capacity;
+} map_t;
+
+map_t *map_init(map_type_t type) {
+    map_t *map = malloc(sizeof(map_t));
+    if (map == NULL) {return NULL;}
+    map -> items = calloc(MAP_DEFAULT_INITIAL_CAPACITY, sizeof(map_item_t));
+    if (map -> items == NULL) {free(map); return NULL;}
+    map -> type = type;
+    map -> size = 0;
+    map -> capacity = MAP_DEFAULT_INITIAL_CAPACITY;
+    return map;
+}
+
+int map_destroy(map_t *map) {
+    for (size_t i = 0; i < map -> size; i++) {
+        free((void*) map -> items[i].key);
+    }
+    free(map -> items); free(map);
+}
+
+#define MAP_FNV_OFFSET 14695981039346656037UL
+#define MAP_FNV_PRIME 1099511628211UL
+
+uint64_t map_hash_key(map_type_t type, const void *key) {
+    uint64_t hash = MAP_FNV_OFFSET;
+    const unsigned char *p = (const unsigned char*) key;
+    for (size_t i = 0; i < (size_t) type; i++) {
+        hash ^= (uint64_t) p[i];
+        hash *= MAP_FNV_PRIME;
+    }
+    return hash;
+}
+
+void *map_get(map_t *map, const void *key) {
+    uint64_t hash = map_hash_key(map -> type, key);
+    size_t index = (size_t) (hash & (uint64_t) (map -> capacity - 1));
+    while (map -> items[index].key != NULL) {
+        switch (map -> type) {
+            case MAP_KEY_CHAR:
+                break;
+            case MAP_KEY_INT:
+                break;
+            case MAP_KEY_TRIPLET:
+                if ((*(struct triplet*) key).pix == (*(struct triplet*) map -> items[index].key).pix
+                    && (*(struct triplet*) key).nix == (*(struct triplet*) map -> items[index].key).nix
+                    && (*(struct triplet*) key).uix == (*(struct triplet*) map -> items[index].key).uix) {
+                        return map -> items[index].value;
+                }
+                break;
+        }
+
+        index++;
+        if (index >= map -> capacity) {index = 0;}
+    }
+    return NULL;
+}
+
+int _map_set_item(map_type_t type, map_item_t *items, size_t *size, size_t capacity, const void *key, void *value) {
+    uint64_t hash = map_hash_key(type, key);
+    size_t index = (size_t) (hash & (uint64_t) (capacity - 1));
+    while (items[index].key != NULL) {
+        switch (type) {
+            case MAP_KEY_CHAR:
+                break;
+            case MAP_KEY_INT:
+                break;
+            case MAP_KEY_TRIPLET:
+                if ((*(struct triplet*) key).pix == (*(struct triplet*) items[index].key).pix
+                    && (*(struct triplet*) key).nix == (*(struct triplet*) items[index].key).nix
+                    && (*(struct triplet*) key).uix == (*(struct triplet*) items[index].key).uix) {
+                        items[index].value = value; return 0;
+                }
+                break;
+        }
+
+        index++;
+        if (index >= capacity) {index = 0;}
+    }
+
+    void *copy = malloc((type == MAP_KEY_CHAR) ? strlen(key) + 1 : (size_t) type);
+    if (!copy) {return 1;}
+
+    if (type == MAP_KEY_CHAR) {strcpy(copy, key);}
+    else {memcpy(copy, key, (size_t) type);}
+
+    if (size) {(*size)++;}
+
+    items[index].key = copy;
+    items[index].value = value;
+
+    return 0; // return index after set? 
+}
+
+int _map_resize(map_t *map) {
+    size_t capacity = map -> capacity * 2;
+    if (capacity < map -> capacity) {return 1;} // overflow
+    
+    map_item_t *items = calloc(capacity, sizeof(map_item_t));
+    if (items == NULL) {return 1;}
+    
+    for (size_t i = 0; i < map -> capacity; i++) {
+        if (map -> items[i].key != NULL) {
+            _map_set_item(map -> type, items, NULL, capacity, map -> items[i].key, map -> items[i].value);
+        }
+    }
+
+    free(map -> items);
+
+    map -> items = items;
+    map -> capacity = capacity;
+
+    return 0;
+}
+
+int map_set(map_t *map, const void *key, void *value) {
+    if (value == NULL) {return 1;}
+    if (map -> size >= map -> capacity / 2) {
+        if (_map_resize(map)) {return 1;}
+    }
+    return _map_set_item(map -> type, map -> items, &map -> size, map -> capacity, key, value);
 }
 
 // object
@@ -196,9 +342,9 @@ void obj_file_read(vertex_array_t *vertices, char *filename) {
 
     for (size_t i = 0; i < indices.size; i += 3) {
         vertex_t vertex = {
-            .position = positions.values[indices.values[i]],
-            .normal = normals.values[indices.values[i + 1]],
-            .uv = uvs.values[indices.values[i + 2]]
+            .position = positions.values[indices.values[i] - 1],
+            .normal = normals.values[indices.values[i + 1] - 1],
+            .uv = uvs.values[indices.values[i + 2] - 1]
         };
         vertex_array_insert(vertices, vertex);
     }
@@ -222,6 +368,11 @@ void obj_file_write(vertex_array_t *vertices, char *filename) {
     if (file == NULL) {
         printf("Failed to write the file: %s\n", filename); return;
     }
+
+    fwrite(&vertices -> size, sizeof(uint32_t), 1, file);
+    fwrite(vertices -> values, sizeof(vertex_t), vertices -> size, file);
+
+    fclose(file);
 }
 
 int main(int argc, char **argv) {
@@ -229,10 +380,52 @@ int main(int argc, char **argv) {
         printf("usage: otob <filename>\n"); return 1;
     }
 
-    vertex_array_t vertices = {0};
-    obj_file_read(&vertices, argv[1]);
+    // read obj
+    vertex_array_t obj_vertices = {0};
+    obj_file_read(&obj_vertices, argv[1]);
 
-    printf("\nsize=%ld\n", vertices.size);
+    // write as so
+    obj_file_write(&obj_vertices, "../assets/model/cube.so");
+
+    free(obj_vertices.values);
+
+    // read so
+    FILE *file = fopen("../assets/model/cube.so", "rb");
+    
+    uint32_t so_size;
+    fread(&so_size, sizeof(uint32_t), 1, file);
+    vertex_array_t so_vertices = {0};
+    so_vertices.values = (vertex_t*) malloc(256 * sizeof(vertex_t));
+    so_vertices.size = so_size;
+    so_vertices.capacity = 256;
+    fread(so_vertices.values, sizeof(vertex_t), so_size, file);
+
+    for (int i = 0; i < 3 && i < so_size; i++) {
+        printf("vertex %d: pos=(%f, %f, %f) normal=(%f, %f, %f) uv=(%f, %f)\n",
+            i,
+            so_vertices.values[i].position.x, 
+            so_vertices.values[i].position.y,
+            so_vertices.values[i].position.z,
+            so_vertices.values[i].normal.x,
+            so_vertices.values[i].normal.y,
+            so_vertices.values[i].normal.z,
+            so_vertices.values[i].uv.x,
+            so_vertices.values[i].uv.y);
+    }
+
+    const struct triplet indices = {1, 2, 3};
+
+    const uint32_t v = 2;
+
+    map_t *map = map_init(MAP_KEY_TRIPLET);
+    map_set(map, &indices, &v);
+
+    void *vr = map_get(map, &indices);
+    printf("v=%d\n", *(uint32_t*) vr);
+
+    free(so_vertices.values);
+
+    fclose(file);
 
     // read obj positions, normals, uvs, faces, material
     // for each face
