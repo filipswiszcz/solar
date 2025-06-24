@@ -125,6 +125,7 @@ map_t *map_init(map_type_t type) {
 int map_destroy(map_t *map) {
     for (size_t i = 0; i < map -> size; i++) {
         free((void*) map -> items[i].key);
+        free((void*) map -> items[i].value);
     }
     free(map -> items); free(map);
 }
@@ -150,6 +151,9 @@ void *map_get(map_t *map, const void *key) {
             case MAP_KEY_CHAR:
                 break;
             case MAP_KEY_INT:
+                if (*(int*) key == *(int*) map -> items[index].key) {
+                    return map -> items[index].value;
+                }
                 break;
             case MAP_KEY_TRIPLET:
                 if ((*(struct triplet*) key).pix == (*(struct triplet*) map -> items[index].key).pix
@@ -174,6 +178,9 @@ int _map_set_item(map_type_t type, map_item_t *items, size_t *size, size_t capac
             case MAP_KEY_CHAR:
                 break;
             case MAP_KEY_INT:
+                if (*(int*) key == *(int*) items[index].key) {
+                    items[index].value = value; return 0;
+                }
                 break;
             case MAP_KEY_TRIPLET:
                 if ((*(struct triplet*) key).pix == (*(struct triplet*) items[index].key).pix
@@ -194,10 +201,18 @@ int _map_set_item(map_type_t type, map_item_t *items, size_t *size, size_t capac
     if (type == MAP_KEY_CHAR) {strcpy(copy, key);}
     else {memcpy(copy, key, (size_t) type);}
 
+    // value malloc
+    void *vcopy = malloc((size_t) type); // doesnt work for chars
+    if (!vcopy) {return 1;}
+
+    memcpy(vcopy, value, (size_t) type);
+    // end of value malloc
+
     if (size) {(*size)++;}
 
     items[index].key = copy;
-    items[index].value = value;
+    // items[index].value = value;
+    items[index].value = vcopy;
 
     return 0; // return index after set? 
 }
@@ -235,7 +250,7 @@ int map_set(map_t *map, const void *key, void *value) {
 
 void _obj_file_read_material() {}
 
-void _obj_file_read_indices(uint32_array_t *array, char line[128]) {
+void _obj_file_read_indices(uint32_array_t *indices, char line[128]) {
     uint16_t mode = 0, offset = 0;
     for (size_t i = 0; i < strlen(line); i++) {
         if (line[i] >= '0' && line[i] <= '9') {
@@ -246,7 +261,7 @@ void _obj_file_read_indices(uint32_array_t *array, char line[128]) {
                     strncpy(part, &line[i - offset + 1], offset);
                     part[offset] = '\0';
                     uint32_t index = strtoul(part, NULL, 0);
-                    uint32_array_insert(array, index);
+                    uint32_array_insert(indices, index);
                     free(part);
                 }
             } else {
@@ -256,7 +271,7 @@ void _obj_file_read_indices(uint32_array_t *array, char line[128]) {
                     strncpy(part, &line[i - offset + 1], offset);
                     part[offset] = '\0';
                     uint32_t index = strtoul(part, NULL, 0);
-                    uint32_array_insert(array, index);
+                    uint32_array_insert(indices, index);
                     free(part);
                 }
             }
@@ -266,7 +281,7 @@ void _obj_file_read_indices(uint32_array_t *array, char line[128]) {
                 strncpy(part, &line[i - offset], offset);
                 part[offset] = '\0';
                 uint32_t index = strtoul(part, NULL, 0);
-                uint32_array_insert(array, index);
+                uint32_array_insert(indices, index);
                 free(part);
                 mode = 0; offset = 0;
             }
@@ -274,7 +289,10 @@ void _obj_file_read_indices(uint32_array_t *array, char line[128]) {
     }
 }
 
-void obj_file_read(vertex_array_t *vertices, char *filename) {
+static uint32_t INDEX_POOL[65536];
+static uint32_t INDEX_POOL_CURSOR = 0;
+
+void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, char *filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         printf("Failed to read the file: %s\n", filename); return;
@@ -284,7 +302,7 @@ void obj_file_read(vertex_array_t *vertices, char *filename) {
     vec3_array_t normals = {0};
     vec2_array_t uvs = {0};
 
-    uint32_array_t indices = {0};
+    uint32_array_t faces = {0};
 
     char line[128];
     while (fgets(line, sizeof(line), file)) {
@@ -301,7 +319,7 @@ void obj_file_read(vertex_array_t *vertices, char *filename) {
             sscanf(line, "vt %f %f", &uv.x, &uv.y);
             vec2_array_insert(&uvs, uv);
         } else if (strncmp(line, "f", 1) == 0) {
-            _obj_file_read_indices(&indices, line);
+            _obj_file_read_indices(&faces, line);
         } else if (strncmp(line, "mtllib", 6) == 0) {
             // char material_filename[128];
             // sscanf(line, "mtllib %s", material_filename);
@@ -333,21 +351,47 @@ void obj_file_read(vertex_array_t *vertices, char *filename) {
 
     // printf("\nsize=%ld\n", indices.size);
 
-    // for (size_t i = 0; i < (indices.size - 1); i += 3) {
-    //     printf("f %d/%d/%d\n", indices.values[i], indices.values[i + 1], indices.values[i + 2]);
+    // for (size_t i = 0; i < (faces.size - 1); i += 3) {
+    //     printf("f %d/%d/%d\n", faces.values[i], faces.values[i + 1], faces.values[i + 2]);
     // }
 
     // something here
 
+    map_t *polygons = map_init(MAP_KEY_TRIPLET);
+    uint32_t cursor = 0;
 
-    for (size_t i = 0; i < indices.size; i += 3) {
-        vertex_t vertex = {
-            .position = positions.values[indices.values[i] - 1],
-            .normal = normals.values[indices.values[i + 1] - 1],
-            .uv = uvs.values[indices.values[i + 2] - 1]
+    for (size_t i = 0; i < faces.size; i += 3) {
+        struct triplet polygon = {faces.values[i], faces.values[i + 1], faces.values[i + 2]};
+        vertex_t vertex = { // it can use triplet vars
+            .position = positions.values[faces.values[i] - 1],
+            .normal = normals.values[faces.values[i + 1] - 1],
+            .uv = uvs.values[faces.values[i + 2] - 1]
         };
-        vertex_array_insert(vertices, vertex);
+
+        void *value = map_get(polygons, &polygon);
+        if (value != NULL) {
+            uint32_t index = (uint32_t) (uintptr_t) value;
+            uint32_array_insert(indices, *(uint32_t*) value); // add hashmap val (index) to indices
+            printf("R> polygon=%d/%d/%d, value=%d \n", polygon.pix, polygon.nix, polygon.uix, *(uint32_t*) value);
+            // printf("value=%d \n", *(uint32_t*) value);
+        } else {
+            vertex_array_insert(vertices, vertex);
+            uint32_array_insert(indices, ++cursor);
+
+            // it overwrites the same int over and over and adds it everywhere
+            map_set(polygons, &polygon, &cursor); // ++cursor definetly increases the same value in every map field lol
+
+            printf("   polygon=%d/%d/%d, index=%d \n", polygon.pix, polygon.nix, polygon.uix, cursor);
+
+            // add vertex to vertices
+            // add index to hashmap
+            // add index to indices
+        }
     }
+
+    printf("faces_size=%ld\n", faces.size);
+    printf("polygons_size=%ld\n", polygons -> size);
+
     // probably
     // go through every 3-indices offset
     // create vertice
@@ -382,12 +426,18 @@ int main(int argc, char **argv) {
 
     // read obj
     vertex_array_t obj_vertices = {0};
-    obj_file_read(&obj_vertices, argv[1]);
+    uint32_array_t obj_indices = {0};
+    obj_file_read(&obj_vertices, &obj_indices, argv[1]);
 
     // write as so
     obj_file_write(&obj_vertices, "../assets/model/cube.so");
 
+    // for (int i = 0; i < obj_indices.size; i += 3) {
+    //     printf("f %d/%d/%d\n", obj_indices.values[i], obj_indices.values[i + 1], obj_indices.values[i + 2]);
+    // }
+
     free(obj_vertices.values);
+    free(obj_indices.values);
 
     // read so
     FILE *file = fopen("../assets/model/cube.so", "rb");
@@ -413,16 +463,6 @@ int main(int argc, char **argv) {
             so_vertices.values[i].uv.y);
     }
 
-    const struct triplet indices = {1, 2, 3};
-
-    const uint32_t v = 2;
-
-    map_t *map = map_init(MAP_KEY_TRIPLET);
-    map_set(map, &indices, &v);
-
-    void *vr = map_get(map, &indices);
-    printf("v=%d\n", *(uint32_t*) vr);
-
     free(so_vertices.values);
 
     fclose(file);
@@ -433,7 +473,6 @@ int main(int argc, char **argv) {
             // reuse vertex from hashmap
         // else
             // create new vertex
-    
 
     return 0;
 }
