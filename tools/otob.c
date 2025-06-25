@@ -289,9 +289,6 @@ void _obj_file_read_indices(uint32_array_t *indices, char line[128]) {
     }
 }
 
-static uint32_t INDEX_POOL[65536];
-static uint32_t INDEX_POOL_CURSOR = 0;
-
 void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, char *filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
@@ -349,14 +346,6 @@ void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, char *file
         }
     }
 
-    // printf("\nsize=%ld\n", indices.size);
-
-    // for (size_t i = 0; i < (faces.size - 1); i += 3) {
-    //     printf("f %d/%d/%d\n", faces.values[i], faces.values[i + 1], faces.values[i + 2]);
-    // }
-
-    // something here
-
     map_t *polygons = map_init(MAP_KEY_TRIPLET);
     uint32_t cursor = 0;
 
@@ -373,7 +362,6 @@ void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, char *file
             uint32_t index = (uint32_t) (uintptr_t) value;
             uint32_array_insert(indices, *(uint32_t*) value); // add hashmap val (index) to indices
             printf("R> polygon=%d/%d/%d, value=%d \n", polygon.pix, polygon.nix, polygon.uix, *(uint32_t*) value);
-            // printf("value=%d \n", *(uint32_t*) value);
         } else {
             vertex_array_insert(vertices, vertex);
             uint32_array_insert(indices, ++cursor);
@@ -382,10 +370,6 @@ void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, char *file
             map_set(polygons, &polygon, &cursor); // ++cursor definetly increases the same value in every map field lol
 
             printf("   polygon=%d/%d/%d, index=%d \n", polygon.pix, polygon.nix, polygon.uix, cursor);
-
-            // add vertex to vertices
-            // add index to hashmap
-            // add index to indices
         }
     }
 
@@ -407,14 +391,16 @@ void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, char *file
     fclose(file);
 }
 
-void obj_file_write(vertex_array_t *vertices, char *filename) {
+void obj_file_write(vertex_array_t *vertices, uint32_array_t *indices, char *filename) {
     FILE *file = fopen(filename, "wb");
     if (file == NULL) {
         printf("Failed to write the file: %s\n", filename); return;
     }
 
     fwrite(&vertices -> size, sizeof(uint32_t), 1, file);
+    fwrite(&indices -> size, sizeof(uint32_t), 1, file);
     fwrite(vertices -> values, sizeof(vertex_t), vertices -> size, file);
+    fwrite(indices -> values, sizeof(uint32_t), indices -> size, file);
 
     fclose(file);
 }
@@ -424,35 +410,37 @@ int main(int argc, char **argv) {
         printf("usage: otob <filename>\n"); return 1;
     }
 
-    // read obj
     vertex_array_t obj_vertices = {0};
     uint32_array_t obj_indices = {0};
+
+    // read obj and write as so
     obj_file_read(&obj_vertices, &obj_indices, argv[1]);
-
-    // write as so
-    obj_file_write(&obj_vertices, "../assets/model/cube.so");
-
-    // for (int i = 0; i < obj_indices.size; i += 3) {
-    //     printf("f %d/%d/%d\n", obj_indices.values[i], obj_indices.values[i + 1], obj_indices.values[i + 2]);
-    // }
+    obj_file_write(&obj_vertices, &obj_indices, "../assets/model/cube.so");
 
     free(obj_vertices.values);
     free(obj_indices.values);
 
-    // read so
+    // read and check so
     FILE *file = fopen("../assets/model/cube.so", "rb");
     
-    uint32_t so_size;
-    fread(&so_size, sizeof(uint32_t), 1, file);
+    uint32_t so_vertices_size, so_indices_size;
+    fread(&so_vertices_size, sizeof(uint32_t), 1, file);
+    fread(&so_indices_size, sizeof(uint32_t), 1, file);
+
     vertex_array_t so_vertices = {0};
     so_vertices.values = (vertex_t*) malloc(256 * sizeof(vertex_t));
-    so_vertices.size = so_size;
+    so_vertices.size = so_vertices_size;
     so_vertices.capacity = 256;
-    fread(so_vertices.values, sizeof(vertex_t), so_size, file);
+    fread(so_vertices.values, sizeof(vertex_t), so_vertices_size, file);
 
-    for (int i = 0; i < 3 && i < so_size; i++) {
-        printf("vertex %d: pos=(%f, %f, %f) normal=(%f, %f, %f) uv=(%f, %f)\n",
-            i,
+    uint32_array_t so_indices = {0};
+    so_indices.values = (uint32_t*) malloc(256 * sizeof(uint32_t));
+    so_indices.size = so_indices_size;
+    so_indices.capacity = 256;
+    fread(so_indices.values, sizeof(uint32_t), so_indices_size, file);
+
+    for (int i = 0; i < 3 && i < so_vertices_size; i++) {
+        printf("vertex %d: pos=(%f, %f, %f) normal=(%f, %f, %f) uv=(%f, %f)\n", i,
             so_vertices.values[i].position.x, 
             so_vertices.values[i].position.y,
             so_vertices.values[i].position.z,
@@ -464,6 +452,7 @@ int main(int argc, char **argv) {
     }
 
     free(so_vertices.values);
+    free(so_indices.values);
 
     fclose(file);
 
