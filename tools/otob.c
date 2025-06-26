@@ -346,35 +346,51 @@ void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, char *file
         }
     }
 
+    printf("positions_size=%ld\n", positions.size);
+    printf("normals_size=%ld\n", normals.size);
+    printf("uvs_size=%ld\n", uvs.size);
+
+    printf("faces_size=%ld\n", faces.size);
+
     map_t *polygons = map_init(MAP_KEY_TRIPLET);
     uint32_t cursor = 0;
 
     for (size_t i = 0; i < faces.size; i += 3) {
-        struct triplet polygon = {faces.values[i], faces.values[i + 1], faces.values[i + 2]};
-        vertex_t vertex = { // it can use triplet vars
-            .position = positions.values[faces.values[i] - 1],
-            .normal = normals.values[faces.values[i + 1] - 1],
-            .uv = uvs.values[faces.values[i + 2] - 1]
+
+        struct triplet polygon = {
+            faces.values[i],
+            faces.values[i + 1],
+            faces.values[i + 2]
         };
 
         void *value = map_get(polygons, &polygon);
         if (value != NULL) {
-            uint32_t index = (uint32_t) (uintptr_t) value;
+
+            // DONT ADD THESE TO SEE IF THE OTHER ARE DRAWN PROPERLY
+                // BCS THIS ARE NOT (REPEATED)
+
+            // SOO THERE IS A PROBLEM WITH INDICES ORDER
+                // MAYBE I SHOULD JUST COPY THE OBJ STRCUTURE
+                // OR TRY HARDER!
+
             uint32_array_insert(indices, *(uint32_t*) value); // add hashmap val (index) to indices
-            printf("R> polygon=%d/%d/%d, value=%d \n", polygon.pix, polygon.nix, polygon.uix, *(uint32_t*) value);
+            // printf("R> polygon=%d/%d/%d, value=%d \n", polygon.pix, polygon.nix, polygon.uix, *(uint32_t*) value);
         } else {
+            vertex_t vertex = { // it can use triplet vars
+                .position = positions.values[faces.values[i] - 1],
+                .normal = normals.values[faces.values[i + 2] - 1],
+                .uv = uvs.values[faces.values[i + 1] - 1]
+            };
+
             vertex_array_insert(vertices, vertex);
-            uint32_array_insert(indices, ++cursor);
+            uint32_array_insert(indices, cursor++);
 
             // it overwrites the same int over and over and adds it everywhere
-            map_set(polygons, &polygon, &cursor); // ++cursor definetly increases the same value in every map field lol
+            // map_set(polygons, &polygon, &cursor); // ++cursor definetly increases the same value in every map field lol
 
-            printf("   polygon=%d/%d/%d, index=%d \n", polygon.pix, polygon.nix, polygon.uix, cursor);
+            // printf("   polygon=%d/%d/%d, index=%d \n", polygon.pix, polygon.nix, polygon.uix, cursor);
         }
     }
-
-    printf("faces_size=%ld\n", faces.size);
-    printf("polygons_size=%ld\n", polygons -> size);
 
     // probably
     // go through every 3-indices offset
@@ -417,6 +433,9 @@ int main(int argc, char **argv) {
     obj_file_read(&obj_vertices, &obj_indices, argv[1]);
     obj_file_write(&obj_vertices, &obj_indices, "../assets/model/cube.so");
 
+    printf("obj_vertices_size=%ld\n", obj_vertices.size);
+    printf("obj_indices_size=%ld\n", obj_indices.size);
+
     free(obj_vertices.values);
     free(obj_indices.values);
 
@@ -428,28 +447,32 @@ int main(int argc, char **argv) {
     fread(&so_indices_size, sizeof(uint32_t), 1, file);
 
     vertex_array_t so_vertices = {0};
-    so_vertices.values = (vertex_t*) malloc(256 * sizeof(vertex_t));
+    so_vertices.values = (vertex_t*) malloc(4096 * sizeof(vertex_t));
     so_vertices.size = so_vertices_size;
-    so_vertices.capacity = 256;
+    so_vertices.capacity = 4096;
     fread(so_vertices.values, sizeof(vertex_t), so_vertices_size, file);
 
     uint32_array_t so_indices = {0};
-    so_indices.values = (uint32_t*) malloc(256 * sizeof(uint32_t));
+    so_indices.values = (uint32_t*) malloc(4096 * sizeof(uint32_t));
     so_indices.size = so_indices_size;
-    so_indices.capacity = 256;
+    so_indices.capacity = 4096;
     fread(so_indices.values, sizeof(uint32_t), so_indices_size, file);
 
-    for (int i = 0; i < 3 && i < so_vertices_size; i++) {
-        printf("vertex %d: pos=(%f, %f, %f) normal=(%f, %f, %f) uv=(%f, %f)\n", i,
-            so_vertices.values[i].position.x, 
-            so_vertices.values[i].position.y,
-            so_vertices.values[i].position.z,
-            so_vertices.values[i].normal.x,
-            so_vertices.values[i].normal.y,
-            so_vertices.values[i].normal.z,
-            so_vertices.values[i].uv.x,
-            so_vertices.values[i].uv.y);
-    }
+    // for (int i = 0; i < 3 && i < so_vertices_size; i++) {
+    //     printf("vertex %d: pos=(%f, %f, %f) normal=(%f, %f, %f) uv=(%f, %f)\n", i,
+    //         so_vertices.values[i].position.x, 
+    //         so_vertices.values[i].position.y,
+    //         so_vertices.values[i].position.z,
+    //         so_vertices.values[i].normal.x,
+    //         so_vertices.values[i].normal.y,
+    //         so_vertices.values[i].normal.z,
+    //         so_vertices.values[i].uv.x,
+    //         so_vertices.values[i].uv.y);
+    // }
+
+    // for (int i = 0; i < so_indices_size; i += 3) {
+    //     printf("index %d/%d/%d\n", so_indices.values[i], so_indices.values[i + 1], so_indices.values[i + 2]);
+    // }
 
     free(so_vertices.values);
     free(so_indices.values);
