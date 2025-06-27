@@ -155,10 +155,17 @@ void *map_get(map_t *map, const void *key) {
                     return map -> items[index].value;
                 }
                 break;
+            // case MAP_KEY_TRIPLET:
+            //     if ((*(struct triplet*) key).pix == (*(struct triplet*) map -> items[index].key).pix
+            //         && (*(struct triplet*) key).nix == (*(struct triplet*) map -> items[index].key).nix
+            //         && (*(struct triplet*) key).uix == (*(struct triplet*) map -> items[index].key).uix) {
+            //             return map -> items[index].value;
+            //     }
+            //     break;
             case MAP_KEY_TRIPLET:
-                if ((*(struct triplet*) key).pix == (*(struct triplet*) map -> items[index].key).pix
-                    && (*(struct triplet*) key).nix == (*(struct triplet*) map -> items[index].key).nix
-                    && (*(struct triplet*) key).uix == (*(struct triplet*) map -> items[index].key).uix) {
+                if ((*(vec3_t*) key).x == (*(vec3_t*) map -> items[index].key).x
+                    && (*(vec3_t*) key).y == (*(vec3_t*) map -> items[index].key).y
+                    && (*(vec3_t*) key).z == (*(vec3_t*) map -> items[index].key).z) {
                         return map -> items[index].value;
                 }
                 break;
@@ -182,10 +189,17 @@ int _map_set_item(map_type_t type, map_item_t *items, size_t *size, size_t capac
                     items[index].value = value; return 0;
                 }
                 break;
+            // case MAP_KEY_TRIPLET:
+            //     if ((*(struct triplet*) key).pix == (*(struct triplet*) items[index].key).pix
+            //         && (*(struct triplet*) key).nix == (*(struct triplet*) items[index].key).nix
+            //         && (*(struct triplet*) key).uix == (*(struct triplet*) items[index].key).uix) {
+            //             items[index].value = value; return 0;
+            //     }
+            //     break;
             case MAP_KEY_TRIPLET:
-                if ((*(struct triplet*) key).pix == (*(struct triplet*) items[index].key).pix
-                    && (*(struct triplet*) key).nix == (*(struct triplet*) items[index].key).nix
-                    && (*(struct triplet*) key).uix == (*(struct triplet*) items[index].key).uix) {
+                if ((*(vec3_t*) key).x == (*(vec3_t*) items[index].key).x
+                    && (*(vec3_t*) key).y == (*(vec3_t*) items[index].key).y
+                    && (*(vec3_t*) key).z == (*(vec3_t*) items[index].key).z) {
                         items[index].value = value; return 0;
                 }
                 break;
@@ -357,11 +371,15 @@ void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, char *file
 
     for (size_t i = 0; i < faces.size; i += 3) {
 
-        struct triplet polygon = {
-            faces.values[i],
-            faces.values[i + 1],
-            faces.values[i + 2]
+        vec3_t polygon = {
+            faces.values[i], faces.values[i + 1], faces.values[i + 2]
         };
+
+        // struct triplet polygon = {
+        //     faces.values[i],
+        //     faces.values[i + 1],
+        //     faces.values[i + 2]
+        // };
 
         void *value = map_get(polygons, &polygon);
         if (value != NULL) {
@@ -376,17 +394,19 @@ void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, char *file
             uint32_array_insert(indices, *(uint32_t*) value); // add hashmap val (index) to indices
             // printf("R> polygon=%d/%d/%d, value=%d \n", polygon.pix, polygon.nix, polygon.uix, *(uint32_t*) value);
         } else {
+
             vertex_t vertex = { // it can use triplet vars
                 .position = positions.values[faces.values[i] - 1],
                 .normal = normals.values[faces.values[i + 2] - 1],
                 .uv = uvs.values[faces.values[i + 1] - 1]
             };
 
+            map_set(polygons, &polygon, &cursor);
+
             vertex_array_insert(vertices, vertex);
             uint32_array_insert(indices, cursor++);
 
-            // it overwrites the same int over and over and adds it everywhere
-            // map_set(polygons, &polygon, &cursor); // ++cursor definetly increases the same value in every map field lol
+            // map_set(polygons, &polygon, &cursor);
 
             // printf("   polygon=%d/%d/%d, index=%d \n", polygon.pix, polygon.nix, polygon.uix, cursor);
         }
@@ -470,9 +490,9 @@ int main(int argc, char **argv) {
     //         so_vertices.values[i].uv.y);
     // }
 
-    // for (int i = 0; i < so_indices_size; i += 3) {
-    //     printf("index %d/%d/%d\n", so_indices.values[i], so_indices.values[i + 1], so_indices.values[i + 2]);
-    // }
+    for (int i = 0; i < so_indices_size; i += 3) {
+        printf("index %d/%d/%d\n", so_indices.values[i], so_indices.values[i + 1], so_indices.values[i + 2]);
+    }
 
     free(so_vertices.values);
     free(so_indices.values);
