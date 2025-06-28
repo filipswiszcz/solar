@@ -41,6 +41,7 @@
 |-- tools/
 |   |-- *.c
 |-- Makefile
+|-- README.md
 
 
 ** FLOW **
@@ -52,6 +53,7 @@
 |   |- init camera
 |   |- init ui
 |   |  |- init crosshair
+|   |  |- init buttons
 |   |- init scene
 |      |- load orb files (mesh) (rotation speed, description etc)
 |      |- calc planets positions (current date and time)
@@ -59,15 +61,17 @@
 |-- update
 |   |- record fps
 |   |- handle inputs
-|   |- update scene
-|   |  |- move and rotate planets
-|   |  |- handle ui triggers (text holograms)
+|   |- update ui
+|   |  |- handle ui triggers (text holograms, buttons)
 |   |- render ui
 |   |  |- draw crosshair
+|   |  |- draw buttons
 |   |  |- draw holograms
 |   |     |- draw planets names
 |   |     |- draw orbits
 |   |     |- draw text holograms (if triggered)
+|   |- update scene
+|   |  |- move and rotate planets
 |   |- render scene
 |      |- draw planets
 |      |- draw skybox
