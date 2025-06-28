@@ -10,6 +10,28 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define QSSERT(_e, ...) if (!(_e)) {fprintf(stderr,  __VA_ARGS__); exit(1);}
+
+static char *strdup(const char *content) {
+    size_t size = strlen(content) + 1;
+    char *copy = malloc(size);
+    if (copy) {
+        memcpy(copy, content, size);
+    }
+    return copy;
+}
+
+static char *file_ext_swap(const char *filename, const char *extension) {
+    char *copyname = strdup(filename);
+    if (!copyname) return NULL;
+    char *mark = strrchr(copyname, '.');
+    if (mark) *mark = '\0';
+    static char name[512];
+    snprintf(name, sizeof(name), "%s.%s", copyname, extension);
+    free(copyname);
+    return name;
+}
+
 // math
 
 typedef struct vec2 {
@@ -20,16 +42,19 @@ typedef struct vec3 {
     float x, y, z;
 } vec3_t;
 
-// vertex
+// mesh
 
 typedef struct vertex {
     vec3_t position, normal;
     vec2_t uv;
 } vertex_t;
 
-struct triplet {
-    uint32_t pix, nix, uix;
-};
+typedef struct material {
+    float shininess;
+    vec3_t ambient, diffuse, specular, emissivity;
+    float density, transparency;
+    int illumination;
+} material_t;
 
 // array
 
@@ -260,9 +285,36 @@ int map_set(map_t *map, const void *key, void *value) {
     return _map_set_item(map -> type, map -> items, &map -> size, map -> capacity, key, value);
 }
 
-// object
+// obj
 
-void _obj_file_read_material() {}
+void _obj_file_read_material(material_t *material, char *filename) {
+    FILE *file = fopen(filename, "r");
+
+    QSSERT(file != NULL, "Failed to read the material file: %s\n", filename);
+
+    char line[128];
+    while (fgets(line, sizeof(line), file)) {
+        if (strncmp(line, "Ns", 2) == 0) {
+            sscanf(line, "Ns %f", &material -> shininess);
+        } else if (strncmp(line, "Ka", 2) == 0) {
+            sscanf(line, "Ka %f %f %f", &material -> ambient.x, &material -> ambient.y, &material -> ambient.z);
+        } else if (strncmp(line, "Kd", 2) == 0) {
+            sscanf(line, "Kd %f %f %f", &material -> diffuse.x, &material -> diffuse.y, &material -> diffuse.z);
+        } else if (strncmp(line, "Ks", 2) == 0) {
+            sscanf(line, "Ks %f %f %f", &material -> specular.x, &material -> specular.y, &material -> specular.z);
+        } else if (strncmp(line, "Ke", 2) == 0) {
+            sscanf(line, "Ke %f %f %f", &material -> emissivity.x, &material -> emissivity.y, &material -> emissivity.z);
+        } else if (strncmp(line, "Ni", 2) == 0) {
+            sscanf(line, "Ni %f", &material -> density);
+        } else if (strncmp(line, "d", 1) == 0) {
+            sscanf(line, "d %f", &material -> transparency);
+        } else if (strncmp(line, "illum", 5) == 0) {
+            sscanf(line, "illum %d", &material -> illumination);
+        }
+    }
+
+    fclose(file);
+}
 
 void _obj_file_read_indices(uint32_array_t *indices, char line[128]) {
     uint16_t mode = 0, offset = 0;
@@ -303,11 +355,10 @@ void _obj_file_read_indices(uint32_array_t *indices, char line[128]) {
     }
 }
 
-void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, char *filename) {
-    FILE *file = fopen(filename, "r");
-    if (file == NULL) {
-        printf("Failed to read the file: %s\n", filename); return;
-    }
+void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, material_t *material, char *filepath) {
+    FILE *file = fopen(filepath, "r");
+
+    QSSERT(file != NULL, "Failed to read the file: %s\n", filepath);
 
     vec3_array_t positions = {0};
     vec3_array_t normals = {0};
@@ -332,70 +383,22 @@ void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, char *file
         } else if (strncmp(line, "f", 1) == 0) {
             _obj_file_read_indices(&faces, line);
         } else if (strncmp(line, "mtllib", 6) == 0) {
-            // char material_filename[128];
-            // sscanf(line, "mtllib %s", material_filename);
-
-            // char *part;
-            // part = strtok(filename, "/");
-            // while (part != NULL) {
-            //     printf("%s\n", part);
-            //     part = strtok(NULL, "/");
-            // }
-            // printf("%s\n", part);
-
-
-
-            // char material_filepath[256];
-            // sprintf(material_filepath, "%s");
-
-            // char title[64];
-            // sprintf(title, "%s [%d FPS]", WINDOW_NAME, context.fps.frames);
-
-            // char prepath[256], path[128];
-            // sscanf(line, "mtllib %s", path);
-            // mesh -> material.name = path;
-            // strcpy(prepath, ASSETS_MODEL_DEFAULT_DIR_PATH);
-            // strcat(prepath, path);
-            // r_mesh_load_material(mesh -> material, prepath);
+            _obj_file_read_material(material, file_ext_swap(filepath, "mtl"));
         }
     }
-
-    printf("positions_size=%ld\n", positions.size);
-    printf("normals_size=%ld\n", normals.size);
-    printf("uvs_size=%ld\n", uvs.size);
-
-    printf("faces_size=%ld\n", faces.size);
 
     map_t *polygons = map_init(MAP_KEY_TRIPLET);
     uint32_t cursor = 0;
 
     for (size_t i = 0; i < faces.size; i += 3) {
 
-        vec3_t polygon = {
-            faces.values[i], faces.values[i + 1], faces.values[i + 2]
-        };
-
-        // struct triplet polygon = {
-        //     faces.values[i],
-        //     faces.values[i + 1],
-        //     faces.values[i + 2]
-        // };
+        vec3_t polygon = {faces.values[i], faces.values[i + 1], faces.values[i + 2]};
 
         void *value = map_get(polygons, &polygon);
         if (value != NULL) {
-
-            // DONT ADD THESE TO SEE IF THE OTHER ARE DRAWN PROPERLY
-                // BCS THIS ARE NOT (REPEATED)
-
-            // SOO THERE IS A PROBLEM WITH INDICES ORDER
-                // MAYBE I SHOULD JUST COPY THE OBJ STRCUTURE
-                // OR TRY HARDER!
-
-            uint32_array_insert(indices, *(uint32_t*) value); // add hashmap val (index) to indices
-            // printf("R> polygon=%d/%d/%d, value=%d \n", polygon.pix, polygon.nix, polygon.uix, *(uint32_t*) value);
+            uint32_array_insert(indices, *(uint32_t*) value);
         } else {
-
-            vertex_t vertex = { // it can use triplet vars
+            vertex_t vertex = {
                 .position = positions.values[faces.values[i] - 1],
                 .normal = normals.values[faces.values[i + 2] - 1],
                 .uv = uvs.values[faces.values[i + 1] - 1]
@@ -405,20 +408,8 @@ void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, char *file
 
             vertex_array_insert(vertices, vertex);
             uint32_array_insert(indices, cursor++);
-
-            // map_set(polygons, &polygon, &cursor);
-
-            // printf("   polygon=%d/%d/%d, index=%d \n", polygon.pix, polygon.nix, polygon.uix, cursor);
         }
     }
-
-    // probably
-    // go through every 3-indices offset
-    // create vertice
-        // add it to hash map
-            // if 1, then add its index to indices arr
-            // if 0, then inc index counter and add it to indices arr?? (this is questionable)
-    // return vertices arr and indices arr
 
     free(positions.values);
     free(normals.values);
@@ -427,16 +418,24 @@ void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, char *file
     fclose(file);
 }
 
-void obj_file_write(vertex_array_t *vertices, uint32_array_t *indices, char *filename) {
-    FILE *file = fopen(filename, "wb");
-    if (file == NULL) {
-        printf("Failed to write the file: %s\n", filename); return;
-    }
+void obj_file_write(vertex_array_t *vertices, uint32_array_t *indices, material_t *material, char *filepath) {
+    FILE *file = fopen(filepath, "wb");
+
+    QSSERT(file != NULL, "Failed to write the file: %s\n", filepath);
 
     fwrite(&vertices -> size, sizeof(uint32_t), 1, file);
     fwrite(&indices -> size, sizeof(uint32_t), 1, file);
     fwrite(vertices -> values, sizeof(vertex_t), vertices -> size, file);
     fwrite(indices -> values, sizeof(uint32_t), indices -> size, file);
+
+    fwrite(&material -> shininess, sizeof(float), 1, file);
+    fwrite(&material -> ambient, sizeof(vec3_t), 1, file);
+    fwrite(&material -> diffuse, sizeof(vec3_t), 1, file);
+    fwrite(&material -> specular, sizeof(vec3_t), 1, file);
+    fwrite(&material -> emissivity, sizeof(vec3_t), 1, file);
+    fwrite(&material -> density, sizeof(float), 1, file);
+    fwrite(&material -> transparency, sizeof(float), 1, file);
+    fwrite(&material -> illumination, sizeof(uint32_t), 1, file);
 
     fclose(file);
 }
@@ -446,37 +445,40 @@ int main(int argc, char **argv) {
         printf("usage: otob <filename>\n"); return 1;
     }
 
-    vertex_array_t obj_vertices = {0};
-    uint32_array_t obj_indices = {0};
+    char *mark = strrchr(argv[1], '.');
+    QSSERT(!strcmp(mark, ".obj"), "File has be in OBJ format\n");
 
-    // read obj and write as so
-    obj_file_read(&obj_vertices, &obj_indices, argv[1]);
-    obj_file_write(&obj_vertices, &obj_indices, "../assets/model/cube.so");
+    vertex_array_t vertices = {0};
+    uint32_array_t indices = {0};
+    material_t material = {0};
 
-    printf("obj_vertices_size=%ld\n", obj_vertices.size);
-    printf("obj_indices_size=%ld\n", obj_indices.size);
+    obj_file_read(&vertices, &indices, &material, argv[1]);
+    obj_file_write(&vertices, &indices, &material, file_ext_swap(argv[1], "orb"));
 
-    free(obj_vertices.values);
-    free(obj_indices.values);
+    printf("vertices=%ld\n", vertices.size);
+    printf("indices=%ld\n", indices.size);
 
-    // read and check so
-    FILE *file = fopen("../assets/model/cube.so", "rb");
+    free(vertices.values);
+    free(indices.values);
+
+    // read and check so *DEL*
+    // FILE *file = fopen("../assets/model/cube.orb", "rb");
     
-    uint32_t so_vertices_size, so_indices_size;
-    fread(&so_vertices_size, sizeof(uint32_t), 1, file);
-    fread(&so_indices_size, sizeof(uint32_t), 1, file);
+    // uint32_t so_vertices_size, so_indices_size;
+    // fread(&so_vertices_size, sizeof(uint32_t), 1, file);
+    // fread(&so_indices_size, sizeof(uint32_t), 1, file);
 
-    vertex_array_t so_vertices = {0};
-    so_vertices.values = (vertex_t*) malloc(4096 * sizeof(vertex_t));
-    so_vertices.size = so_vertices_size;
-    so_vertices.capacity = 4096;
-    fread(so_vertices.values, sizeof(vertex_t), so_vertices_size, file);
+    // vertex_array_t so_vertices = {0};
+    // so_vertices.values = (vertex_t*) malloc(4096 * sizeof(vertex_t));
+    // so_vertices.size = so_vertices_size;
+    // so_vertices.capacity = 4096;
+    // fread(so_vertices.values, sizeof(vertex_t), so_vertices_size, file);
 
-    uint32_array_t so_indices = {0};
-    so_indices.values = (uint32_t*) malloc(4096 * sizeof(uint32_t));
-    so_indices.size = so_indices_size;
-    so_indices.capacity = 4096;
-    fread(so_indices.values, sizeof(uint32_t), so_indices_size, file);
+    // uint32_array_t so_indices = {0};
+    // so_indices.values = (uint32_t*) malloc(4096 * sizeof(uint32_t));
+    // so_indices.size = so_indices_size;
+    // so_indices.capacity = 4096;
+    // fread(so_indices.values, sizeof(uint32_t), so_indices_size, file);
 
     // for (int i = 0; i < 3 && i < so_vertices_size; i++) {
     //     printf("vertex %d: pos=(%f, %f, %f) normal=(%f, %f, %f) uv=(%f, %f)\n", i,
@@ -490,21 +492,14 @@ int main(int argc, char **argv) {
     //         so_vertices.values[i].uv.y);
     // }
 
-    for (int i = 0; i < so_indices_size; i += 3) {
-        printf("index %d/%d/%d\n", so_indices.values[i], so_indices.values[i + 1], so_indices.values[i + 2]);
-    }
+    // for (int i = 0; i < so_indices_size; i += 3) {
+    //     printf("index %d/%d/%d\n", so_indices.values[i], so_indices.values[i + 1], so_indices.values[i + 2]);
+    // }
 
-    free(so_vertices.values);
-    free(so_indices.values);
+    // free(so_vertices.values);
+    // free(so_indices.values);
 
-    fclose(file);
-
-    // read obj positions, normals, uvs, faces, material
-    // for each face
-        // if hashmap contains key (pos_id, uv_id, norm_id)
-            // reuse vertex from hashmap
-        // else
-            // create new vertex
+    // fclose(file);
 
     return 0;
 }

@@ -1,25 +1,111 @@
+** PROJECT TREE **
+|-- assets/
+|   |-- model/
+|   |   |-- default/
+|   |   |   |-- *.orb
+|   |   |-- *.orb
+|   |-- sound/
+|   |   |-- *.wav
+|   |   |-- *.mp3
+|   |-- texture/
+|       |-- model/
+|       |   |-- *.png
+|       |-- skybox/
+|           |-- *.png
+|-- lib/
+|   |-- stb/
+|       |-- stb_image.h
+|-- shader/
+|   |-- *.fs
+|   |-- *.vs
+|-- src/
+|   |-- d_array.c
+|   |-- d_array.h
+|   |-- d_util.c
+|   |-- d_util.h
+|   |-- g_game.c
+|   |-- g_game.h
+|   |-- main.c
+|   |-- r_math.c
+|   |-- r_math.h
+|   |-- r_ui.c
+|   |-- r_ui.h
+|   |-- r_physics.c
+|   |-- r_physics.h
+|   |-- r_renderer.c
+|   |-- r_renderer.h
+|   |-- r_shader.c
+|   |-- r_shader.h
+|   |-- r_sound.c
+|   |-- r_sound.h
+|-- tools/
+|   |-- *.c
+|-- Makefile
 
-* structure
+
+** FLOW **
+|-- init
+|   |- init glfw
+|   |- set window icon
+|   |- load shaders
+|   |- load textures
+|   |- init camera
+|   |- init ui
+|   |  |- init crosshair
+|   |- init scene
+|      |- load orb files (mesh) (rotation speed, description etc)
+|      |- calc planets positions (current date and time)
+|      |- load skybox
+|-- update
+|   |- record fps
+|   |- handle inputs
+|   |- update scene
+|   |  |- move and rotate planets
+|   |  |- handle ui triggers (text holograms)
+|   |- render ui
+|   |  |- draw crosshair
+|   |  |- draw holograms
+|   |     |- draw planets names
+|   |     |- draw orbits
+|   |     |- draw text holograms (if triggered)
+|   |- render scene
+|      |- draw planets
+|      |- draw skybox
+|-- stop
+|   |- free dynamic arrays
+|   |- terminate glfw
 
 
-
-* OBJECTIVES
+** OBJECTIVES **
 - posix
-- cubemaps (skybox)
-- textures support
-- lighting
-- camera (zooming)
-- interface and text objects
-- physics (movement acceleration and deceleration according to current)
-- models (eg size of the Sun = 1.0f, Earth size = 0.004) (orbits) (moons)
+- structure design
++ obj to orb converter (for faster mesh load) (custom file type)
+- texture support (meshes properly use textures)
++ cubemaps (skybox)
+- lighting (basically the Sun casting light on the planets)
++ camera
+- camera zooming
+- models
+- physics (planets correct movement)
+- interface
+- interface data (planets descriptions)
+- shaders (planets orbits)
 - sound
-- data (descriptions, positions etc)
 - eggs
 
-TIME_FLOW_SPEEDS=[-1yr, -10mo, -1mo, -10d, -1d, -10h, -1h, -10m, -1m, -10s, -1s, 1s (LIVE), 10s, 1m, 10m, 1h, 10h, 1d, 10d, 1mo, 10mo, 1yr] // time has to match outside of simulation time (our world)
-MIN_DATE="31 DECEMBER 1949"
-MAX_DATE="31 DECEMBER 2049"
 
+** CONSTANTS **
+time_flow_speeds=[-1yr, -10mo, -1mo, -10d, -1d, -10h, -1h, -10m, -1m, -10s, -1s, 1s (LIVE), 10s, 1m, 10m, 1h, 10h, 1d, 10d, 1mo, 10mo, 1yr] // time has to match outside of simulation time (our world)
+date_min="31 DECEMBER 1949"
+date_max="31 DECEMBER 2049"
+
+
+** PROBLEMS **
+- load all textures from "assets/" and index them by name
+-
+
+
+** OTHER **
 
 INSTANCE:
 - MESH (shape?, material)
