@@ -60,6 +60,8 @@ mat4_t r_translate(mat4_t m, vec3_t v);
 
 mat4_t r_rotate(mat4_t m, float angle, vec3_t v);
 
+mat4_t r_scale(mat4_t m, vec3_t s);
+
 mat4_t r_look_at(vec3_t pos, vec3_t target, vec3_t up);
 
 // quat

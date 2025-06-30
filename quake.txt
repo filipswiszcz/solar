@@ -28,16 +28,16 @@
 |   |-- main.c
 |   |-- r_math.c
 |   |-- r_math.h
-|   |-- r_ui.c
-|   |-- r_ui.h
 |   |-- r_physics.c
 |   |-- r_physics.h
 |   |-- r_renderer.c
 |   |-- r_renderer.h
 |   |-- r_shader.c
 |   |-- r_shader.h
-|   |-- r_sound.c
-|   |-- r_sound.h
+|   |-- r_ui.c
+|   |-- r_ui.h
+|   |-- s_sound.c
+|   |-- s_sound.h
 |-- tools/
 |   |-- *.c
 |-- Makefile
@@ -82,7 +82,7 @@
 
 ** OBJECTIVES **
 - posix
-- structure design
++ structure design
 + obj to orb converter (for faster mesh load) (custom file type)
 - texture support (meshes properly use textures)
 + cubemaps (skybox)
@@ -106,7 +106,7 @@ date_max="31 DECEMBER 2049"
 
 ** PROBLEMS **
 - load all textures from "assets/" and index them by name
--
+- Jupiter is smaller than previously estimated (as of feb 2026)
 
 
 ** OTHER **
