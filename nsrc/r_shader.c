@@ -3,7 +3,7 @@
 char *_r_read_shader(char *path) {
     FILE *file = fopen(path, "r");
 
-    ASSERT(file != NULL, "Failed to open the file: %s", path);
+    VSSERT(file != NULL, NULL, "Failed to open shader file: %s\n", path);
 
     fseek(file, 0, SEEK_END);
     size_t fsize = ftell(file);
@@ -28,13 +28,13 @@ uint32_t _r_compile_shader(uint32_t type, char *code) {
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
         glGetShaderInfoLog(shader, 256, NULL, info);
-        printf("Shader did not compile: %s", info); return -1;
+        printf("Shader did not compile: %s\n", info); return -1;
     }
 #endif
     return shader;
 }
 
-void r_create_program(shader_t *shader, char *frag_path, char *vert_path) {
+void r_create_program(shader_t *shader, char *vert_path, char *frag_path) {
     char *vert_code = _r_read_shader(vert_path);
     char *frag_code = _r_read_shader(frag_path);
 
@@ -52,9 +52,13 @@ void r_create_program(shader_t *shader, char *frag_path, char *vert_path) {
     glGetProgramiv(prog, GL_LINK_STATUS, &status);
     if (status != GL_TRUE) {
         glGetProgramInfoLog(prog, 256, NULL, info);
-        printf("Shader did not link: %s", info); return -1;
+        printf("Shader did not link: %s\n", info); return -1;
     }
 #endif
+}
+
+void r_set_int(shader_t *shader, char *name, int val) {
+    glUniform1i(glGetUniformLocation(shader -> program, name), val);
 }
 
 void r_set_vec3(shader_t *shader, char *name, vec3_t vec) {

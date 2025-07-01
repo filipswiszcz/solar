@@ -22,7 +22,9 @@ typedef struct shader {
     uint32_t program;
 } shader_t;
 
-void r_create_program(shader_t *shader, char *frag_path, char *vert_path);
+void r_create_program(shader_t *shader, char *vert_path, char *frag_path);
+
+void r_set_int(shader_t *shader, char *name, int val);
 
 void r_set_vec3(shader_t *shader, char *name, vec3_t vec);
 
