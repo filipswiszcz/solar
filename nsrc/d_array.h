@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-// BASE
+// MATH
 
 typedef struct float_array {
     float *values;
@@ -20,6 +20,8 @@ typedef struct uint32_array {
 
 void d_uint32_array_insert(uint32_array_t *array, uint32_t value);
 
+// void d_uint32_array_insert_all(uint32_array_t *array, uint32_t *values);
+
 // MESH
 
 typedef struct vertex vertex_t;
@@ -31,13 +33,13 @@ typedef struct vertex_array {
 
 void d_vertex_array_insert(vertex_array_t *array, vertex_t value);
 
-// SCENE
+typedef struct mesh mesh_t;
 
-// typedef struct instance_array {
-//     instance_t *values;
-//     size_t size, capacity;
-// } instance_array_t;
+typedef struct mesh_array {
+    mesh_t *values;
+    size_t size, capacity;
+} mesh_array_t;
 
-// void d_instance_array_insert(instance_array_t *array, instance_t instance);
+void d_mesh_array_insert(mesh_array_t *array, mesh_t value);
 
 #endif // !__D_ARRAY_H__
