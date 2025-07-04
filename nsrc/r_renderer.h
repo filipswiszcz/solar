@@ -5,12 +5,22 @@
 #include <stdint.h>
 #include <string.h>
 
+#ifdef __APPLE__
+    #define GL_SILENCE_DEPRECATION
+    #define GLFW_INCLUDE_GLCOREARB
+    #include <GLFW/glfw3.h>
+#else
+    #include <GL/glew.h>
+    #include <GLFW/glfw3.h>
+#endif
+
 #include "d_array.h"
 #include "d_util.h"
 #include "r_math.h"
 
 #define ASSETS_DIR_PATH "assets/"
-#define ASSETS_DEFAULT_DIR_PATH "assets/default/"
+#define ASSETS_MODEL_DEFAULT_DIR_PATH "assets/model/default/"
+#define ASSETS_MODEL_DIR_PATH "assets/model/"
 #define ASSETS_TEXTURE_DIR_PATH "assets/texture/"
 
 // MESH
@@ -28,20 +38,26 @@ typedef struct material {
     int illumination;
 } material_t;
 
-typedef struct mesh {
+struct mesh {
     char *filename;
     vertex_array_t vertices;
     uint32_array_t indices;
+    size_t offset, size;
     material_t material;
-} mesh_t;
+};
 
-void r_mesh_load(mesh_t *mesh, char *filepath);
+void r_mesh_read(mesh_t *mesh, char *filepath);
 
 typedef struct object {
-    uint32_t vao, vbo;
-    mesh_t *meshes;
-    size_t size;
+    mesh_array_t meshes;
+    uint32_t vao, vbo, ibo;
 } object_t;
+
+void r_object_insert(object_t *object, mesh_t mesh);
+
+void r_object_upload(object_t *object);
+
+void r_object_draw(object_t *object);
 
 typedef struct transformation {
     uint16_t id;
