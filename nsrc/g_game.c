@@ -2,14 +2,14 @@
 #include "g_game.h"
 #include "r_renderer.h"
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGHT 1080
 
 #define WINDOW_NAME "SOLAR (Build v0.0.8)"
 
 // INPUTS
 
-void g_game_handle_mouse() {
+void g_game_handle_mouse(void) {
     double mouse_x, mouse_y;
     glfwGetCursorPos(context.window, &mouse_x, &mouse_y);
 
@@ -37,7 +37,7 @@ void g_game_handle_mouse() {
     context.camera.target_position = r_normalize(target);
 }
 
-void g_game_handle_keyboard() {
+void g_game_handle_keyboard(void) {
     if (glfwGetKey(context.window, GLFW_KEY_W) == GLFW_PRESS)
         context.camera.position = vec3_add(context.camera.position, vec3_mul(context.camera.target_position, (context.camera.speed * context.fps.time_between_frames))); 
     if (glfwGetKey(context.window, GLFW_KEY_S) == GLFW_PRESS)
@@ -47,16 +47,16 @@ void g_game_handle_keyboard() {
     if (glfwGetKey(context.window, GLFW_KEY_D) == GLFW_PRESS)
         context.camera.position = vec3_add(context.camera.position, vec3_mul(r_normalize(r_cross(context.camera.target_position, context.camera.head_position)), (context.camera.speed * context.fps.time_between_frames)));
     if (glfwGetKey(context.window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        context.camera.speed = 4.0f;
+        context.camera.speed = 8.0f;
     if (glfwGetKey(context.window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
-        context.camera.speed = 2.0f;
+        context.camera.speed = 4.0f;
     if (glfwGetKey(context.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(context.window, 1);
 }
 
 // FPS
 
-void g_game_record_fps() {
+void g_game_record_fps(void) {
     double current_time = glfwGetTime();
     context.fps.frames++;
     if (current_time - context.fps.time_of_last_frame >= 1.0f) {
@@ -70,7 +70,8 @@ void g_game_record_fps() {
 
 // GAME
 
-void g_game_init() {
+void g_game_init(void) {
+    // OPENGL
     QSSERT(glfwInit(), "Failed to initialize OpenGL");
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -96,6 +97,9 @@ void g_game_init() {
     glEnable(GL_PROGRAM_POINT_SIZE);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    // ICON
+    //..
 
     // SHADERS
     shader_t default_shader = {0};
@@ -128,68 +132,115 @@ void g_game_init() {
     context.camera.speed = 0.2f;
     context.camera.sensitivity = 0.2f;
 
-    // CROSSHAIR
+    // UI
+    //..
 
+    // SCENE
+    // load orbs (HANDLE ENDIANNESS (and use in the report))
+    char *filepath = "assets/model/sphere.orb";
+    FILE *file = fopen(filepath, "rb");
 
-    // OBJECTS
+    ASSERT(file != NULL, "Failed to open the mesh file: %s", filepath);
+
+    uint32_t so_vertices_size, so_indices_size;
+    fread(&so_vertices_size, sizeof(uint32_t), 1, file);
+    fread(&so_indices_size, sizeof(uint32_t), 1, file);
+    
+    printf("sol_vertices_size=%d\n", so_vertices_size);
+    printf("sol_indices_size=%d\n", so_indices_size);
+
+    context.sol.vertices = malloc(so_vertices_size * sizeof(vertex_t));
+    fread(context.sol.vertices, sizeof(vertex_t), so_vertices_size, file);
+
+    context.sol.indices = malloc(so_indices_size * sizeof(uint32_t));
+    fread(context.sol.indices, sizeof(uint32_t), so_indices_size, file);
+    // printf("v %f, %f, %f\n", context.sol.vertices[0].position.x, context.sol.vertices[0].position.y, context.sol.vertices[0].position.z);
+
+    glGenVertexArrays(1, &context.sol.vao);
+    glGenBuffers(1, &context.sol.vbo);
+    glGenBuffers(1, &context.sol.ibo);
+
+    glBindVertexArray(context.sol.vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, context.sol.vbo);
+    glBufferData(GL_ARRAY_BUFFER, so_vertices_size * sizeof(vertex_t), context.sol.vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, context.sol.ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, so_indices_size * sizeof(uint32_t), context.sol.indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, position));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, normal));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, uv));
+    glEnableVertexAttribArray(2);
+    
+    glBindVertexArray(0);
+
+    // calc planets pos and rot
+
+    // load skybox
     mesh_t mesh = {0};
-    r_mesh_read(&mesh, "assets/default/cube.obj");
+    r_mesh_read(&mesh, "assets/model/cube.obj");
     object_t object = {0};
     context.object = object;
     r_object_insert(&context.object, mesh);
     r_object_upload(&context.object);
 
-    // SKYBOX
     object_t skybox = {0};
     context.skybox.object = object;
     r_object_insert(&context.skybox.object, mesh);
     r_object_upload(&context.skybox.object);
-
-    // glGenVertexArrays(1, &context.skybox.vao);
-    // glGenBuffers(1, &context.skybox.vbo);
-
-    // glBindVertexArray(context.skybox.vao);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, context.skybox.vbo);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
-    
-    // glEnableVertexAttribArray(0);
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
 
     r_set_int(&context.skybox.shader, "skybox", 0);
 
     //..
 }
 
-void g_game_update() {
+void g_game_update(void) {
     while (!glfwWindowShouldClose(context.window)) {
+
+        // OPENGL
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // FPS
+        g_game_record_fps();
 
         // INPUTS
         g_game_handle_mouse();
         g_game_handle_keyboard();
 
-        // FPS
-        g_game_record_fps();
+        // UI
+        //.. (triggers) (crosshair) (holos)
 
-        // BACKGROUND
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // SCENE
+        // .. (calcs) (planets) (skybox)
 
-        // CROSSHAIR
-        //..
-
-        // OBJECTS
+        // objects
         glUseProgram(context.shader.program);
 
-        mat4_t projection = r_perspective(r_radians(45.0f), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 100.0f);
+        mat4_t projection = r_perspective(r_radians(60.0f), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.0001f, 1000000.0f);
         r_set_mat4(&context.shader, "projection", projection);
         mat4_t view = r_look_at(context.camera.position, vec3_add(context.camera.position, context.camera.target_position), context.camera.head_position);
         r_set_mat4(&context.shader, "view", view);
-        mat4_t model = mat4(1.0f);
-        model = r_translate(model, vec3(-1.0f, 0.0f, 0.0f));
-        r_set_mat4(&context.shader, "model", model);
-        r_object_draw(&context.object);
+        // mat4_t model = mat4(1.0f);
+        // model = r_translate(model, vec3(-1.0f, 0.0f, 0.0f));
+        // r_set_mat4(&context.shader, "model", model);
+        // r_object_draw(&context.object);
 
-        // SKYBOX
+        // orbs
+        glBindVertexArray(context.sol.vao);
+
+        mat4_t sun = mat4(1.0f);
+        sun = r_translate(sun, vec3(0.0f, 0.0f, 0.0f));
+        sun = r_scale(sun, vec3(10.0f, 10.0f, 10.0f));
+        r_set_mat4(&context.shader, "model", sun);
+        glDrawElements(GL_TRIANGLES, 2880, GL_UNSIGNED_INT, 0);
+        // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        // glDrawElements(GL_TRIANGLES, 26358, GL_UNSIGNED_INT, 0);
+        // glDrawArrays(GL_TRIANGLES, 0, 2880);
+
+        // skybox
         glDepthFunc(GL_LEQUAL);
         glDepthMask(GL_FALSE);
         glUseProgram(context.skybox.shader.program);
@@ -206,16 +257,16 @@ void g_game_update() {
 
         r_object_draw(&context.skybox.object);
 
+        // OPENGL
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
 
-        // OTHER
         glfwSwapBuffers(context.window);
         glfwPollEvents();
 
     }
 }
 
-void g_game_stop() {
+void g_game_stop(void) {
     glfwTerminate();
 }

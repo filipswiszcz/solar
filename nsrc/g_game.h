@@ -45,6 +45,12 @@ static struct {
         // float *vertices;
     } skybox;
 
+    struct {
+        vertex_t *vertices;
+        uint32_t *indices;
+        uint32_t vao, vbo, ibo;
+    } sol;
+
     shader_t shader;
     object_t object;
 
@@ -66,10 +72,10 @@ static struct {
                     // draw
 } context;
 
-void g_game_init();
+void g_game_init(void);
 
-void g_game_update();
+void g_game_update(void);
 
-void g_game_stop();
+void g_game_stop(void);
 
 #endif // !__G_GAME_H__
