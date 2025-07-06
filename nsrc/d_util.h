@@ -49,6 +49,45 @@ static uint32_t d_cubemap_read(char *faces[6]) {
     return id;
 }
 
+static uint32_t d_texture_read(const char *filepath) {
+    uint32_t texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int w, h, c;
+    unsigned char *img = stbi_load(filepath, &w, &h, &c, 0);
+    ASSERT(img, "Failed to load texture");
+
+    int frmt, ifrmt;
+    switch (c) {
+        case 1:
+            frmt = GL_RED;
+            ifrmt = GL_RED;
+            break;
+        case 3:
+            frmt = GL_RGB;
+            ifrmt = GL_RGB;
+            break;
+        case 4:
+            frmt = GL_RGBA;
+            ifrmt = GL_RGBA;
+            break;
+    }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, ifrmt, w, h, 0, frmt, GL_UNSIGNED_BYTE, img);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(img);
+
+    return texture;
+}
+
 static void d_mesh_so_read(mesh_t *mesh, char *filepath) {
     FILE *file = fopen(filepath, "r");
 
