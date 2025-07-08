@@ -47,9 +47,9 @@ void g_game_handle_keyboard(void) {
     if (glfwGetKey(context.window, GLFW_KEY_D) == GLFW_PRESS)
         context.camera.position = vec3_add(context.camera.position, vec3_mul(r_normalize(r_cross(context.camera.target_position, context.camera.head_position)), (context.camera.speed * context.fps.time_between_frames)));
     if (glfwGetKey(context.window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        context.camera.speed = 8.0f;
-    if (glfwGetKey(context.window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
         context.camera.speed = 4.0f;
+    if (glfwGetKey(context.window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
+        context.camera.speed = 2.0f;
     if (glfwGetKey(context.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(context.window, 1);
 }
@@ -110,6 +110,8 @@ void g_game_init(void) {
     context.skybox.shader = skybox_shader;
 
     // TEXTURES
+    context.planet.texture = d_texture_read("assets/texture/model/mars.jpg");
+
     char *faces[6] = {
         "assets/texture/skybox/right.png",
         "assets/texture/skybox/left.png",
@@ -137,36 +139,35 @@ void g_game_init(void) {
 
     // SCENE
     // load orbs (HANDLE ENDIANNESS (and use in the report))
-    char *filepath = "assets/model/sphere.orb";
+    char *filepath = "assets/model/sun.orb";
     FILE *file = fopen(filepath, "rb");
 
     ASSERT(file != NULL, "Failed to open the mesh file: %s", filepath);
 
-    uint32_t so_vertices_size, so_indices_size;
-    fread(&so_vertices_size, sizeof(uint32_t), 1, file);
-    fread(&so_indices_size, sizeof(uint32_t), 1, file);
+    // uint32_t vertices, indices;
+    fread(&context.planet.vertices_size, sizeof(uint32_t), 1, file);
+    fread(&context.planet.indices_size, sizeof(uint32_t), 1, file);
     
-    printf("sol_vertices_size=%d\n", so_vertices_size);
-    printf("sol_indices_size=%d\n", so_indices_size);
+    printf("vertices=%d\n", context.planet.vertices_size);
+    printf("indices=%d\n", context.planet.indices_size);
 
-    context.sol.vertices = malloc(so_vertices_size * sizeof(vertex_t));
-    fread(context.sol.vertices, sizeof(vertex_t), so_vertices_size, file);
+    context.planet.vertices = malloc(context.planet.vertices_size * sizeof(vertex_t));
+    fread(context.planet.vertices, sizeof(vertex_t), context.planet.vertices_size, file);
 
-    context.sol.indices = malloc(so_indices_size * sizeof(uint32_t));
-    fread(context.sol.indices, sizeof(uint32_t), so_indices_size, file);
-    // printf("v %f, %f, %f\n", context.sol.vertices[0].position.x, context.sol.vertices[0].position.y, context.sol.vertices[0].position.z);
+    context.planet.indices = malloc(context.planet.indices_size * sizeof(uint32_t));
+    fread(context.planet.indices, sizeof(uint32_t), context.planet.indices_size, file);
 
-    glGenVertexArrays(1, &context.sol.vao);
-    glGenBuffers(1, &context.sol.vbo);
-    glGenBuffers(1, &context.sol.ibo);
+    glGenVertexArrays(1, &context.planet.vao);
+    glGenBuffers(1, &context.planet.vbo);
+    glGenBuffers(1, &context.planet.ibo); // RENDER ORB WITH TEXTURE
 
-    glBindVertexArray(context.sol.vao);
+    glBindVertexArray(context.planet.vao);
 
-    glBindBuffer(GL_ARRAY_BUFFER, context.sol.vbo);
-    glBufferData(GL_ARRAY_BUFFER, so_vertices_size * sizeof(vertex_t), context.sol.vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, context.planet.vbo);
+    glBufferData(GL_ARRAY_BUFFER, context.planet.vertices_size * sizeof(vertex_t), context.planet.vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, context.sol.ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, so_indices_size * sizeof(uint32_t), context.sol.indices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, context.planet.ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, context.planet.indices_size * sizeof(uint32_t), context.planet.indices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, position));
     glEnableVertexAttribArray(0);
@@ -219,26 +220,24 @@ void g_game_update(void) {
         // objects
         glUseProgram(context.shader.program);
 
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, context.planet.texture);
+        r_set_int(&context.shader, "u_Texture", 0);
+
         mat4_t projection = r_perspective(r_radians(60.0f), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.0001f, 1000000.0f);
-        r_set_mat4(&context.shader, "projection", projection);
+        r_set_mat4(&context.shader, "u_Projection", projection);
         mat4_t view = r_look_at(context.camera.position, vec3_add(context.camera.position, context.camera.target_position), context.camera.head_position);
-        r_set_mat4(&context.shader, "view", view);
-        // mat4_t model = mat4(1.0f);
-        // model = r_translate(model, vec3(-1.0f, 0.0f, 0.0f));
-        // r_set_mat4(&context.shader, "model", model);
-        // r_object_draw(&context.object);
+        r_set_mat4(&context.shader, "u_View", view);
+        mat4_t model = mat4(1.0f);
+        model = r_translate(model, vec3(0.0f, 0.0f, 0.0f));
+        // model = r_scale(model, vec3(10.0f, 10.0f, 10.0f));
+        r_set_mat4(&context.shader, "u_Model", model);
+
+        r_set_vec3(&context.shader, "u_Light", vec3(-1.0f, -1.0f, -1.0f));
 
         // orbs
-        glBindVertexArray(context.sol.vao);
-
-        mat4_t sun = mat4(1.0f);
-        sun = r_translate(sun, vec3(0.0f, 0.0f, 0.0f));
-        sun = r_scale(sun, vec3(10.0f, 10.0f, 10.0f));
-        r_set_mat4(&context.shader, "model", sun);
-        glDrawElements(GL_TRIANGLES, 2880, GL_UNSIGNED_INT, 0);
-        // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        // glDrawElements(GL_TRIANGLES, 26358, GL_UNSIGNED_INT, 0);
-        // glDrawArrays(GL_TRIANGLES, 0, 2880);
+        glBindVertexArray(context.planet.vao);
+        glDrawElements(GL_TRIANGLES, context.planet.indices_size, GL_UNSIGNED_INT, 0);
 
         // skybox
         glDepthFunc(GL_LEQUAL);

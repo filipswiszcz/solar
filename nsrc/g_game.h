@@ -48,8 +48,10 @@ static struct {
     struct {
         vertex_t *vertices;
         uint32_t *indices;
+        uint32_t vertices_size, indices_size;
         uint32_t vao, vbo, ibo;
-    } sol;
+        uint32_t texture;
+    } planet;
 
     shader_t shader;
     object_t object;
