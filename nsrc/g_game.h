@@ -25,6 +25,7 @@ static struct {
     struct {
         double time_of_last_frame;
         double time_between_frames;
+        double time_accumulated;
         uint32_t frames;
     } fps;
 

@@ -58,12 +58,15 @@ void g_game_handle_keyboard(void) {
 
 void g_game_record_fps(void) {
     double current_time = glfwGetTime();
+    context.fps.time_between_frames = (float) (current_time - context.fps.time_of_last_frame);
+    context.fps.time_of_last_frame = current_time;
+    context.fps.time_accumulated += context.fps.time_between_frames;
     context.fps.frames++;
-    if (current_time - context.fps.time_of_last_frame >= 1.0f) {
+    if (context.fps.time_accumulated >= 1.0f) {
         char title[64];
         sprintf(title, "%s [%d FPS]", WINDOW_NAME, context.fps.frames);
         glfwSetWindowTitle(context.window, title);
-        context.fps.time_of_last_frame = current_time;
+        context.fps.time_accumulated = 0.0f;
         context.fps.frames = 0;
     }
 }
@@ -121,9 +124,6 @@ void g_game_init(void) {
         "assets/texture/skybox/back.png"
     };
     context.skybox.texture = d_cubemap_read(faces);
-
-    // FPS
-    context.fps.time_between_frames = 0.16f;
 
     // CAMERA
     context.camera.position = vec3(0.0f, 1.0f, 3.0f);
