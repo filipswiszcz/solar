@@ -1,0 +1,232 @@
+Perfect — let’s make this **clean, boring, and hard to break** 😄
+I’ll give you:
+
+1. A **Planet struct** that scales from “simple circular” → “Keplerian”
+2. A **global simulation clock** design
+3. Orbit functions that are **pure**, rewind-safe, and fast-forward-safe
+
+No magic, no hidden state.
+
+---
+
+## 1️⃣ Global simulation clock (one place, one truth)
+
+```c
+typedef struct {
+    double time;        // days since epoch
+    double time_scale;  // days per real second (can be negative)
+} SimClock;
+```
+
+Update once per frame:
+
+```c
+void sim_clock_update(SimClock* clock, double real_dt_seconds) {
+    clock->time += real_dt_seconds * clock->time_scale;
+}
+```
+
+That’s it.
+
+Everything else reads `clock->time`.
+Nothing else ever writes to it.
+
+---
+
+## 2️⃣ Clean `Planet` struct (visualizer-friendly)
+
+This is Keplerian, but still approachable.
+
+```c
+typedef struct {
+    // Identity
+    const char* name;
+
+    // Orbit (Keplerian elements)
+    double semi_major_axis;     // a (visual units)
+    double eccentricity;        // e
+    double inclination;         // i (radians)
+    double asc_node_longitude;  // Ω (radians)
+    double periapsis_argument;  // ω (radians)
+
+    double orbital_period;      // days
+    double mean_anomaly_at_epoch; // M₀ (radians)
+
+    // Rotation
+    double rotation_period;     // days (sidereal)
+    double axial_tilt;          // radians
+
+    // Visuals
+    float radius;               // visual scale
+} Planet;
+```
+
+Notes:
+
+* No velocity
+* No accumulated angles
+* No mutable orbital state
+* Entirely deterministic
+
+---
+
+## 3️⃣ Core orbit math (pure function)
+
+### Mean anomaly at time `t`
+
+```c
+double planet_mean_anomaly(const Planet* p, double sim_time) {
+    double n = 2.0 * M_PI / p->orbital_period; // rad/day
+    return p->mean_anomaly_at_epoch + n * sim_time;
+}
+```
+
+---
+
+### Solve Kepler’s equation (Newton–Raphson)
+
+```c
+double solve_kepler(double M, double e) {
+    double E = M; // good initial guess
+    for (int i = 0; i < 5; i++) {
+        E = E - (E - e * sin(E) - M) / (1.0 - e * cos(E));
+    }
+    return E;
+}
+```
+
+5 iterations is plenty for planets.
+
+---
+
+### Position in orbital plane
+
+```c
+vec3_t planet_orbital_position(const Planet* p, double sim_time) {
+    double M = planet_mean_anomaly(p, sim_time);
+    double E = solve_kepler(M, p->eccentricity);
+
+    double x = p->semi_major_axis * (cos(E) - p->eccentricity);
+    double y = p->semi_major_axis * sqrt(1.0 - p->eccentricity * p->eccentricity) * sin(E);
+
+    // Orbital plane is X-Y, Z = 0
+    return vec3(x, y, 0.0);
+}
+```
+
+---
+
+## 4️⃣ Rotate into world space (the “3 rotations”)
+
+```c
+vec3_t rotate_orbit_to_world(const Planet* p, vec3_t pos) {
+    pos = rotate_z(pos, p->periapsis_argument); // ω
+    pos = rotate_x(pos, p->inclination);        // i
+    pos = rotate_z(pos, p->asc_node_longitude); // Ω
+    return pos;
+}
+```
+
+Order matters. This is standard astronomy convention.
+
+---
+
+## 5️⃣ Final planet position (this is what you render)
+
+```c
+vec3_t planet_position_at_time(const Planet* p, double sim_time) {
+    vec3_t pos = planet_orbital_position(p, sim_time);
+    return rotate_orbit_to_world(p, pos);
+}
+```
+
+No side effects.
+Call it 1× per frame or 1× per year — same result.
+
+---
+
+## 6️⃣ Planet rotation (day/night)
+
+```c
+double planet_rotation_angle(const Planet* p, double sim_time) {
+    if (p->rotation_period == 0.0) return 0.0;
+    return 2.0 * M_PI * (sim_time / p->rotation_period);
+}
+```
+
+Apply axial tilt first, then spin.
+
+---
+
+## 7️⃣ Example: Earth (visually scaled)
+
+```c
+Planet earth = {
+    .name = "Earth",
+
+    .semi_major_axis = 30.0,          // visual units
+    .eccentricity = 0.0167,
+    .inclination = radians(0.00005),
+    .asc_node_longitude = radians(-11.26064),
+    .periapsis_argument = radians(114.20783),
+
+    .orbital_period = 365.256,
+    .mean_anomaly_at_epoch = radians(100.46435),
+
+    .rotation_period = 0.99726968,
+    .axial_tilt = radians(23.44),
+
+    .radius = 1.0f
+};
+```
+
+---
+
+## 8️⃣ How this plays with fast-forward & rewind
+
+Let’s say:
+
+```c
+clock.time_scale = 100.0; // 100 days per second
+```
+
+* Earth completes an orbit in ~3.6 seconds
+* Rotation still works
+* Reverse time? Set `time_scale = -100.0`
+* Jump 10 years?
+
+```c
+clock.time += 3652.56;
+```
+
+Everything stays coherent.
+
+---
+
+## Why this design works so well
+
+✔ Deterministic
+✔ Reversible
+✔ Stable for huge time jumps
+✔ Easy to debug
+✔ Easy to extend (moons, rings, LOD)
+
+This is the same mental model used by:
+
+* planetariums
+* orbital visualizers
+* space mission planners (minus perturbations)
+
+---
+
+## Where to go next (good next steps)
+
+If you want, we can:
+
+* add **moons orbiting planets**
+* draw orbital paths efficiently
+* handle **true scale vs visual scale** cleanly
+* add **precession** for extra realism
+* discuss depth precision tricks for that huge z-range
+
+Just tell me where you want to push it next 🌍🚀
