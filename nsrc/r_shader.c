@@ -61,6 +61,10 @@ void r_set_int(shader_t *shader, char *name, int val) {
     glUniform1i(glGetUniformLocation(shader -> program, name), val);
 }
 
+void r_set_float(shader_t *shader, char *name, float val) {
+    glUniform1f(glGetUniformLocation(shader -> program, name), val);
+}
+
 void r_set_vec3(shader_t *shader, char *name, vec3_t vec) {
     glUniform3f(glGetUniformLocation(shader -> program, name), vec.x, vec.y, vec.z);
 }
