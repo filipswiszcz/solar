@@ -12,9 +12,9 @@
     #include <GLFW/glfw3.h>
 #endif
 
+#include "d_util.h"
+#include "r_physics.h"
 #include "r_renderer.h"
-// #include "d_util.h"
-// #include "r_math.h"
 #include "r_shader.h"
 
 // xycida
@@ -26,7 +26,7 @@ static struct {
         double time_of_last_frame;
         double time_between_frames;
         double time_accumulated;
-        uint32_t frames;
+        uint32_t frames; // change to counter or smth similar
     } fps;
 
     struct {
@@ -56,6 +56,23 @@ static struct {
 
     shader_t shader;
     object_t object;
+
+    // physics
+
+    struct {
+        double time;
+        double scale;
+    } clock;
+
+    planet_t *planets;
+
+    struct {
+        struct {
+            vec3_t segments[128];
+            shader_t shader;
+            uint32_t vao, vbo, ibo;
+        } orbit;
+    } ui;
 
     // viewer
         // speed of movement, distances to other objects
