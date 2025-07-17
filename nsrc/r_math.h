@@ -4,6 +4,8 @@
 #include <math.h>
 #include <stdio.h>
 
+#define R_PI 3.14159265358979323846
+
 // vec2
 #define vec2(x, y) ((vec2_t) {x, y})
 #define vec2_add(a, b) ((vec2_t) {a.x + b.x, a.y + b.y})
