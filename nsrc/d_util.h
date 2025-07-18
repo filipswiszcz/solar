@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <math.h>
+
 #include <stb/stb_image.h>
 
 #ifdef __APPLE__
@@ -19,9 +21,36 @@
 #include "r_renderer.h"
 
 #define ASSERT(_e, ...) if (!(_e)) {fprintf(stderr, __VA_ARGS__);}
-#define RSSERT(_e, ...) if (!(_e)) {fprintf(stderr, __VA_ARGS__); return;}
-#define VSSERT(_e, v, ...) if (!(_e)) {fprintf(stderr, __VA_ARGS__); return v;}
+#define RSSERT(_e, ...) if (!(_e)) {fprintf(stderr, __VA_ARGS__); return;} // return v
+#define VSSERT(_e, v, ...) if (!(_e)) {fprintf(stderr, __VA_ARGS__); return v;} // del?
 #define QSSERT(_e, ...) if (!(_e)) {fprintf(stderr, __VA_ARGS__); exit(1);}
+
+// TEMPORARY?
+static void d_date_gregorian_to_julian(double *date, uint32_t day, uint32_t month, uint32_t year) {
+    if (month <= 2) {year -= 1; month += 12;}
+    *date = floor(365.25 * (year + 4716)) + floor(30.6001 * (month + 1)) + day + (2 - (year / 100) + ((year / 100) / 4)) - 1524.5;
+}
+
+// TEMPORARY?
+static void d_date_julian_to_gregorian(uint32_t *day, uint32_t *month, uint32_t *year, double date) {
+    uint32_t z = (uint32_t) (date += 0.5);
+
+    uint32_t a;
+    if (z < 2299161) a = z;
+    else {
+        uint32_t t = (uint32_t) ((z - 1867216.25) / 36524.25);
+        a = z + 1 + t - (t / 4);
+    }
+
+    uint32_t b = a + 1524;
+    uint32_t c = (uint32_t) ((b - 122.1) / 365.25);
+    uint32_t d = (uint32_t) (365.25 * c);
+    uint32_t e = (uint32_t) ((b - d) / 30.6001);
+
+    *day = b - d - (uint32_t) (30.6001 * e) + (date - z);
+    *month = (e < 14) ? e - 1 : e - 13;
+    *year = (*month > 2) ? c - 4716 : c - 4715;
+}
 
 // TEMPORARY
 static uint32_t d_cubemap_read(char *faces[6]) {
@@ -49,6 +78,7 @@ static uint32_t d_cubemap_read(char *faces[6]) {
     return id;
 }
 
+// TEMPORARY
 static uint32_t d_texture_read(const char *filepath) {
     uint32_t texture;
     glGenTextures(1, &texture);
@@ -86,27 +116,6 @@ static uint32_t d_texture_read(const char *filepath) {
     stbi_image_free(img);
 
     return texture;
-}
-
-static void d_mesh_so_read(mesh_t *mesh, char *filepath) {
-    FILE *file = fopen(filepath, "r");
-
-    ASSERT(file != NULL, "Failed to open the mesh file: %s", filepath);
-
-    // uint32_t vertices, indices;
-    // fread(&vertices, sizeof(uint32_t), 1, file);
-    // fread(&indices, sizeof(uint32_t), 1, file);
-
-    // mesh -> vertices.values = (vertex_t*) malloc(vertices * sizeof(vertex_t));
-    // mesh -> indices.values = (uint32_t*) malloc(indices * sizeof(uint32_t));
-
-    // would memory arena help here?
-        // 
-
-    // fread(mesh -> vertices.values, sizeof(vertex_t), vertices, file);
-    // fread(mesh -> indices.values, sizeof(uint32_t), indices, file);
-
-    fclose(file);
 }
 
 #endif // !__D_UTIL_H__

@@ -6,19 +6,23 @@
 // #define R_PHYSICS_ORBIT_SCALE (1.0 / 5000000.0)
 // #define R_PHYSICS_PLANET_SCALE (1.0 / 100000.0)
 #define R_PHYSICS_ORBIT_SCALE (1.0 / 1e7)
-#define R_PHYSICS_PLANET_SCALE (1.0 / 1e7)
+#define R_PHYSICS_PLANET_SCALE (1.0 / 1e5)
 #define R_PHYSICS_DAY_SECONDS 86400.0f
 
 typedef struct planet {
     const char *name;
+    vec3_t color;
     // object_t -> contains mesh, material, texture, transformation (pos, scale, rot)
     double radius;
-    // struct {
-    //     double radius, period, phase;
-    // } orbit;
-    double orbit_radius; // km
-    double orbit_period; // seconds
-    double orbit_phase; // radians
+    struct {
+        double radius, period, phase;
+    } orbit;
+    // double orbit_radius; // km
+    // double orbit_period; // seconds
+    // double orbit_phase; // radians
+    double inclination;
+    double node;
+    
     double spin;
     double tilt; // radians
     struct {

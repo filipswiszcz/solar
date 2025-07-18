@@ -35,7 +35,7 @@ void r_mesh_load_material(material_t material, char *filepath) {
         } else if (strncmp(line, "Ks", 2) == 0) {
             sscanf(line, "Ks %f %f %f", &material.specular.x, &material.specular.y, &material.specular.z);
         } else if (strncmp(line, "Ke", 2) == 0) {
-            sscanf(line, "Ke %f %f %f", &material.emissibity.x, &material.emissibity.y, &material.emissibity.z);
+            sscanf(line, "Ke %f %f %f", &material.emissivity.x, &material.emissivity.y, &material.emissivity.z);
         } else if (strncmp(line, "Ni", 2) == 0) {
             sscanf(line, "Ni %f", &material.density);
         } else if (strncmp(line, "d", 1) == 0) {
@@ -74,7 +74,6 @@ void r_mesh_read(mesh_t *mesh, char *filepath) { // rewrite reader to handle all
         } else if (strncmp(line, "mtllib", 6) == 0) {
             char prepath[256], path[128];
             sscanf(line, "mtllib %s", path);
-            mesh -> material.name = path;
             strcpy(prepath, ASSETS_MODEL_DIR_PATH);
             strcat(prepath, path);
             r_mesh_load_material(mesh -> material, prepath);

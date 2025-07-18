@@ -31,15 +31,14 @@ struct vertex {
 };
 
 typedef struct material {
-    char *name;
     float shininess;
-    vec3_t ambient, diffuse, specular, emissibity;
+    vec3_t ambient, diffuse, specular, emissivity;
     float density, transparency;
     int illumination;
 } material_t;
 
 struct mesh {
-    char *filename;
+    char *filename; 
     vertex_array_t vertices;
     uint32_array_t indices;
     size_t offset, size;
@@ -47,6 +46,12 @@ struct mesh {
 };
 
 void r_mesh_read(mesh_t *mesh, char *filepath);
+
+// typedef struct object {
+//     // vertices
+//     // indices
+//     // material
+// } object_t;
 
 typedef struct object {
     mesh_array_t meshes;
@@ -75,8 +80,8 @@ typedef struct instance {
 // SCENE
 
 typedef struct scene {
-    // instance_array_t instances;
-    // ui, bg
+    // objects
+    // skybox
 } scene_t;
 
 void r_scene_init(scene_t *scene);
