@@ -51,7 +51,7 @@ static struct {
         uint32_t *indices;
         uint32_t vertices_size, indices_size;
         uint32_t vao, vbo, ibo;
-        uint32_t texture;
+        uint32_t texture, texture_b;
     } planet;
 
     shader_t shader;
