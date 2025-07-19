@@ -96,31 +96,49 @@ mat4_t r_rotate(mat4_t m, float angle, vec3_t v) {
 }
 
 mat4_t r_scale(mat4_t m, vec3_t s) {
-    mat4_t res = mat4(1.0f);
-    
-    res.m[0][0] = m.m[0][0] * s.x;
-    res.m[1][1] = m.m[1][1] * s.y;
-    res.m[2][2] = m.m[2][2] * s.z;
-    
-    res.m[3][0] = m.m[3][0];
-    res.m[3][1] = m.m[3][1];
-    res.m[3][2] = m.m[3][2];
-    res.m[3][3] = m.m[3][3];
-    
-    res.m[0][1] = m.m[0][1];
-    res.m[0][2] = m.m[0][2];
-    res.m[0][3] = m.m[0][3];
-    
-    res.m[1][0] = m.m[1][0];
-    res.m[1][2] = m.m[1][2];
-    res.m[1][3] = m.m[1][3];
-    
-    res.m[2][0] = m.m[2][0];
-    res.m[2][1] = m.m[2][1];
-    res.m[2][3] = m.m[2][3];
-    
+    mat4_t res = m;
+
+    res.m[0][0] *= s.x;
+    res.m[0][1] *= s.x;
+    res.m[0][2] *= s.x;
+
+    res.m[1][0] *= s.y;
+    res.m[1][1] *= s.y;
+    res.m[1][2] *= s.y;
+
+    res.m[2][0] *= s.z;
+    res.m[2][1] *= s.z;
+    res.m[2][2] *= s.z;
+
     return res;
 }
+
+// mat4_t r_scale(mat4_t m, vec3_t s) {
+//     mat4_t res = mat4(1.0f);
+    
+//     res.m[0][0] = m.m[0][0] * s.x;
+//     res.m[1][1] = m.m[1][1] * s.y;
+//     res.m[2][2] = m.m[2][2] * s.z;
+    
+//     res.m[3][0] = m.m[3][0];
+//     res.m[3][1] = m.m[3][1];
+//     res.m[3][2] = m.m[3][2];
+//     res.m[3][3] = m.m[3][3];
+    
+//     res.m[0][1] = m.m[0][1];
+//     res.m[0][2] = m.m[0][2];
+//     res.m[0][3] = m.m[0][3];
+    
+//     res.m[1][0] = m.m[1][0];
+//     res.m[1][2] = m.m[1][2];
+//     res.m[1][3] = m.m[1][3];
+    
+//     res.m[2][0] = m.m[2][0];
+//     res.m[2][1] = m.m[2][1];
+//     res.m[2][3] = m.m[2][3];
+    
+//     return res;
+// }
 
 mat4_t r_look_at(vec3_t pos, vec3_t target, vec3_t up) {
     const vec3_t t = r_normalize(vec3_sub(target, pos));

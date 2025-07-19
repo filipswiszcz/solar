@@ -2,6 +2,7 @@
 #define __R_MATH_H__
 
 #include <math.h>
+#include <stdint.h>
 #include <stdio.h>
 
 #define R_PI 3.14159265358979323846
