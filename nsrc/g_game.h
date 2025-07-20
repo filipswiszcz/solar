@@ -68,10 +68,11 @@ static struct {
 
     struct {
         struct {
-            vec3_t segments[128];
+            // vec3_t segments[128];
             shader_t shader;
-            uint32_t vao, vbo, ibo;
+            // uint32_t vao, vbo, ibo;
         } orbit;
+        uint32_t ring_vao, ring_vbo;
     } ui;
 
     // viewer

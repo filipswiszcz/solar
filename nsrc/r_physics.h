@@ -3,8 +3,6 @@
 
 #include "r_math.h"
 
-// #define R_PHYSICS_ORBIT_SCALE (1.0 / 5000000.0)
-// #define R_PHYSICS_PLANET_SCALE (1.0 / 100000.0)
 #define R_PHYSICS_ORBIT_SCALE (1.0 / 1e7)
 #define R_PHYSICS_PLANET_SCALE (1.0 / 1e5)
 #define R_PHYSICS_DAY_SECONDS 86400.0f
@@ -30,9 +28,39 @@ typedef struct planet {
         float orbit_angle, spin_angle;
     } state;
     struct planet *parent;
+
+    //..
+    uint32_t vao, vbo;
+    uint32_t size;
 } planet_t;
 
 void r_physics_state_update(planet_t *planet, double time);
+
+static inline vec3_t orbit_local_to_world(vec3_t v, planet_t *p)
+{
+    // rotate by inclination (X axis)
+    float ci = cos(p->inclination);
+    float si = sin(p->inclination);
+
+    float y = v.y * ci - v.z * si;
+    float z = v.y * si + v.z * ci;
+
+    v.y = y;
+    v.z = z;
+
+    // rotate by longitude of ascending node (Y axis)
+    float cn = cos(p->node);
+    float sn = sin(p->node);
+
+    float x = v.x * cn + v.z * sn;
+    z = -v.x * sn + v.z * cn;
+
+    v.x = x;
+    v.z = z;
+
+    // translate to parent (Sun)
+    return vec3_add(v, p->parent->state.position);
+}
 
 // typedef struct Planet {
 //     const char* name;

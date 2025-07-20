@@ -47,6 +47,7 @@ struct mesh {
 
 void r_mesh_read(mesh_t *mesh, char *filepath);
 
+// object_t -> contains mesh, material, texture, transformation (pos, scale, rot)
 // typedef struct object {
 //     // vertices
 //     // indices

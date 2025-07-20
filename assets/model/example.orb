@@ -31,6 +31,3 @@ float emissivity: {x}, {y}, {z} (12 bytes)
 float density: {value} (4 bytes)
 float transparency: {value} (4 bytes)
 uint32_t illumination: {value} (4 bytes)
-
-https://chatgpt.com/s/t_6984beb772ec81918cb1d3c4181e3027
-https://chatgpt.com/s/t_6984be859d0481919aa7dda4b037b181
