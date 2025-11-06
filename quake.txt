@@ -1,0 +1,16 @@
+
+* structure
+
+
+
+
+INSTANCE:
+- MESH (shape?, material)
+- TRANSFORM (pos, rot, scale)
+- 
+
+
+RENDERER:
+deferred rendering (two passes)
+    draw object data (positions, normals, colors) into buffers
+    apply lightning in a second pass

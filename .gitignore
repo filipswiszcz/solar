@@ -3,6 +3,9 @@
 !/**/
 !*.*
 
+# build files xyari XYARI
+build
+
 # xcode debug files
 *.dSYM
 
@@ -11,3 +14,6 @@
 
 # macos files
 .DS_Store
+
+# python files
+venv

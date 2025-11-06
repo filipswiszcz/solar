@@ -8,6 +8,8 @@
 #include "util/shload.h"
 #include "context.h"
 
+#include "r_shader.h"
+
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
@@ -124,6 +126,9 @@ int main() {
     glEnable(GL_DEPTH_TEST);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    shader_t shader;
+    r_create_program(&shader, "shader/basic.fs", "shader/basic.vs");
+
     // shaders
     char *vshcode, *fshcode;
     shread("shader/basic.vs", &vshcode);
@@ -230,7 +235,7 @@ int main() {
 
         glUseProgram(prog);
 
-        glUniform3f(glGetUniformLocation(prog, "object_color"), 1.0f, 0.5f, 0.33f);
+        glUniform3f(glGetUniformLocation(prog, "object_color"), 1.0f, 0.5f, 0.31f);
         glUniform3f(glGetUniformLocation(prog, "light_color"), 1.0f, 1.0f, 1.0f);
         glUniform3f(glGetUniformLocation(prog, "light_pos"), 5.0f, 0.0f, 5.0f);
         glUniform3f(glGetUniformLocation(prog, "view_pos"), context.camera.pos.x, context.camera.pos.y, context.camera.pos.z);

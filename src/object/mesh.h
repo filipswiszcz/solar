@@ -20,8 +20,8 @@ typedef struct mesh mesh_t;
 
 struct mesh {
     uint16_t id;
-    farray_t vertices;
-    iarray_t indices;
+    //farray_t vertices;
+    //iarray_t indices;
     material_t material;
 };
 

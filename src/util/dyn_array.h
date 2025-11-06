@@ -9,7 +9,7 @@ typedef struct hash_entry hash_entry_t;
 
 struct hash_entry {
     char *key;
-    shape_t value;
+    // shape_t value;
     hash_entry_t *next;
 };
 
@@ -21,7 +21,7 @@ struct hash_table {
     size_t capacity;
 };
 
-void hash_table_add(hash_table_t *tab, char *key, shape_t val);
+// void hash_table_add(hash_table_t *tab, char *key, shape_t val);
 
 typedef struct farray farray_t;
 typedef struct iarray iarray_t;
