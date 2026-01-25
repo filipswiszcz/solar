@@ -3,10 +3,6 @@
 uint32_t vertices: {count} (4 bytes)
 uint32_t indices: {count} (4 bytes)
 
-[parameters]
-float scale: {value} (4 bytes)
-..
-
 [BODY]
 [vertex]
 <- vertex 0 ->

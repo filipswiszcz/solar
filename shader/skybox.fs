@@ -1,11 +1,11 @@
 #version 410 core
 
-in vec3 coords;
+in vec3 t_Position;
 
-out vec4 color;
+out vec4 o_Color;
 
-uniform samplerCube skybox;
+uniform samplerCube u_Map;
 
 void main() {
-    color = texture(skybox, coords);
+    o_Color = texture(u_Map, t_Position);
 }
