@@ -15,76 +15,61 @@
 #endif
 
 #include "d_array.h"
-#include "d_util.h"
+// #include "d_util.h"
 #include "r_math.h"
+#include "r_shader.h"
 
 #define ASSETS_DIR_PATH "assets/"
-#define ASSETS_MODEL_DEFAULT_DIR_PATH "assets/model/default/"
 #define ASSETS_MODEL_DIR_PATH "assets/model/"
 #define ASSETS_TEXTURE_DIR_PATH "assets/texture/"
 
-// MESH
+// OBJECT
 
-struct vertex {
+typedef struct vertex {
     vec3_t position, normal;
     vec2_t uv;
-};
+} vertex_t;
+
+typedef struct mesh {
+    struct {
+        vertex_t *values;
+        uint32_t size;
+    } vertices;
+    struct {
+        uint32_t *values;
+        uint32_t size;
+    } indices;
+    uint32_t vao, vbo, ibo;
+} mesh_t;
 
 typedef struct material {
     float shininess;
     vec3_t ambient, diffuse, specular, emissivity;
     float density, transparency;
-    int illumination;
+    uint32_t illumination;
 } material_t;
 
-struct mesh {
-    char *filename; 
-    vertex_array_t vertices;
-    uint32_array_t indices;
-    size_t offset, size;
-    material_t material;
-};
-
-void r_mesh_read(mesh_t *mesh, char *filepath);
-
-// object_t -> contains mesh, material, texture, transformation (pos, scale, rot)
-// typedef struct object {
-//     // vertices
-//     // indices
-//     // material
-// } object_t;
+typedef struct transform {
+    vec3_t postion;
+    quat_t rotation;
+    vec3_t scale;
+} transform_t;
 
 typedef struct object {
-    mesh_array_t meshes;
-    uint32_t vao, vbo, ibo;
+    const char *filepath;
+    mesh_t mesh;
+    material_t material;
+    transform_t transform;
+    uint32_t texture;
+    shader_t shader;
+    uint8_t visible;
+    void *params;
 } object_t;
 
-void r_object_insert(object_t *object, mesh_t mesh);
+void r_renderer_object_read(object_t *object, char *filepath);
 
-void r_object_upload(object_t *object);
+void r_renderer_object_upload(object_t *object);
 
-void r_object_draw(object_t *object);
-
-typedef struct transformation {
-    uint16_t id;
-    vec3_t scale;
-    vec3_t rotation_origin;
-    quat_t rotation;
-    vec3_t translation;
-} transformation_t;
-
-typedef struct instance {
-    object_t *object;
-    transformation_t transformation;
-} instance_t;
-
-// SCENE
-
-typedef struct scene {
-    // objects
-    // skybox
-} scene_t;
-
-void r_scene_init(scene_t *scene);
+void r_renderer_object_draw(object_t *object);
 
 #endif // !__R_RENDERER_H__

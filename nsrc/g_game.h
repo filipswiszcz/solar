@@ -38,11 +38,24 @@ static struct {
     } camera;
 
     struct {
-        // object_t object;
+        object_t *objects; // dynamic array
+        // shader_t *shaders;
+        // sounds?
+    } renderer;
+
+    struct {
+        // planets (planet contain pointer to object and to sound)
+        // clock ()
+        // skybox (object_t)
+        // ui? (here on in renderer) labels?
+    } scene;
+
+    struct {
+        object_t object;
         shader_t shader;
         uint32_t texture;
-        object_t object;
-        // uint32_t vao, vbo;
+        // object_t object;
+        uint32_t vao, vbo;
         // float *vertices;
     } skybox;
 
@@ -56,8 +69,6 @@ static struct {
 
     shader_t shader;
     object_t object;
-
-    // physics
 
     struct {
         double time;

@@ -18,7 +18,7 @@
     #include <GLFW/glfw3.h>
 #endif
 
-#include "r_renderer.h"
+// #include "r_renderer.h"
 
 #define ASSERT(_e, ...) if (!(_e)) {fprintf(stderr, __VA_ARGS__);}
 #define RSSERT(_e, ...) if (!(_e)) {fprintf(stderr, __VA_ARGS__); return;} // return v
