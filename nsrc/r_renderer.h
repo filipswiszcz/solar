@@ -19,9 +19,9 @@
 #include "r_math.h"
 #include "r_shader.h"
 
-#define ASSETS_DIR_PATH "assets/"
-#define ASSETS_MODEL_DIR_PATH "assets/model/"
-#define ASSETS_TEXTURE_DIR_PATH "assets/texture/"
+#define R_RENDERER_ASSETS_DIR_PATH "assets/"
+#define R_RENDERER_ASSETS_MODEL_DIR_PATH "assets/model/"
+#define R_RENDERER_ASSETS_TEXTURE_DIR_PATH "assets/texture/"
 
 // OBJECT
 

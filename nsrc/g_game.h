@@ -45,7 +45,12 @@ static struct {
 
     struct {
         // planets (planet contain pointer to object and to sound)
-        // clock ()
+        planet_t *planets;
+        planet_t planet; // temporary
+        struct {
+            double time;
+            double scale;
+        } clock;
         // skybox (object_t)
         // ui? (here on in renderer) labels?
     } scene;

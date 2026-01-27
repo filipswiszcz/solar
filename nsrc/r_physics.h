@@ -1,7 +1,7 @@
 #ifndef __R_PHYSICS_H__
 #define __R_PHYSICS_H__
 
-#include "r_math.h"
+#include "r_renderer.h"
 
 #define R_PHYSICS_ORBIT_SCALE (1.0 / 1e7)
 #define R_PHYSICS_PLANET_SCALE (1.0 / 1e5)
@@ -28,6 +28,8 @@ typedef struct planet {
         float orbit_angle, spin_angle;
     } state;
     struct planet *parent;
+
+    object_t object;
 
     //..
     uint32_t vao, vbo;

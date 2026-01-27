@@ -20,6 +20,8 @@ void r_renderer_object_read(object_t *object, char *filepath) {
 
     // read materials
 
+    fclose(file);
+
     object -> visible = 1;
 }
 

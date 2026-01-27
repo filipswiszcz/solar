@@ -75,7 +75,7 @@ void g_game_handle_keyboard(void) {
 
 // CLOCK
 void g_game_clock_update(void) {
-    context.clock.time += context.fps.time_between_frames * context.clock.scale;
+    context.scene.clock.time += context.fps.time_between_frames * context.scene.clock.scale;
 }
 
 void r_generate_orbit_mesh(planet_t *p) {
@@ -178,7 +178,8 @@ void g_game_init(void) {
 
     // TEXTURES
     context.planet.texture = d_texture_read("assets/texture/model/earth.jpg");
-    context.planet.texture_b = d_texture_read("assets/texture/model/sun.png");
+    // context.planet.texture_b = d_texture_read("assets/texture/model/sun.png");
+    context.scene.planet.object.texture = d_texture_read("assets/texture/model/sun.png");
 
     char *faces[6] = {
         "assets/texture/skybox/right.png",
@@ -201,46 +202,12 @@ void g_game_init(void) {
 
     // SCENE
     // load orbs (HANDLE ENDIANNESS (and use in the report))
-    char *filepath = "assets/model/earth.orb";
-    FILE *file = fopen(filepath, "rb");
-
-    ASSERT(file != NULL, "Failed to open the mesh file: %s", filepath);
-
-    fread(&context.planet.vertices_size, sizeof(uint32_t), 1, file);
-    fread(&context.planet.indices_size, sizeof(uint32_t), 1, file);
-
-    context.planet.vertices = malloc(context.planet.vertices_size * sizeof(vertex_t));
-    fread(context.planet.vertices, sizeof(vertex_t), context.planet.vertices_size, file);
-
-    context.planet.indices = malloc(context.planet.indices_size * sizeof(uint32_t));
-    fread(context.planet.indices, sizeof(uint32_t), context.planet.indices_size, file);
-
-    fclose(file);
-
-    glGenVertexArrays(1, &context.planet.vao);
-    glGenBuffers(1, &context.planet.vbo);
-    glGenBuffers(1, &context.planet.ibo); // RENDER ORB WITH TEXTURE
-
-    glBindVertexArray(context.planet.vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, context.planet.vbo);
-    glBufferData(GL_ARRAY_BUFFER, context.planet.vertices_size * sizeof(vertex_t), context.planet.vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, context.planet.ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, context.planet.indices_size * sizeof(uint32_t), context.planet.indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, position));
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, normal));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, uv));
-    glEnableVertexAttribArray(2);
-    
-    glBindVertexArray(0);
+    r_renderer_object_read(&context.scene.planet.object, "assets/model/earth.orb");
+    r_renderer_object_upload(&context.scene.planet.object);
 
     // calc planets pos and rot
-    context.clock.time = 0.0;
-    context.clock.scale = 86400.0;
+    context.scene.clock.time = 0.0;
+    context.scene.clock.scale = 86400.0;
 
     static planet_t planets[] = {
         {.name="SUN", .radius=695700.0, .orbit={0,0,0}, .inclination=0, .node=0, .spin=25.38*R_PHYSICS_DAY_SECONDS, .tilt=0, .state={vec3(0,0,0),0,0}, .parent=NULL},
@@ -257,7 +224,7 @@ void g_game_init(void) {
     context.planets = planets;
 
     for (uint32_t i = 0; i < 10; i++) {
-        r_physics_state_update(&context.planets[i], context.clock.time);
+        r_physics_state_update(&context.planets[i], context.scene.clock.time);
     }
 
     // orbits
@@ -265,23 +232,10 @@ void g_game_init(void) {
         r_generate_orbit_mesh(&context.planets[i]);
     }
 
+    // rings
     r_generate_ring_unit_mesh(&context.ui.ring_vao, &context.ui.ring_vbo);
 
     // SKYBOX
-    // mesh_t mesh = {0};
-    // r_mesh_read(&mesh, "assets/model/cube.obj");
-    // object_t object = {0};
-    // context.object = object;
-    // r_object_insert(&context.object, mesh);
-    // r_object_upload(&context.object);
-
-    // object_t skybox = {0};
-    // context.skybox.object = object;
-    // r_object_insert(&context.skybox.object, mesh);
-    // r_object_upload(&context.skybox.object);
-
-    // r_set_int(&context.skybox.shader, "skybox", 0);
-
     r_renderer_object_read(&context.skybox.object, "assets/model/cube.orb");
     r_renderer_object_upload(&context.skybox.object);
     r_set_int(&context.skybox.shader, "u_Map", 0);
@@ -321,7 +275,7 @@ void g_game_update(void) {
         // SCENE
         // .. (calcs) (planets) (skybox)
         for (uint32_t i = 0; i < 10; i++) {
-            r_physics_state_update(&context.planets[i], context.clock.time);
+            r_physics_state_update(&context.planets[i], context.scene.clock.time);
         }
 
         glUseProgram(context.shader.program);
@@ -331,12 +285,12 @@ void g_game_update(void) {
         mat4_t view = r_look_at(context.camera.position, vec3_add(context.camera.position, context.camera.target_position), context.camera.head_position);
         r_set_mat4(&context.shader, "u_View", view);
 
-        glBindVertexArray(context.planet.vao);
+        glBindVertexArray(context.scene.planet.object.mesh.vao);
         for (uint32_t i = 0; i < 10; i++) {
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, (i == 0) ? context.planet.texture_b : context.planet.texture);
-            r_set_int(&context.shader, "u_Texture", 0);
+            glBindTexture(GL_TEXTURE_2D, context.scene.planet.object.texture);
 
+            r_set_int(&context.shader, "u_Texture", 0);
             r_set_int(&context.shader, "u_Emissive", i == 0);
 
             mat4_t model = mat4(1.0f);
@@ -348,7 +302,7 @@ void g_game_update(void) {
 
             r_set_mat4(&context.shader, "u_Model", model);
 
-            glDrawElements(GL_TRIANGLES, context.planet.indices_size, GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, context.scene.planet.object.mesh.indices.size, GL_UNSIGNED_INT, 0);
         }
 
         r_set_vec3(&context.shader, "u_Light", vec3_mul(context.planets[0].state.position, R_PHYSICS_ORBIT_SCALE));
