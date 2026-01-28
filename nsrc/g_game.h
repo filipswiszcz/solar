@@ -39,48 +39,24 @@ static struct {
 
     struct {
         object_t *objects; // dynamic array
-        // shader_t *shaders;
+        // shader_t *shaders; // dynamic array
         // sounds?
     } renderer;
 
     struct {
-        // planets (planet contain pointer to object and to sound)
-        planet_t *planets;
-        planet_t planet; // temporary
         struct {
             double time;
             double scale;
         } clock;
-        // skybox (object_t)
-        // ui? (here on in renderer) labels?
+        planet_t *planets; // planets (planet contain pointer to object and to sound)
+        planet_t planet; // temporary
+        struct {
+            object_t object;
+        } skybox;
+        // ui? (here or in renderer struct) labels?
     } scene;
 
-    struct {
-        object_t object;
-        shader_t shader;
-        uint32_t texture;
-        // object_t object;
-        uint32_t vao, vbo;
-        // float *vertices;
-    } skybox;
-
-    struct {
-        vertex_t *vertices;
-        uint32_t *indices;
-        uint32_t vertices_size, indices_size;
-        uint32_t vao, vbo, ibo;
-        uint32_t texture, texture_b;
-    } planet;
-
-    shader_t shader;
-    object_t object;
-
-    struct {
-        double time;
-        double scale;
-    } clock;
-
-    planet_t *planets;
+    planet_t *planets; // delete
 
     struct {
         struct {
@@ -91,22 +67,6 @@ static struct {
         uint32_t ring_vao, ring_vbo;
     } ui;
 
-    // viewer
-        // speed of movement, distances to other objects
-        // camera attached to viewer
-
-    // renderer
-        // scenes
-            // objects
-                // things
-                    // meshes, textures, colors
-                    // other properties (weight, size, speed)
-                // characters
-                    // bones
-                    // draw
-                // particles
-                    // sim
-                    // draw
 } context;
 
 void g_game_init(void);

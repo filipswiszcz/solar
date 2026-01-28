@@ -3,7 +3,7 @@
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
 
-#define WINDOW_NAME "SOLAR (Build v0.8.9)"
+#define WINDOW_NAME "SOLAR (Build v0.9.0)"
 
 // FPS
 
@@ -63,7 +63,7 @@ void g_game_handle_keyboard(void) {
         context.camera.position = vec3_add(context.camera.position, vec3_mul(r_normalize(r_cross(context.camera.target_position, context.camera.head_position)), (context.camera.speed * context.fps.time_between_frames)));
     if (glfwGetKey(context.window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         context.camera.speed = 128.0f;
-    if (glfwGetKey(context.window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
+    if (glfwGetKey(context.window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE) // release is called everytime, so thats why it breaks
         context.camera.speed = 16.0f;
     // if (glfwGetKey(context.window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
     //     context.camera.speed = 2.0f;
@@ -141,7 +141,7 @@ void r_generate_ring_unit_mesh(uint32_t *vao, uint32_t *vbo) {
 // GAME
 
 void g_game_init(void) {
-    // OPENGL
+    // GLFW
     QSSERT(glfwInit(), "Failed to initialize OpenGL");
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -163,6 +163,7 @@ void g_game_init(void) {
     QSSERT(glewInit(), "Failed to initialize GLEW\n");
 #endif
 
+    // OPENGL
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_PROGRAM_POINT_SIZE);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -172,16 +173,17 @@ void g_game_init(void) {
     //..
 
     // SHADERS
-    r_create_program(&context.shader, "shader/default.vs", "shader/default.fs");
+    r_create_program(&context.scene.planet.object.shader, "shader/default.vs", "shader/default.fs");
     r_create_program(&context.ui.orbit.shader, "shader/orbit.vs", "shader/orbit.fs");
-    r_create_program(&context.skybox.shader, "shader/skybox.vs", "shader/skybox.fs");
+    r_create_program(&context.scene.skybox.object.shader, "shader/skybox.vs", "shader/skybox.fs");
 
     // TEXTURES
-    context.planet.texture = d_texture_read("assets/texture/model/earth.jpg");
+    // context.planet.texture = d_texture_read("assets/texture/model/earth.jpg");
     // context.planet.texture_b = d_texture_read("assets/texture/model/sun.png");
     context.scene.planet.object.texture = d_texture_read("assets/texture/model/sun.png");
+    // read for each planet..
 
-    char *faces[6] = {
+    char *skybox_textures[6] = {
         "assets/texture/skybox/right.png",
         "assets/texture/skybox/left.png",
         "assets/texture/skybox/top.png",
@@ -189,7 +191,7 @@ void g_game_init(void) {
         "assets/texture/skybox/front.png",
         "assets/texture/skybox/back.png"
     };
-    context.skybox.texture = d_cubemap_read(faces);
+    context.scene.skybox.object.texture = d_cubemap_read(skybox_textures);
 
     // CAMERA
     context.camera.position = vec3(0.0f, 128.0f, 512.0f);
@@ -201,13 +203,12 @@ void g_game_init(void) {
     context.camera.sensitivity = 0.2f;
 
     // SCENE
+    context.scene.clock.time = 0.0;
+    context.scene.clock.scale = 86400.0;
+
     // load orbs (HANDLE ENDIANNESS (and use in the report))
     r_renderer_object_read(&context.scene.planet.object, "assets/model/earth.orb");
     r_renderer_object_upload(&context.scene.planet.object);
-
-    // calc planets pos and rot
-    context.scene.clock.time = 0.0;
-    context.scene.clock.scale = 86400.0;
 
     static planet_t planets[] = {
         {.name="SUN", .radius=695700.0, .orbit={0,0,0}, .inclination=0, .node=0, .spin=25.38*R_PHYSICS_DAY_SECONDS, .tilt=0, .state={vec3(0,0,0),0,0}, .parent=NULL},
@@ -227,21 +228,16 @@ void g_game_init(void) {
         r_physics_state_update(&context.planets[i], context.scene.clock.time);
     }
 
-    // orbits
-    for (uint32_t i = 0; i < 10; i++) {
+    // ui
+    for (uint32_t i = 0; i < 10; i++) { // orbits
         r_generate_orbit_mesh(&context.planets[i]);
     }
-
-    // rings
     r_generate_ring_unit_mesh(&context.ui.ring_vao, &context.ui.ring_vbo);
 
-    // SKYBOX
-    r_renderer_object_read(&context.skybox.object, "assets/model/cube.orb");
-    r_renderer_object_upload(&context.skybox.object);
-    r_set_int(&context.skybox.shader, "u_Map", 0);
-
-    // UI
-    //..
+    // skybox
+    r_renderer_object_read(&context.scene.skybox.object, "assets/model/cube.orb");
+    r_renderer_object_upload(&context.scene.skybox.object);
+    r_set_int(&context.scene.skybox.object.shader, "u_Map", 0);
 
     //..
     // orb file contains all mesh and planet info
@@ -267,31 +263,28 @@ void g_game_update(void) {
         g_game_handle_mouse();
         g_game_handle_keyboard();
 
-        // CLOCK
+        // PHYSICS
         g_game_clock_update();
 
-        // PHYSICS
-
-        // SCENE
-        // .. (calcs) (planets) (skybox)
         for (uint32_t i = 0; i < 10; i++) {
             r_physics_state_update(&context.planets[i], context.scene.clock.time);
         }
 
-        glUseProgram(context.shader.program);
+        // SCENE
+        glUseProgram(context.scene.planet.object.shader.program);
 
         mat4_t projection = r_perspective(r_radians(60.0f), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.01f, 1000000.0f);
-        r_set_mat4(&context.shader, "u_Projection", projection);
+        r_set_mat4(&context.scene.planet.object.shader, "u_Projection", projection);
         mat4_t view = r_look_at(context.camera.position, vec3_add(context.camera.position, context.camera.target_position), context.camera.head_position);
-        r_set_mat4(&context.shader, "u_View", view);
+        r_set_mat4(&context.scene.planet.object.shader, "u_View", view);
 
         glBindVertexArray(context.scene.planet.object.mesh.vao);
         for (uint32_t i = 0; i < 10; i++) {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, context.scene.planet.object.texture);
 
-            r_set_int(&context.shader, "u_Texture", 0);
-            r_set_int(&context.shader, "u_Emissive", i == 0);
+            r_set_int(&context.scene.planet.object.shader, "u_Texture", 0);
+            r_set_int(&context.scene.planet.object.shader, "u_Emissive", i == 0);
 
             mat4_t model = mat4(1.0f);
             model = r_rotate(model, context.planets[i].tilt * (180.0f / R_PI), vec3(0.0f, 0.0f, 1.0f));
@@ -300,14 +293,14 @@ void g_game_update(void) {
             model = r_scale(model, vec3_mul(vec3(context.planets[i].radius * scale, context.planets[i].radius * scale, context.planets[i].radius * scale), R_PHYSICS_PLANET_SCALE));
             model = r_translate(model, vec3_mul(context.planets[i].state.position, R_PHYSICS_ORBIT_SCALE));
 
-            r_set_mat4(&context.shader, "u_Model", model);
+            r_set_mat4(&context.scene.planet.object.shader, "u_Model", model);
 
             glDrawElements(GL_TRIANGLES, context.scene.planet.object.mesh.indices.size, GL_UNSIGNED_INT, 0);
         }
 
-        r_set_vec3(&context.shader, "u_Light", vec3_mul(context.planets[0].state.position, R_PHYSICS_ORBIT_SCALE));
+        r_set_vec3(&context.scene.planet.object.shader, "u_Light", vec3_mul(context.planets[0].state.position, R_PHYSICS_ORBIT_SCALE));
 
-        // orbit
+        // ui
         glUseProgram(context.ui.orbit.shader.program);
 
         r_set_mat4(&context.ui.orbit.shader, "u_Projection", projection);
@@ -341,21 +334,18 @@ void g_game_update(void) {
         // skybox
         glDepthFunc(GL_LEQUAL);
         glDepthMask(GL_FALSE);
-        glUseProgram(context.skybox.shader.program);
+        glUseProgram(context.scene.skybox.object.shader.program);
 
-        glBindVertexArray(context.skybox.object.mesh.vao);
+        glBindVertexArray(context.scene.skybox.object.mesh.vao);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, context.skybox.texture);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, context.scene.skybox.object.texture);
 
         // view = r_look_at(context.camera.position, vec3_add(context.camera.position, context.camera.target_position), context.camera.head_position);
         view.m[3][0] = view.m[3][1] = view.m[3][2] = 0.0f;
-        r_set_mat4(&context.skybox.shader, "u_Projection", projection);
-        r_set_mat4(&context.skybox.shader, "u_View", view);
+        r_set_mat4(&context.scene.skybox.object.shader, "u_Projection", projection);
+        r_set_mat4(&context.scene.skybox.object.shader, "u_View", view);
 
-        r_renderer_object_draw(&context.skybox.object);
-
-        // UI
-        //.. (triggers) (crosshair) (text holos)
+        r_renderer_object_draw(&context.scene.skybox.object);
 
         // OPENGL
         glDepthMask(GL_TRUE);
