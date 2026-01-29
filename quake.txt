@@ -1,8 +1,6 @@
 ** PROJECT TREE **
 |-- assets/
 |   |-- model/
-|   |   |-- default/
-|   |   |   |-- *.orb
 |   |   |-- *.orb
 |   |-- sound/
 |   |   |-- *.wav
@@ -47,34 +45,38 @@
 ** FLOW **
 |-- init
 |   |- init glfw
+|   |- init opengl
 |   |- set window icon
 |   |- load shaders
 |   |- load textures
+|   |- load sounds
 |   |- init camera
-|   |- init ui
-|   |  |- init crosshair
-|   |  |- init buttons
 |   |- init scene
-|      |- load orb files (mesh) (rotation speed, description etc)
-|      |- calc planets positions (current date and time)
-|      |- load skybox
+|   |  |- init clock
+|   |  |- init planets
+|   |  |  |- load objects (.orb files)
+|   |  |  |- init planets
+|   |  |- calc planets init positions (current date and time)
+|   |  |- init ui
+|   |  |  |- init orbits
+|   |  |  |- init rings
+|   |  |  |- init labels
+|   |  |- load skybox
+|   |- init sound
 |-- update
 |   |- record fps
 |   |- handle inputs
-|   |- update ui
-|   |  |- handle ui triggers (text holograms, buttons)
-|   |- render ui
-|   |  |- draw crosshair
-|   |  |- draw buttons
-|   |  |- draw holograms
-|   |     |- draw planets names
-|   |     |- draw orbits
-|   |     |- draw text holograms (if triggered)
 |   |- update scene
-|   |  |- move and rotate planets
+|   |  |- update global simulation clock
+|   |  |- update position, rotation and scale for each planet
+|   |  |- update position for each label (text)
 |   |- render scene
-|      |- draw planets
-|      |- draw skybox
+|   |  |- draw planets
+|   |  |- draw ui
+|   |  |  |- draw orbits
+|   |  |  |- draw rings
+|   |  |  |- draw labels
+|   |  |- draw skybox
 |-- stop
 |   |- free dynamic arrays
 |   |- terminate glfw
@@ -84,16 +86,15 @@
 - posix
 + structure design
 + obj to orb converter (for faster mesh load) (custom file type)
-- texture support (meshes properly use textures)
++ texture support (meshes properly use textures)
 + cubemaps (skybox)
-- lighting (basically the Sun casting light on the planets)
++ lighting (basically the Sun casting light on the planets)
 + camera
 - camera zooming
 - models
 - physics (planets correct movement)
 - interface
-- interface data (planets descriptions)
-- shaders (planets orbits)
++ shaders
 - sound
 - eggs
 
@@ -105,16 +106,30 @@ date_max="31 DECEMBER 2049"
 
 
 ** PROBLEMS **
-- load all textures from "assets/" and index them by name
 - Jupiter is smaller than previously estimated (as of feb 2026)
+- should i include Pluto?
+- change STATIC_DRAW to DYNAMIC_DRAW for planets? are there any benefits?
+- add material_t values in blender to make planets look better
+-..
 
 
 ** OTHER **
+object:
+- mesh (shape?, material)
+- transform (pos, rot, scale)
+-..
 
-INSTANCE:
-- MESH (shape?, material)
-- TRANSFORM (pos, rot, scale)
-- 
+
+** THINGS I WANT TO WRITE ABOUT **
+- can i estimate ram usage, load differences with/without custom orb files, etc?
+    - how otob.c works
+- Lambert point light (shaders that imitate planet getting light from the Sun)
+- emissive light Sun
+- solar system used scales
+- how i calculated positions on orbits etc
+- moore's law and low level engineering (and current ram state)
+- simulation is separate to renderer (engine), changes to one should not affect the other
+-..
 
 
 RENDERER:
