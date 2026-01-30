@@ -235,7 +235,7 @@ void g_game_init(void) {
     r_generate_ring_unit_mesh(&context.ui.ring_vao, &context.ui.ring_vbo);
 
     // skybox
-    r_renderer_object_read(&context.scene.skybox.object, "assets/model/cube.orb");
+    r_renderer_object_read(&context.scene.skybox.object, "assets/model/default/cube.orb");
     r_renderer_object_upload(&context.scene.skybox.object);
     r_set_int(&context.scene.skybox.object.shader, "u_Map", 0);
 
