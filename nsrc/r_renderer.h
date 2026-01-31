@@ -15,7 +15,6 @@
 #endif
 
 #include "d_array.h"
-// #include "d_util.h"
 #include "r_math.h"
 #include "r_shader.h"
 

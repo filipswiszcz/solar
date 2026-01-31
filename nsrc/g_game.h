@@ -53,7 +53,19 @@ static struct {
         struct {
             object_t object;
         } skybox;
-        // ui? (here or in renderer struct) labels?
+        struct {
+            struct {
+                uint32_t vao, vbo;
+                uint32_t size;
+                shader_t shader; // make it a pointer
+            } orbits;
+            struct {
+                uint32_t vao, vbo;
+                uint32_t size;
+                shader_t shader; // make it a pointer
+            } markers;
+            // labels
+        } ui; // ui? (here or in renderer struct) labels?
     } scene;
 
     planet_t *planets; // delete

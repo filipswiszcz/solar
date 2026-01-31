@@ -36,33 +36,9 @@ typedef struct planet {
     uint32_t size;
 } planet_t;
 
-void r_physics_state_update(planet_t *planet, double time);
+vec3_t r_physics_orbit_to_local(planet_t *planet, vec3_t position);
 
-static inline vec3_t orbit_local_to_world(vec3_t v, planet_t *p)
-{
-    // rotate by inclination (X axis)
-    float ci = cos(p->inclination);
-    float si = sin(p->inclination);
-
-    float y = v.y * ci - v.z * si;
-    float z = v.y * si + v.z * ci;
-
-    v.y = y;
-    v.z = z;
-
-    // rotate by longitude of ascending node (Y axis)
-    float cn = cos(p->node);
-    float sn = sin(p->node);
-
-    float x = v.x * cn + v.z * sn;
-    z = -v.x * sn + v.z * cn;
-
-    v.x = x;
-    v.z = z;
-
-    // translate to parent (Sun)
-    return vec3_add(v, p->parent->state.position);
-}
+void r_physics_planet_state_update(planet_t *planet, double time);
 
 // typedef struct Planet {
 //     const char* name;
