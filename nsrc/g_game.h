@@ -58,27 +58,17 @@ static struct {
                 uint32_t vao, vbo;
                 uint32_t size;
                 shader_t shader; // make it a pointer
+                uint8_t visible;
             } orbits;
             struct {
                 uint32_t vao, vbo;
                 uint32_t size;
                 shader_t shader; // make it a pointer
+                uint8_t visible;
             } markers;
             // labels
         } ui; // ui? (here or in renderer struct) labels?
     } scene;
-
-    planet_t *planets; // delete
-
-    struct {
-        struct {
-            // vec3_t segments[128];
-            shader_t shader;
-            // uint32_t vao, vbo, ibo;
-        } orbit;
-        uint32_t ring_vao, ring_vbo;
-    } ui;
-
 } context;
 
 void g_game_init(void);

@@ -79,8 +79,9 @@ void g_game_clock_update(void) {
 }
 
 void g_game_ui_orbits_init(void) {
+    vec3_t vertices[10 * context.scene.ui.orbits.size];
+    uint32_t cursor = 0;
     for (uint32_t i = 1; i < 10; i++) {
-        vec3_t vertices[context.scene.ui.orbits.size];
         for (uint32_t j = 0; j < context.scene.ui.orbits.size; j++) {
             double angle = (2.0 * R_PI * j) / context.scene.ui.orbits.size;
             vec3_t position = {
@@ -88,22 +89,22 @@ void g_game_ui_orbits_init(void) {
                 0.0f,
                 sin(angle) * context.scene.planets[i].orbit.radius * R_PHYSICS_ORBIT_SCALE
             };
-            vertices[j] = r_physics_orbit_to_local(&context.scene.planets[i], position);
+            vertices[cursor++] = r_physics_orbit_to_local(&context.scene.planets[i], position);
         }
-
-        glGenVertexArrays(1, &context.scene.planets[i].vao); // move it out of this loop and hold all orbits in one vao, vbo;
-        glGenBuffers(1, &context.scene.planets[i].vbo);
-
-        glBindVertexArray(context.scene.planets[i].vao);
-
-        glBindBuffer(GL_ARRAY_BUFFER, context.scene.planets[i].vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3_t), (void*) 0);
-        glEnableVertexAttribArray(0);
-
-        glBindVertexArray(0);
     }
+
+    glGenVertexArrays(1, &context.scene.ui.orbits.vao);
+    glGenBuffers(1, &context.scene.ui.orbits.vbo);
+
+    glBindVertexArray(context.scene.ui.orbits.vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, context.scene.ui.orbits.vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3_t), (void*) 0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
 }
 
 void g_game_ui_markers_init(void) {
@@ -219,8 +220,10 @@ void g_game_init(void) {
 
     // ui
     context.scene.ui.orbits.size = 2048;
+    context.scene.ui.orbits.visible = 1;
     g_game_ui_orbits_init();
     context.scene.ui.markers.size = 256;
+    context.scene.ui.markers.visible = 1;
     g_game_ui_markers_init();
 
     // skybox
@@ -252,19 +255,22 @@ void g_game_update(void) {
         g_game_handle_mouse();
         g_game_handle_keyboard();
 
-        // PHYSICS
+        // SCENE
+        mat4_t projection = r_perspective(r_radians(60.0f), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.01f, 1000000.0f);
+        mat4_t view = r_look_at(context.camera.position, vec3_add(context.camera.position, context.camera.target_position), context.camera.head_position);
+
+        // clock
         g_game_clock_update();
 
+        // physics
         for (uint32_t i = 0; i < 10; i++) {
             r_physics_planet_state_update(&context.scene.planets[i], context.scene.clock.time);
         }
 
-        // SCENE
+        // planets
         glUseProgram(context.scene.planet.object.shader.program);
 
-        mat4_t projection = r_perspective(r_radians(60.0f), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.01f, 1000000.0f);
         r_set_mat4(&context.scene.planet.object.shader, "u_Projection", projection);
-        mat4_t view = r_look_at(context.camera.position, vec3_add(context.camera.position, context.camera.target_position), context.camera.head_position);
         r_set_mat4(&context.scene.planet.object.shader, "u_View", view);
 
         glBindVertexArray(context.scene.planet.object.mesh.vao);
@@ -286,7 +292,7 @@ void g_game_update(void) {
 
             glDrawElements(GL_TRIANGLES, context.scene.planet.object.mesh.indices.size, GL_UNSIGNED_INT, 0);
         }
-
+        
         r_set_vec3(&context.scene.planet.object.shader, "u_Light", vec3_mul(context.scene.planets[0].state.position, R_PHYSICS_ORBIT_SCALE));
 
         // ui
@@ -295,20 +301,23 @@ void g_game_update(void) {
         r_set_mat4(&context.scene.ui.orbits.shader, "u_Projection", projection);
         r_set_mat4(&context.scene.ui.orbits.shader, "u_View", view);
 
+        uint32_t offset_orbit = 0;
         for (uint32_t i = 1; i < 10; i++) {
-            mat4_t model_orbit = mat4(1.0f);
+            // orbits
             r_set_mat4(&context.scene.ui.orbits.shader, "u_Model", mat4(1.0f));
+
             r_set_vec3(&context.scene.ui.orbits.shader, "u_Color", vec3(1.0f, 1.0f, 1.0f));
             r_set_float(&context.scene.ui.orbits.shader, "u_Brightness", 0.2f);
-            glBindVertexArray(context.scene.planets[i].vao);
-            glDrawArrays(GL_LINE_LOOP, 0, context.scene.ui.orbits.size);
+            
+            glBindVertexArray(context.scene.ui.orbits.vao);
+            glDrawArrays(GL_LINE_LOOP, offset_orbit, context.scene.ui.orbits.size);
+            offset_orbit += context.scene.ui.orbits.size;
 
-            //.. 
-
-            mat4_t model_ring = mat4(1.0f);
-            model_ring = r_translate(model_ring, vec3_mul(context.scene.planets[i].state.position, R_PHYSICS_ORBIT_SCALE));
-            model_ring = r_scale(model_ring, vec3(context.scene.planets[6].radius * R_PHYSICS_PLANET_SCALE * 1.6f, 0.0f, context.scene.planets[6].radius * R_PHYSICS_PLANET_SCALE * 1.6f));
-            r_set_mat4(&context.scene.ui.orbits.shader, "u_Model", model_ring);
+            // markers
+            mat4_t model_marker = mat4(1.0f);
+            model_marker = r_translate(model_marker, vec3_mul(context.scene.planets[i].state.position, R_PHYSICS_ORBIT_SCALE));
+            model_marker = r_scale(model_marker, vec3(context.scene.planets[6].radius * R_PHYSICS_PLANET_SCALE * 1.6f, 0.0f, context.scene.planets[6].radius * R_PHYSICS_PLANET_SCALE * 1.6f));
+            r_set_mat4(&context.scene.ui.orbits.shader, "u_Model", model_marker);
 
             r_set_vec3(&context.scene.ui.orbits.shader, "u_Color", vec3(1.0f, 1.0f, 1.0f));
             r_set_float(&context.scene.ui.orbits.shader, "u_Brightness", 4.0f);
