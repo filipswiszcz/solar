@@ -59,8 +59,8 @@ typedef struct object {
     mesh_t mesh;
     material_t material;
     transform_t transform;
-    uint32_t texture;
-    shader_t shader;
+    shader_t *shader;
+    uint32_t *texture;
     uint8_t visible;
     void *params;
 } object_t;

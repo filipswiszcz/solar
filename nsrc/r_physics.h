@@ -29,7 +29,7 @@ typedef struct planet {
     } state;
     struct planet *parent;
 
-    object_t object; // should be a pointer
+    object_t *object; // should be a pointer
 } planet_t;
 
 vec3_t r_physics_orbit_to_local(planet_t *planet, vec3_t position);

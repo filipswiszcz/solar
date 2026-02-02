@@ -3,7 +3,7 @@
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
 
-#define WINDOW_NAME "SOLAR (Build v0.9.2)"
+#define WINDOW_NAME "SOLAR (Build v0.9.5)"
 
 // FPS
 
@@ -63,8 +63,8 @@ void g_game_handle_keyboard(void) {
         context.camera.position = vec3_add(context.camera.position, vec3_mul(r_normalize(r_cross(context.camera.target_position, context.camera.head_position)), (context.camera.speed * context.fps.time_between_frames)));
     if (glfwGetKey(context.window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         context.camera.speed = 128.0f;
-    if (glfwGetKey(context.window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE) // release is called everytime, so thats why it breaks
-        context.camera.speed = 16.0f;
+    if (glfwGetKey(context.window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE) // release is called every loop, so thats why it breaks
+        context.camera.speed = 8.0f;
     // if (glfwGetKey(context.window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
     //     context.camera.speed = 2.0f;
     // if (glfwGetKey(context.window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE)
@@ -163,17 +163,25 @@ void g_game_init(void) {
     //..
 
     // SHADERS
-    r_create_program(&context.scene.planet.object.shader, "shader/default.vs", "shader/default.fs");
-    r_create_program(&context.scene.ui.orbits.shader, "shader/orbit.vs", "shader/orbit.fs");
-    r_create_program(&context.scene.skybox.object.shader, "shader/skybox.vs", "shader/skybox.fs");
+    context.renderer.shaders = calloc(3, sizeof(shader_t)); // swap to dynamic array
+    r_create_program(&context.renderer.shaders[0], "shader/default.vs", "shader/default.fs");
+    r_create_program(&context.renderer.shaders[1], "shader/orbit.vs", "shader/orbit.fs");
+    r_create_program(&context.renderer.shaders[2], "shader/skybox.vs", "shader/skybox.fs");
 
     // TEXTURES
-    // context.planet.texture = d_texture_read("assets/texture/model/earth.jpg");
-    // context.planet.texture_b = d_texture_read("assets/texture/model/sun.png");
-    context.scene.planet.object.texture = d_texture_read("assets/texture/model/sun.png");
-    // read for each planet..
+    context.renderer.textures = calloc(11, sizeof(uint32_t)); // swap to dynamic array
+    context.renderer.textures[0] = d_texture_read("assets/texture/model/sun.png");
+    context.renderer.textures[1] = d_texture_read("assets/texture/model/earth.jpg");
+    context.renderer.textures[2] = d_texture_read("assets/texture/model/sun.png");
+    context.renderer.textures[3] = d_texture_read("assets/texture/model/earth.jpg");
+    context.renderer.textures[4] = d_texture_read("assets/texture/model/mars.jpg");
+    context.renderer.textures[5] = d_texture_read("assets/texture/model/earth.jpg");
+    context.renderer.textures[6] = d_texture_read("assets/texture/model/sun.png");
+    context.renderer.textures[7] = d_texture_read("assets/texture/model/earth.jpg");
+    context.renderer.textures[8] = d_texture_read("assets/texture/model/sun.png");
+    context.renderer.textures[9] = d_texture_read("assets/texture/model/earth.jpg");
 
-    char *skybox_textures[6] = {
+    char *skybox_texture_filepaths[6] = {
         "assets/texture/skybox/right.png",
         "assets/texture/skybox/left.png",
         "assets/texture/skybox/top.png",
@@ -181,7 +189,8 @@ void g_game_init(void) {
         "assets/texture/skybox/front.png",
         "assets/texture/skybox/back.png"
     };
-    context.scene.skybox.object.texture = d_cubemap_read(skybox_textures);
+    // context.scene.skybox.object -> texture = d_cubemap_read(skybox_texture_filepaths);
+    context.renderer.textures[10] = d_cubemap_read(skybox_texture_filepaths);
 
     // CAMERA
     context.camera.position = vec3(0.0f, 128.0f, 512.0f);
@@ -189,17 +198,66 @@ void g_game_init(void) {
     context.camera.head_position = vec3(0.0f, 1.0f, 0.0f);
     context.camera.yaw = -90.0f;
     context.camera.pitch = 0.0f;
-    context.camera.speed = 16.0f;
-    context.camera.sensitivity = 0.2f;
+    context.camera.speed = 8.0f;
+    context.camera.sensitivity = 0.1f;
 
     // SCENE
     context.scene.clock.time = 0.0;
     context.scene.clock.scale = 86400.0;
 
     // load orbs (HANDLE ENDIANNESS (and use in the report))
-    r_renderer_object_read(&context.scene.planet.object, "assets/model/earth.orb");
-    r_renderer_object_upload(&context.scene.planet.object);
+    context.renderer.objects = calloc(10, sizeof(object_t));
+    r_renderer_object_read(&context.renderer.objects[0], "assets/model/sun.orb");
+    context.renderer.objects[0].shader = &context.renderer.shaders[0];
+    context.renderer.objects[0].texture = &context.renderer.textures[0];
+    r_renderer_object_upload(&context.renderer.objects[0]);
 
+    r_renderer_object_read(&context.renderer.objects[1], "assets/model/earth.orb");
+    context.renderer.objects[1].shader = &context.renderer.shaders[0];
+    context.renderer.objects[1].texture = &context.renderer.textures[1];
+    r_renderer_object_upload(&context.renderer.objects[1]);
+
+    r_renderer_object_read(&context.renderer.objects[2], "assets/model/earth.orb");
+    context.renderer.objects[2].shader = &context.renderer.shaders[0];
+    context.renderer.objects[2].texture = &context.renderer.textures[1];
+    r_renderer_object_upload(&context.renderer.objects[2]);
+
+    r_renderer_object_read(&context.renderer.objects[3], "assets/model/earth.orb");
+    context.renderer.objects[3].shader = &context.renderer.shaders[0];
+    context.renderer.objects[3].texture = &context.renderer.textures[1];
+    r_renderer_object_upload(&context.renderer.objects[3]);
+
+    r_renderer_object_read(&context.renderer.objects[4], "assets/model/earth.orb");
+    context.renderer.objects[4].shader = &context.renderer.shaders[0];
+    context.renderer.objects[4].texture = &context.renderer.textures[1];
+    r_renderer_object_upload(&context.renderer.objects[4]);
+
+    r_renderer_object_read(&context.renderer.objects[5], "assets/model/earth.orb");
+    context.renderer.objects[5].shader = &context.renderer.shaders[0];
+    context.renderer.objects[5].texture = &context.renderer.textures[1];
+    r_renderer_object_upload(&context.renderer.objects[5]);
+
+    r_renderer_object_read(&context.renderer.objects[6], "assets/model/earth.orb");
+    context.renderer.objects[6].shader = &context.renderer.shaders[0];
+    context.renderer.objects[6].texture = &context.renderer.textures[1];
+    r_renderer_object_upload(&context.renderer.objects[6]);
+
+    r_renderer_object_read(&context.renderer.objects[7], "assets/model/earth.orb");
+    context.renderer.objects[7].shader = &context.renderer.shaders[0];
+    context.renderer.objects[7].texture = &context.renderer.textures[1];
+    r_renderer_object_upload(&context.renderer.objects[7]);
+
+    r_renderer_object_read(&context.renderer.objects[8], "assets/model/earth.orb");
+    context.renderer.objects[8].shader = &context.renderer.shaders[0];
+    context.renderer.objects[8].texture = &context.renderer.textures[1];
+    r_renderer_object_upload(&context.renderer.objects[8]);
+
+    r_renderer_object_read(&context.renderer.objects[9], "assets/model/earth.orb");
+    context.renderer.objects[9].shader = &context.renderer.shaders[0];
+    context.renderer.objects[9].texture = &context.renderer.textures[1];
+    r_renderer_object_upload(&context.renderer.objects[9]);
+
+    // planets
     static planet_t planets[] = {
         {.name="SUN", .radius=695700.0, .orbit={0,0,0}, .inclination=0, .node=0, .spin=25.38*R_PHYSICS_DAY_SECONDS, .tilt=0, .state={vec3(0,0,0),0,0}, .parent=NULL},
         {.name="MERCURY", .radius=2439.7, .orbit={57909227.0,87.9691*R_PHYSICS_DAY_SECONDS,252.25084*(R_PI/180.0)}, .inclination=7.005*(R_PI/180.0), .node=48.331*(R_PI/180.0), .spin=58.646*R_PHYSICS_DAY_SECONDS, .tilt=0.034*(R_PI/180.0), .state={vec3(0,0,0),0,0}, .parent=&planets[0]},
@@ -212,24 +270,33 @@ void g_game_init(void) {
         {.name="NEPTUNE", .radius=24622.0, .orbit={4498396441.0,60189.0*R_PHYSICS_DAY_SECONDS,304.88003*(R_PI/180.0)}, .inclination=1.770*(R_PI/180.0), .node=131.784*(R_PI/180.0), .spin=16.11*3600.0, .tilt=28.32*(R_PI/180.0), .state={vec3(0,0,0),0,0}, .parent=&planets[0]},
         {.name="PLUTO", .radius=1188.3, .orbit={5906380000.0,90560.0*R_PHYSICS_DAY_SECONDS,238.92881*(R_PI/180.0)}, .inclination=17.16*(R_PI/180.0), .node=110.299*(R_PI/180.0), .spin=-6.387*R_PHYSICS_DAY_SECONDS, .tilt=119.61*(R_PI/180.0), .state={vec3(0,0,0),0,0}, .parent=&planets[0]}
     };
+
+    for (int i = 0; i < 10; i++) {
+        planets[i].object = &context.renderer.objects[i];
+    }
     context.scene.planets = planets;
 
+    // physics
     for (uint32_t i = 0; i < 10; i++) {
         r_physics_planet_state_update(&context.scene.planets[i], context.scene.clock.time);
     }
 
     // ui
     context.scene.ui.orbits.size = 2048;
+    context.scene.ui.orbits.shader = &context.renderer.shaders[1];
     context.scene.ui.orbits.visible = 1;
     g_game_ui_orbits_init();
     context.scene.ui.markers.size = 256;
+    context.scene.ui.markers.shader = &context.renderer.shaders[1];
     context.scene.ui.markers.visible = 1;
     g_game_ui_markers_init();
 
     // skybox
     r_renderer_object_read(&context.scene.skybox.object, "assets/model/default/cube.orb");
     r_renderer_object_upload(&context.scene.skybox.object);
-    r_set_int(&context.scene.skybox.object.shader, "u_Map", 0);
+    context.scene.skybox.object.shader = &context.renderer.shaders[2];
+    context.scene.skybox.object.texture = &context.renderer.textures[2];
+    r_set_int(context.scene.skybox.object.shader, "u_Map", 0);
 
     //..
     // orb file contains all mesh and planet info
@@ -268,18 +335,18 @@ void g_game_update(void) {
         }
 
         // planets
-        glUseProgram(context.scene.planet.object.shader.program);
-
-        r_set_mat4(&context.scene.planet.object.shader, "u_Projection", projection);
-        r_set_mat4(&context.scene.planet.object.shader, "u_View", view);
-
-        glBindVertexArray(context.scene.planet.object.mesh.vao);
         for (uint32_t i = 0; i < 10; i++) {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, context.scene.planet.object.texture);
+            // glBindVertexArray(context.scene.planets[i].object -> mesh.vao);
+            glUseProgram(context.scene.planets[i].object -> shader -> program);
 
-            r_set_int(&context.scene.planet.object.shader, "u_Texture", 0);
-            r_set_int(&context.scene.planet.object.shader, "u_Emissive", i == 0);
+            r_set_mat4(context.scene.planets[i].object -> shader, "u_Projection", projection);
+            r_set_mat4(context.scene.planets[i].object -> shader, "u_View", view);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, *context.scene.planets[i].object -> texture);
+
+            r_set_int(context.scene.planets[i].object -> shader, "u_Texture", 0);
+            r_set_int(context.scene.planets[i].object -> shader, "u_Emissive", i == 0);
 
             mat4_t model = mat4(1.0f);
             model = r_rotate(model, context.scene.planets[i].tilt * (180.0f / R_PI), vec3(0.0f, 0.0f, 1.0f));
@@ -288,26 +355,27 @@ void g_game_update(void) {
             model = r_scale(model, vec3_mul(vec3(context.scene.planets[i].radius * scale, context.scene.planets[i].radius * scale, context.scene.planets[i].radius * scale), R_PHYSICS_PLANET_SCALE));
             model = r_translate(model, vec3_mul(context.scene.planets[i].state.position, R_PHYSICS_ORBIT_SCALE));
 
-            r_set_mat4(&context.scene.planet.object.shader, "u_Model", model);
+            r_set_mat4(context.scene.planets[i].object -> shader, "u_Model", model);
 
-            glDrawElements(GL_TRIANGLES, context.scene.planet.object.mesh.indices.size, GL_UNSIGNED_INT, 0);
+            r_set_vec3(context.scene.planets[i].object -> shader, "u_Light", vec3_mul(context.scene.planets[0].state.position, R_PHYSICS_ORBIT_SCALE));
+
+            r_renderer_object_draw(context.scene.planets[i].object);
+            // glDrawElements(GL_TRIANGLES, context.scene.planets[i].object -> mesh.indices.size, GL_UNSIGNED_INT, 0);
         }
-        
-        r_set_vec3(&context.scene.planet.object.shader, "u_Light", vec3_mul(context.scene.planets[0].state.position, R_PHYSICS_ORBIT_SCALE));
 
         // ui
-        glUseProgram(context.scene.ui.orbits.shader.program);
+        glUseProgram(context.scene.ui.orbits.shader -> program);
 
-        r_set_mat4(&context.scene.ui.orbits.shader, "u_Projection", projection);
-        r_set_mat4(&context.scene.ui.orbits.shader, "u_View", view);
+        r_set_mat4(context.scene.ui.orbits.shader, "u_Projection", projection);
+        r_set_mat4(context.scene.ui.orbits.shader, "u_View", view);
 
         uint32_t offset_orbit = 0;
         for (uint32_t i = 1; i < 10; i++) {
             // orbits
-            r_set_mat4(&context.scene.ui.orbits.shader, "u_Model", mat4(1.0f));
+            r_set_mat4(context.scene.ui.orbits.shader, "u_Model", mat4(1.0f));
 
-            r_set_vec3(&context.scene.ui.orbits.shader, "u_Color", vec3(1.0f, 1.0f, 1.0f));
-            r_set_float(&context.scene.ui.orbits.shader, "u_Brightness", 0.2f);
+            r_set_vec3(context.scene.ui.orbits.shader, "u_Color", vec3(1.0f, 1.0f, 1.0f));
+            r_set_float(context.scene.ui.orbits.shader, "u_Brightness", 0.2f);
             
             glBindVertexArray(context.scene.ui.orbits.vao);
             glDrawArrays(GL_LINE_LOOP, offset_orbit, context.scene.ui.orbits.size);
@@ -317,10 +385,10 @@ void g_game_update(void) {
             mat4_t model_marker = mat4(1.0f);
             model_marker = r_translate(model_marker, vec3_mul(context.scene.planets[i].state.position, R_PHYSICS_ORBIT_SCALE));
             model_marker = r_scale(model_marker, vec3(context.scene.planets[6].radius * R_PHYSICS_PLANET_SCALE * 1.6f, 0.0f, context.scene.planets[6].radius * R_PHYSICS_PLANET_SCALE * 1.6f));
-            r_set_mat4(&context.scene.ui.orbits.shader, "u_Model", model_marker);
+            r_set_mat4(context.scene.ui.orbits.shader, "u_Model", model_marker);
 
-            r_set_vec3(&context.scene.ui.orbits.shader, "u_Color", vec3(1.0f, 1.0f, 1.0f));
-            r_set_float(&context.scene.ui.orbits.shader, "u_Brightness", 4.0f);
+            r_set_vec3(context.scene.ui.orbits.shader, "u_Color", vec3(1.0f, 1.0f, 1.0f));
+            r_set_float(context.scene.ui.orbits.shader, "u_Brightness", 4.0f);
             
             glBindVertexArray(context.scene.ui.markers.vao);
             glDrawArrays(GL_LINE_LOOP, 0, context.scene.ui.markers.size);
@@ -329,16 +397,16 @@ void g_game_update(void) {
         // skybox
         glDepthFunc(GL_LEQUAL);
         glDepthMask(GL_FALSE);
-        glUseProgram(context.scene.skybox.object.shader.program);
+        glUseProgram(context.scene.skybox.object.shader -> program);
 
         glBindVertexArray(context.scene.skybox.object.mesh.vao);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, context.scene.skybox.object.texture);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, *context.scene.skybox.object.texture);
 
         // view = r_look_at(context.camera.position, vec3_add(context.camera.position, context.camera.target_position), context.camera.head_position);
         view.m[3][0] = view.m[3][1] = view.m[3][2] = 0.0f;
-        r_set_mat4(&context.scene.skybox.object.shader, "u_Projection", projection);
-        r_set_mat4(&context.scene.skybox.object.shader, "u_View", view);
+        r_set_mat4(context.scene.skybox.object.shader, "u_Projection", projection);
+        r_set_mat4(context.scene.skybox.object.shader, "u_View", view);
 
         r_renderer_object_draw(&context.scene.skybox.object);
 
@@ -353,6 +421,13 @@ void g_game_update(void) {
 }
 
 void g_game_stop(void) {
+
+    // RENDERER
+    free(context.renderer.objects);
+    free(context.renderer.textures);
+    free(context.renderer.shaders);
+
+    // GLFW
     glfwDestroyWindow(context.window);
     glfwTerminate();
 }
