@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+// UTIL
+
 #define QSSERT(_e, ...) if (!(_e)) {fprintf(stderr,  __VA_ARGS__); exit(1);}
 
 static char *strdup(const char *content) {
@@ -32,7 +34,7 @@ static char *file_ext_swap(const char *filename, const char *extension) {
     return name;
 }
 
-// math
+// MATH
 
 typedef struct vec2 {
     float x, y;
@@ -42,7 +44,7 @@ typedef struct vec3 {
     float x, y, z;
 } vec3_t;
 
-// mesh
+// MESH
 
 typedef struct vertex {
     vec3_t position, normal;
@@ -56,7 +58,7 @@ typedef struct material {
     int illumination;
 } material_t;
 
-// array
+// ARRAY
 
 typedef struct uint32_array {
     uint32_t *values;
@@ -114,7 +116,7 @@ void vertex_array_insert(vertex_array_t *array, vertex_t value) {
     array -> values[array -> size++] = value;
 }
 
-// hashmap
+// HASHMAP
 
 #define MAP_DEFAULT_INITIAL_CAPACITY 16
 
@@ -285,7 +287,7 @@ int map_set(map_t *map, const void *key, void *value) {
     return _map_set_item(map -> type, map -> items, &map -> size, map -> capacity, key, value);
 }
 
-// obj
+// MESH
 
 void _obj_file_read_material(material_t *material, char *filename) {
     FILE *file = fopen(filename, "r");
@@ -418,7 +420,7 @@ void obj_file_read(vertex_array_t *vertices, uint32_array_t *indices, material_t
     fclose(file);
 }
 
-void obj_file_write(vertex_array_t *vertices, uint32_array_t *indices, material_t *material, char *filepath) {
+void orb_file_write(vertex_array_t *vertices, uint32_array_t *indices, material_t *material, char *filepath) {
     FILE *file = fopen(filepath, "wb");
 
     QSSERT(file != NULL, "Failed to write the file: %s\n", filepath);
@@ -453,53 +455,10 @@ int main(int argc, char **argv) {
     material_t material = {0};
 
     obj_file_read(&vertices, &indices, &material, argv[1]);
-    obj_file_write(&vertices, &indices, &material, file_ext_swap(argv[1], "orb"));
-
-    printf("vertices=%ld\n", vertices.size);
-    printf("indices=%ld\n", indices.size);
+    orb_file_write(&vertices, &indices, &material, file_ext_swap(argv[1], "orb"));
 
     free(vertices.values);
     free(indices.values);
-
-    // read and check so *DEL*
-    // FILE *file = fopen("../assets/model/cube.orb", "rb");
-    
-    // uint32_t so_vertices_size, so_indices_size;
-    // fread(&so_vertices_size, sizeof(uint32_t), 1, file);
-    // fread(&so_indices_size, sizeof(uint32_t), 1, file);
-
-    // vertex_array_t so_vertices = {0};
-    // so_vertices.values = (vertex_t*) malloc(4096 * sizeof(vertex_t));
-    // so_vertices.size = so_vertices_size;
-    // so_vertices.capacity = 4096;
-    // fread(so_vertices.values, sizeof(vertex_t), so_vertices_size, file);
-
-    // uint32_array_t so_indices = {0};
-    // so_indices.values = (uint32_t*) malloc(4096 * sizeof(uint32_t));
-    // so_indices.size = so_indices_size;
-    // so_indices.capacity = 4096;
-    // fread(so_indices.values, sizeof(uint32_t), so_indices_size, file);
-
-    // for (int i = 0; i < 3 && i < so_vertices_size; i++) {
-    //     printf("vertex %d: pos=(%f, %f, %f) normal=(%f, %f, %f) uv=(%f, %f)\n", i,
-    //         so_vertices.values[i].position.x, 
-    //         so_vertices.values[i].position.y,
-    //         so_vertices.values[i].position.z,
-    //         so_vertices.values[i].normal.x,
-    //         so_vertices.values[i].normal.y,
-    //         so_vertices.values[i].normal.z,
-    //         so_vertices.values[i].uv.x,
-    //         so_vertices.values[i].uv.y);
-    // }
-
-    // for (int i = 0; i < so_indices_size; i += 3) {
-    //     printf("index %d/%d/%d\n", so_indices.values[i], so_indices.values[i + 1], so_indices.values[i + 2]);
-    // }
-
-    // free(so_vertices.values);
-    // free(so_indices.values);
-
-    // fclose(file);
 
     return 0;
 }
