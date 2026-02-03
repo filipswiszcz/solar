@@ -36,3 +36,25 @@ void r_physics_planet_state_update(planet_t *planet, double time) {
     if (strcmp(planet -> name, "VENUS") == 0 || !strcmp(planet -> name, "URANUS") == 0 || !strcmp(planet -> name, "PLUTO") == 0) sign = -1.0;
     planet -> state.spin_angle = sign * 2.0f * R_PI * time / planet -> spin;
 }
+
+struct tm r_physics_clock_to_tm(double time) {
+    struct tm tm_origin = {0};
+    tm_origin.tm_year = 2000 - 1900;
+    tm_origin.tm_mon = 0;
+    tm_origin.tm_mday = 1;
+    tm_origin.tm_hour = 0;
+    tm_origin.tm_min = 0;
+    tm_origin.tm_sec = 0;
+    tm_origin.tm_isdst = -1;
+
+    time_t time_origin = mktime(&tm_origin);
+    time_t time_current = time_origin + (time_t)time;
+
+    struct tm tm_current;
+#if defined(_WIN32) || defined(_WIN64)
+    localtime_s(&tm_current, &time_current);
+#else
+    localtime_r(&time_current, &tm_current);
+#endif
+    return tm_current;
+}
