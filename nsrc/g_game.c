@@ -3,7 +3,7 @@
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
 
-#define WINDOW_NAME "SOLAR (Build v0.9.5)"
+#define WINDOW_NAME "SOLAR (Build v0.9.7)"
 
 // FPS
 
@@ -53,6 +53,10 @@ void g_game_handle_mouse(void) {
 }
 
 void g_game_handle_keyboard(void) {
+    int clock_key_h = glfwGetKey(context.window, GLFW_KEY_H);
+    int clock_key_j = glfwGetKey(context.window, GLFW_KEY_J);
+    int clock_key_k = glfwGetKey(context.window, GLFW_KEY_K);
+
     if (glfwGetKey(context.window, GLFW_KEY_W) == GLFW_PRESS)
         context.camera.position = vec3_add(context.camera.position, vec3_mul(context.camera.target_position, (context.camera.speed * context.fps.time_between_frames))); 
     if (glfwGetKey(context.window, GLFW_KEY_S) == GLFW_PRESS)
@@ -61,6 +65,17 @@ void g_game_handle_keyboard(void) {
         context.camera.position = vec3_sub(context.camera.position, vec3_mul(r_normalize(r_cross(context.camera.target_position, context.camera.head_position)), (context.camera.speed * context.fps.time_between_frames)));
     if (glfwGetKey(context.window, GLFW_KEY_D) == GLFW_PRESS)
         context.camera.position = vec3_add(context.camera.position, vec3_mul(r_normalize(r_cross(context.camera.target_position, context.camera.head_position)), (context.camera.speed * context.fps.time_between_frames)));
+    
+    if (clock_key_h == GLFW_PRESS && context.scene.clock.keys.h == GLFW_RELEASE) {
+        if (context.scene.clock.cursor > 0) context.scene.clock.cursor--;
+    }
+    if (clock_key_j == GLFW_PRESS && context.scene.clock.keys.j == GLFW_RELEASE) {
+        if (context.scene.clock.cursor > 0) context.scene.clock.cursor = 17;
+    }
+    if (clock_key_k == GLFW_PRESS && context.scene.clock.keys.k == GLFW_RELEASE) {
+        if (context.scene.clock.cursor < 21) context.scene.clock.cursor++;
+    }
+
     if (glfwGetKey(context.window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         context.camera.speed = 128.0f;
     if (glfwGetKey(context.window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE) // release is called every loop, so thats why it breaks
@@ -69,13 +84,26 @@ void g_game_handle_keyboard(void) {
     //     context.camera.speed = 2.0f;
     // if (glfwGetKey(context.window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE)
     //     context.camera.speed = 16.0f;
+
     if (glfwGetKey(context.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(context.window, 1);
+
+    context.scene.clock.keys.h = clock_key_h;
+    context.scene.clock.keys.j = clock_key_j;
+    context.scene.clock.keys.k = clock_key_k;
 }
 
 // SCENE
 void g_game_clock_update(void) {
-    context.scene.clock.time += context.fps.time_between_frames * context.scene.clock.scale;
+    context.scene.clock.time += context.fps.time_between_frames * context.scene.clock.speeds[context.scene.clock.cursor];
+    struct tm current_date = r_physics_clock_to_tm(context.scene.clock.time);
+    static double time_of_last_log = 0.0;
+    time_of_last_log += context.fps.time_between_frames;
+    if (time_of_last_log >= 1.0) {
+        printf("simulation_date=[%04d-%02d-%02d %02d:%02d:%02d], cursor=%d\n", 
+            current_date.tm_year + 1900, current_date.tm_mon + 1, current_date.tm_mday, current_date.tm_hour, current_date.tm_min, current_date.tm_sec, context.scene.clock.cursor);
+        time_of_last_log = 0.0;
+    }
 }
 
 void g_game_ui_orbits_init(void) {
@@ -202,8 +230,25 @@ void g_game_init(void) {
     context.camera.sensitivity = 0.1f;
 
     // SCENE
-    context.scene.clock.time = 0.0;
-    context.scene.clock.scale = 86400.0;
+    context.scene.clock.time = 0.0; // 1 january 2000
+    context.scene.clock.cursor = 17; // 24h (- reverses time, 0 pauses, + moves forward)
+
+    static double speeds[] = {
+        -R_PHYSICS_YEAR_SECONDS, -10 * R_PHYSICS_MONTH_SECONDS, -R_PHYSICS_MONTH_SECONDS,
+        -10 * R_PHYSICS_DAY_SECONDS, -R_PHYSICS_DAY_SECONDS,
+        -10 * R_PHYSICS_HOUR_SECONDS, -R_PHYSICS_HOUR_SECONDS,
+        -10 * R_PHYSICS_MINUTE_SECONDS, -R_PHYSICS_MINUTE_SECONDS,
+        -10.0, -1.0, 1.0, 10.0,
+        R_PHYSICS_MINUTE_SECONDS, 10 * R_PHYSICS_MINUTE_SECONDS,
+        R_PHYSICS_HOUR_SECONDS, 10 * R_PHYSICS_HOUR_SECONDS,
+        R_PHYSICS_DAY_SECONDS, 10 * R_PHYSICS_DAY_SECONDS,
+        R_PHYSICS_MONTH_SECONDS, 10 * R_PHYSICS_MONTH_SECONDS, R_PHYSICS_YEAR_SECONDS
+    };
+    context.scene.clock.speeds = speeds;
+
+    context.scene.clock.keys.h = GLFW_RELEASE;
+    context.scene.clock.keys.j = GLFW_RELEASE;
+    context.scene.clock.keys.k = GLFW_RELEASE;
 
     // load orbs (HANDLE ENDIANNESS (and use in the report))
     context.renderer.objects = calloc(10, sizeof(object_t));
@@ -258,6 +303,7 @@ void g_game_init(void) {
     r_renderer_object_upload(&context.renderer.objects[9]);
 
     // planets
+
     static planet_t planets[] = {
         {.name="SUN", .radius=695700.0, .orbit={0,0,0}, .inclination=0, .node=0, .spin=25.38*R_PHYSICS_DAY_SECONDS, .tilt=0, .state={vec3(0,0,0),0,0}, .parent=NULL},
         {.name="MERCURY", .radius=2439.7, .orbit={57909227.0,87.9691*R_PHYSICS_DAY_SECONDS,252.25084*(R_PI/180.0)}, .inclination=7.005*(R_PI/180.0), .node=48.331*(R_PI/180.0), .spin=58.646*R_PHYSICS_DAY_SECONDS, .tilt=0.034*(R_PI/180.0), .state={vec3(0,0,0),0,0}, .parent=&planets[0]},

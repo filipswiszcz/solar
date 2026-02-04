@@ -38,16 +38,20 @@ static struct {
     } camera;
 
     struct {
-        object_t *objects; // dynamic array
-        shader_t *shaders; // dynamic array
-        uint32_t *textures; // dynamic array
+        object_t *objects; // change to dynamic array
+        shader_t *shaders; // change to dynamic array
+        uint32_t *textures; // change to dynamic array
         // sounds?
     } renderer;
 
     struct {
         struct {
             double time;
-            double scale;
+            double *speeds;
+            uint8_t cursor;
+            struct {
+                int h, j, k;
+            } keys;
         } clock;
 
         planet_t *planets; // planets (planet contains pointer to object/sound)
@@ -70,9 +74,9 @@ static struct {
                 shader_t *shader;
                 uint8_t visible;
             } markers;
-            
+
             // labels
-        } ui; // ui? (here or in renderer struct) labels?
+        } ui;
     } scene;
 
 } context;
