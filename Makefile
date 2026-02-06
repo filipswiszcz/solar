@@ -22,7 +22,7 @@ CFLAGS := -std=$(STD) $(CWARNINGS) $(OPENGL_INCLUDE) $(OTHER_INCLUDES) -I./$(SRC
 LDFLAGS := $(OPENGL_LIBS)
 
 BUILD_DIR = build
-SRC_DIR = nsrc
+SRC_DIR = src
 
 # SRCS := $(wildcard $(SRC_DIR)/*.c)
 # OBJS := $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))

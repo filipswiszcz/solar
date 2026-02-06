@@ -100,8 +100,8 @@ void g_game_clock_update(void) {
     static double time_of_last_log = 0.0;
     time_of_last_log += context.fps.time_between_frames;
     if (time_of_last_log >= 1.0) {
-        printf("simulation_date=[%04d-%02d-%02d %02d:%02d:%02d], cursor=%d\n", 
-            current_date.tm_year + 1900, current_date.tm_mon + 1, current_date.tm_mday, current_date.tm_hour, current_date.tm_min, current_date.tm_sec, context.scene.clock.cursor);
+        // printf("simulation_date=[%04d-%02d-%02d %02d:%02d:%02d], cursor=%d\n", 
+        //     current_date.tm_year + 1900, current_date.tm_mon + 1, current_date.tm_mday, current_date.tm_hour, current_date.tm_min, current_date.tm_sec, context.scene.clock.cursor);
         time_of_last_log = 0.0;
     }
 }
