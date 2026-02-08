@@ -92,7 +92,7 @@ static uint32_t d_texture_read(const char *filepath) {
 
     int w, h, c;
     unsigned char *img = stbi_load(filepath, &w, &h, &c, 0);
-    ASSERT(img, "Failed to load texture");
+    ASSERT(img, "Failed to load texture: %s\n", filepath);
 
     int frmt, ifrmt;
     switch (c) {

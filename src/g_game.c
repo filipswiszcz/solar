@@ -3,7 +3,7 @@
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
 
-#define WINDOW_NAME "SOLAR (Build v0.9.7)"
+#define WINDOW_NAME "SOLAR (Build v0.9.8)"
 
 // FPS
 
@@ -198,16 +198,16 @@ void g_game_init(void) {
 
     // TEXTURES
     context.renderer.textures = calloc(11, sizeof(uint32_t)); // swap to dynamic array
-    context.renderer.textures[0] = d_texture_read("assets/texture/model/sun.png");
-    context.renderer.textures[1] = d_texture_read("assets/texture/model/earth.jpg");
-    context.renderer.textures[2] = d_texture_read("assets/texture/model/sun.png");
+    context.renderer.textures[0] = d_texture_read("assets/texture/model/sun.jpg");
+    context.renderer.textures[1] = d_texture_read("assets/texture/model/mercury.jpg");
+    context.renderer.textures[2] = d_texture_read("assets/texture/model/venus.jpg");
     context.renderer.textures[3] = d_texture_read("assets/texture/model/earth.jpg");
     context.renderer.textures[4] = d_texture_read("assets/texture/model/mars.jpg");
-    context.renderer.textures[5] = d_texture_read("assets/texture/model/earth.jpg");
-    context.renderer.textures[6] = d_texture_read("assets/texture/model/sun.png");
-    context.renderer.textures[7] = d_texture_read("assets/texture/model/earth.jpg");
-    context.renderer.textures[8] = d_texture_read("assets/texture/model/sun.png");
-    context.renderer.textures[9] = d_texture_read("assets/texture/model/earth.jpg");
+    context.renderer.textures[5] = d_texture_read("assets/texture/model/jupiter.jpg");
+    context.renderer.textures[6] = d_texture_read("assets/texture/model/saturn.jpg");
+    context.renderer.textures[7] = d_texture_read("assets/texture/model/uranus.jpg");
+    context.renderer.textures[8] = d_texture_read("assets/texture/model/neptune.jpg");
+    context.renderer.textures[9] = d_texture_read("assets/texture/model/pluto.jpg");
 
     char *skybox_texture_filepaths[6] = {
         "assets/texture/skybox/right.png",
@@ -264,42 +264,42 @@ void g_game_init(void) {
 
     r_renderer_object_read(&context.renderer.objects[2], "assets/model/earth.orb");
     context.renderer.objects[2].shader = &context.renderer.shaders[0];
-    context.renderer.objects[2].texture = &context.renderer.textures[1];
+    context.renderer.objects[2].texture = &context.renderer.textures[2];
     r_renderer_object_upload(&context.renderer.objects[2]);
 
     r_renderer_object_read(&context.renderer.objects[3], "assets/model/earth.orb");
     context.renderer.objects[3].shader = &context.renderer.shaders[0];
-    context.renderer.objects[3].texture = &context.renderer.textures[1];
+    context.renderer.objects[3].texture = &context.renderer.textures[3];
     r_renderer_object_upload(&context.renderer.objects[3]);
 
     r_renderer_object_read(&context.renderer.objects[4], "assets/model/earth.orb");
     context.renderer.objects[4].shader = &context.renderer.shaders[0];
-    context.renderer.objects[4].texture = &context.renderer.textures[1];
+    context.renderer.objects[4].texture = &context.renderer.textures[4];
     r_renderer_object_upload(&context.renderer.objects[4]);
 
     r_renderer_object_read(&context.renderer.objects[5], "assets/model/earth.orb");
     context.renderer.objects[5].shader = &context.renderer.shaders[0];
-    context.renderer.objects[5].texture = &context.renderer.textures[1];
+    context.renderer.objects[5].texture = &context.renderer.textures[5];
     r_renderer_object_upload(&context.renderer.objects[5]);
 
     r_renderer_object_read(&context.renderer.objects[6], "assets/model/earth.orb");
     context.renderer.objects[6].shader = &context.renderer.shaders[0];
-    context.renderer.objects[6].texture = &context.renderer.textures[1];
+    context.renderer.objects[6].texture = &context.renderer.textures[6];
     r_renderer_object_upload(&context.renderer.objects[6]);
 
     r_renderer_object_read(&context.renderer.objects[7], "assets/model/earth.orb");
     context.renderer.objects[7].shader = &context.renderer.shaders[0];
-    context.renderer.objects[7].texture = &context.renderer.textures[1];
+    context.renderer.objects[7].texture = &context.renderer.textures[7];
     r_renderer_object_upload(&context.renderer.objects[7]);
 
     r_renderer_object_read(&context.renderer.objects[8], "assets/model/earth.orb");
     context.renderer.objects[8].shader = &context.renderer.shaders[0];
-    context.renderer.objects[8].texture = &context.renderer.textures[1];
+    context.renderer.objects[8].texture = &context.renderer.textures[8];
     r_renderer_object_upload(&context.renderer.objects[8]);
 
     r_renderer_object_read(&context.renderer.objects[9], "assets/model/earth.orb");
     context.renderer.objects[9].shader = &context.renderer.shaders[0];
-    context.renderer.objects[9].texture = &context.renderer.textures[1];
+    context.renderer.objects[9].texture = &context.renderer.textures[9];
     r_renderer_object_upload(&context.renderer.objects[9]);
 
     // planets
@@ -468,12 +468,29 @@ void g_game_update(void) {
 
 void g_game_stop(void) {
 
+    // SCENE
+    glDeleteVertexArrays(1, &context.scene.ui.orbits.vao);
+    glDeleteBuffers(1, &context.scene.ui.orbits.vbo);
+
+    glDeleteVertexArrays(1, &context.scene.ui.markers.vao);
+    glDeleteBuffers(1, &context.scene.ui.markers.vbo);
+
     // RENDERER
+    // for (int i = 0; i < 10; i++) {
+    //     r_renderer_object_destroy(&context.renderer.objects[i]);
+    // }
     free(context.renderer.objects);
+
+    glDeleteTextures(11, context.renderer.textures);
     free(context.renderer.textures);
+
+    // for (int i = 0; i < 3; i++) {
+    //     r_shader_destroy(&context.renderer.shaders[i]);
+    // }
     free(context.renderer.shaders);
 
     // GLFW
     glfwDestroyWindow(context.window);
     glfwTerminate();
+    
 }
