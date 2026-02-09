@@ -1,12 +1,15 @@
 ** PROJECT TREE **
 |-- assets/
 |   |-- model/
+|   |   |-- default/
+|   |   |   |-- *.orb
 |   |   |-- *.orb
 |   |-- sound/
 |   |   |-- *.wav
 |   |   |-- *.mp3
 |   |-- texture/
 |       |-- model/
+|       |   |-- *.jpg
 |       |   |-- *.png
 |       |-- skybox/
 |           |-- *.png
