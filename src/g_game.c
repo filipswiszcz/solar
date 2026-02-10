@@ -332,6 +332,7 @@ void g_game_init(void) {
     context.scene.ui.orbits.shader = &context.renderer.shaders[1];
     context.scene.ui.orbits.visible = 1;
     g_game_ui_orbits_init();
+    
     context.scene.ui.markers.size = 256;
     context.scene.ui.markers.shader = &context.renderer.shaders[1];
     context.scene.ui.markers.visible = 1;

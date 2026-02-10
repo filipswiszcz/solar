@@ -94,8 +94,8 @@
 + lighting (basically the Sun casting light on the planets)
 + camera
 - camera zooming
-- models
-- physics (planets correct movement)
++ models
++ physics (planets correct movement)
 - interface
 + shaders
 - sound
@@ -111,7 +111,6 @@ date_max="31 DECEMBER 2049"
 ** PROBLEMS **
 - Jupiter is smaller than previously estimated (as of feb 2026)
 - should i include Pluto?
-- change STATIC_DRAW to DYNAMIC_DRAW for planets? are there any benefits?
 - add material_t values in blender to make planets look better
 -..
 
