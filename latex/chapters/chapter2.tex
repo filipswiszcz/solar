@@ -1,0 +1,72 @@
+\chapter{Środowisko i narzędzia wytwórcze}
+
+Wybór odpowiedniego zestawu technologii i narzędzi programistycznych jest kluczowym etapem realizacji każdego projektu inżynierskiego. W przypadku silnika graficznego i symulacji fizycznej, priorytetem była wydajność, przenośność oraz możliwość bezpośredniej interakcji ze sprzętem graficznym. W niniejszym rozdziale omówiono język programowania, biblioteki oraz narzędzia wykorzystane w procesie tworzenia aplikacji „SOLAR”.
+
+    % 2.1
+    \section{Język programowania C}
+
+     Jako podstawowe narzędzie implementacji wybrano język C w standardzie C99. Decyzja ta, choć może wydawać się nietypowa w dobie wysokopoziomowych języków obiektowych, była podyktowana specyficznymi wymaganiami inżynierii gier i symulacji fizycznych. Język C oferuje bezkompromisową wydajność oraz niskopoziomowy dostęp do pamięci operacyjnej, co jest krytyczne przy przetwarzaniu tysięcy wierzchołków i obliczaniu fizyki orbitalnej w każdej klatce obrazu. W przeciwieństwie do języków wyposażonych w automatyczne odśmiecanie pamięci (Garbage Collection), C wymusza na programiście ręczne zarządzanie alokacją i dealokacją zasobów. W projekcie wykorzystano to do stworzenia dedykowanych struktur danych, takich jak dynamiczne tablice zaimplementowane w module \texttt{d\_array}, które minimalizują narzut pamięciowy i fragmentację sterty. Ponadto, API biblioteki OpenGL zostało pierwotnie zaprojektowane właśnie dla języka C, co eliminuje konieczność stosowania dodatkowych warstw abstrakcji (wrapperów) i pozwala na bezpośrednią interakcję ze sterownikami karty graficznej.
+
+     % ZDJĘCIE=screen_fragment_d_array_h (uint32_array_t or float_array_t)
+     % Rysunek 2.1
+     \bigbreak
+     \bigbreak
+     [RYSUNEK 2.1]
+     \bigbreak
+     \bigbreak
+
+     \newpage
+
+    % 2.2
+    \section{Biblioteka graficzna OpenGL 4.1 Core Profile}
+
+     Warstwa wizualna aplikacji została oparta na bibliotece OpenGL w wersji 4.1 Core Profile. Jest to otwarty standard interfejsu programistycznego, służący do generowania grafiki dwu- i trójwymiarowej. Wybór wersji 4.1 stanowił świadomy kompromis pomiędzy dostępem do nowoczesnych funkcji a kompatybilnością sprzętową. Wersja ta jest ostatnią natywnie wspieraną przez systemy operacyjne macOS, co zapewnia przenośność aplikacji między platformami Windows, Linux i Apple bez konieczności modyfikacji kodu źródłowego. Zastosowanie profilu rdzennego (Core Profile) oznacza całkowitą rezygnację z przestarzałego modelu "Fixed Function Pipeline" na rzecz w pełni programowalnego potoku renderującego. Wymusiło to implementację własnych shaderów w języku GLSL (OpenGL Shading Language), odpowiedzialnych za transformację geometrii oraz obliczanie oświetlenia pikseli bezpośrednio na procesorze graficznym (GPU). Takie podejście pozwala na uzyskanie znacznie wyższej wydajności i elastyczności w kreowaniu efektów wizualnych niż w przypadku gotowych rozwiązań.
+
+     % ZDJĘCIE=screen_opengl_flow (programmable pipeline)
+     % Rysunek 2.2
+     \bigbreak
+     \bigbreak
+     [RYSUNEK 2.2]
+     \bigbreak
+     \bigbreak
+
+   \newpage
+
+    % 2.3
+    \section{Biblioteki pomocnicze}
+
+     OpenGL jest jedynie specyfikacją API graficznego i nie zawiera funkcji do obsługi systemu operacyjnego (tworzenie okna, obsługa klawiatury) ani ładowania plików. W związku z tym wykorzystano zestaw lekkich, specjalizowanych bibliotek.
+
+        \subsection{GLFW}
+
+         Biblioteka GLFW posłużyła do utworzenia kontekstu OpenGL, zarządzania oknem aplikacji oraz obsługi urządzeń wejścia (mysz, klawiatura).
+         W pliku \texttt{g\_game.c} wykorzystano funkcje takie jak glfwGetCursorPos do sterowania kamerą oraz glfwGetKey do obsługi poruszania się w przestrzeni. GLFW zapewnia abstrakcję warstwy systemowej, dzięki czemu aplikacja może być kompilowana zarówno na systemach Windows, Linux, jak i macOS.
+
+        \subsection{GLEW / GLCoreARB}
+
+         Ze względu na specyfikę ładowania funkcji OpenGL, które są dostarczane przez sterowniki karty graficznej, konieczne jest użycie mechanizmu ładującego wskaźniki do tych funkcji.
+
+         \bigbreak
+
+         - Na systemach Windows/Linux wykorzystano bibliotekę GLEW
+
+         - Na systemie macOS (zdefiniowanym makrem \_\_APPLE\_\_) wykorzystano nagłówki GLCoreARB
+
+        \subsection{stb\_image}
+        
+         Do wczytywania tekstur (formaty .jpg, .png) użyto biblioteki \texttt{stb\_image}. Jest to biblioteka typu "header-only" (zawarta w jednym pliku nagłówkowym), co znacząco upraszcza proces kompilacji. W module \texttt{d\_util.c} funkcja stbi\_load dekoduje pliki graficzne do surowej tablicy bajtów, która następnie jest przesyłana do pamięci karty graficznej funkcją glTexImage2D.
+
+   \newpage
+
+    % 2.4
+    \section{Narzędzia budowania i systemy kontroli wersji}
+
+     Proces wytwórczy oprogramowania wspierany był przez standardowe narzędzia inżynierskie.
+
+        \subsection{Make}
+
+         Do automatyzacji procesu kompilacji wykorzystano narzędzie Make. Plik konfiguracyjny Makefile definiuje reguły kompilacji poszczególnych modułów (.c) do plików obiektowych (.o), a następnie ich linkowania w plik wykonywalny. Pozwala to na szybką rekompilację tylko tych części kodu, które uległy zmianie, oraz łatwe zarządzanie flagami kompilatora i linkera (np. -lGL -lglfw).
+
+        \subsection{Git}
+
+         Zarządzanie kodem źródłowym odbywało się przy użyciu systemu kontroli wersji Git. Umożliwiło to śledzenie historii zmian, eksperymentowanie z nowymi funkcjami (np. implementacja formatu .orb) na osobnych gałęziach (branch) oraz zabezpieczenie kodu przed utratą. Struktura repozytorium została podzielona na katalogi logiczne: src (kod źródłowy), assets (zasoby), shader (kody shaderów) oraz tools (narzędzia pomocnicze).
