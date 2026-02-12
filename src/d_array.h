@@ -20,8 +20,6 @@ typedef struct uint32_array {
 
 void d_uint32_array_insert(uint32_array_t *array, uint32_t value);
 
-// void d_uint32_array_insert_all(uint32_array_t *array, uint32_t *values);
-
 // MESH
 
 // typedef struct vertex vertex_t;
