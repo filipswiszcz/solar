@@ -21,21 +21,29 @@ typedef struct planet {
     const char *name;
     vec3_t color;
     
-    double radius;
+    // physical properties
+    double radius_equatorial;
 
     struct {
-        double radius, period, phase;
+        double semi_major_axis; // standard Keplerian term
+        double period_orbital; // year duration
+        double mean_anomaly_epoch; // starting position in orbit
+        double eccentricity;
     } orbit;
 
-    double inclination;
-    double node;
+    // orbital elements
+    double inclination; // angle between orbit and reference plane
+    double long_asc_node; // longitude of the ascending node
     
-    double spin;
-    double tilt; // radians
+    // rotational properties
+    double period_rotation; // time per rotation
+    double obliquity; // axial tilt
 
+    // dynamic state (runtime)
     struct {
         vec3_t position;
-        float orbit_angle, spin_angle;
+        float anomaly; // position along orbit
+        float rotation; // rotation angle
     } state;
 
     struct planet *parent;

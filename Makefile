@@ -7,7 +7,8 @@ ifeq ($(OS), Windows_NT)
   OPENGL_LIBS := -lglfw3 -lGLEW -lopengl32 -lgdi32
   OTHER_INCLUDES := -I./lib
 else
-  CWARNINGS := -Wall -Wextra -Wpedantic -Wshadow
+  # CWARNINGS := -Wall -Wextra -Wpedantic -Wshadow
+  CWARNINGS := -Wall -Wextra -Wshadow
   TARGET = $(BUILD_DIR)/solar
   ifeq ($(shell uname -s), Linux)
     OPENGL_INCLUDE := -I/usr/include/GLFW -I/usr/include/GL

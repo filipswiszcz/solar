@@ -3,7 +3,7 @@
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
 
-#define WINDOW_NAME "SOLAR (Build v0.9.8)"
+#define WINDOW_NAME "SOLAR (Build v1.1.8)"
 
 // FPS
 
@@ -96,7 +96,7 @@ void _g_game_keyboard_handle(void) {
 // SCENE
 void _g_game_clock_update(void) {
     context.scene.clock.time += context.fps.time_between_frames * context.scene.clock.speeds[context.scene.clock.cursor];
-    struct tm current_date = r_physics_clock_to_tm(context.scene.clock.time);
+    // struct tm current_date = r_physics_clock_to_tm(context.scene.clock.time);
     static double time_of_last_log = 0.0;
     time_of_last_log += context.fps.time_between_frames;
     if (time_of_last_log >= 1.0) {
@@ -113,9 +113,9 @@ void _g_game_ui_orbits_init(void) {
         for (uint32_t j = 0; j < context.scene.ui.orbits.size; j++) {
             double angle = (2.0 * R_PI * j) / context.scene.ui.orbits.size;
             vec3_t position = {
-                cos(angle) * context.scene.planets[i].orbit.radius * R_PHYSICS_ORBIT_SCALE,
+                context.scene.planets[i].orbit.semi_major_axis * R_PHYSICS_ORBIT_SCALE * (cos(angle) - context.scene.planets[i].orbit.eccentricity),
                 0.0f,
-                sin(angle) * context.scene.planets[i].orbit.radius * R_PHYSICS_ORBIT_SCALE
+                context.scene.planets[i].orbit.semi_major_axis * R_PHYSICS_ORBIT_SCALE * sqrt(1.0 - context.scene.planets[i].orbit.eccentricity * context.scene.planets[i].orbit.eccentricity) * sin(angle)
             };
             vertices[cursor++] = r_physics_orbit_to_local(&context.scene.planets[i], position);
         }
@@ -192,17 +192,15 @@ void g_game_init(void) {
     
     // MEMORY
     d_arena_init(&context.arena, GAME_MEMORY, GAME_MEMORY_CAPACITY);
-    d_arena_stats(&context.arena);
+    // d_arena_stats(&context.arena);
 
     // SHADERS
-    // context.renderer.shaders = calloc(3, sizeof(shader_t));
     context.renderer.shaders = d_arena_alloc(&context.arena, 3 * sizeof(shader_t));
     r_create_program(&context.renderer.shaders[0], "shader/default.vs", "shader/default.fs");
     r_create_program(&context.renderer.shaders[1], "shader/orbit.vs", "shader/orbit.fs");
     r_create_program(&context.renderer.shaders[2], "shader/skybox.vs", "shader/skybox.fs");
 
     // TEXTURES
-    // context.renderer.textures = calloc(11, sizeof(uint32_t));
     context.renderer.textures = d_arena_alloc(&context.arena, 11 * sizeof(uint32_t));
     d_util_texture_read(&context.renderer.textures[0], "assets/texture/model/sun.jpg");
     d_util_texture_read(&context.renderer.textures[1], "assets/texture/model/mercury.jpg");
@@ -256,7 +254,6 @@ void g_game_init(void) {
     context.scene.clock.keys.k = GLFW_RELEASE;
 
     // load orbs (HANDLE ENDIANNESS (and use in the report))
-    // context.renderer.objects = calloc(10, sizeof(object_t));
     context.renderer.objects = d_arena_alloc(&context.arena, 10 * sizeof(object_t));
     r_renderer_object_read(&context.arena, &context.renderer.objects[0], "assets/model/sun.orb");
     context.renderer.objects[0].shader = &context.renderer.shaders[0];
@@ -311,20 +308,18 @@ void g_game_init(void) {
     d_arena_stats(&context.arena);
 
     // planets
-
     static planet_t planets[] = {
-        {.name="SUN", .radius=695700.0, .orbit={0,0,0}, .inclination=0, .node=0, .spin=25.38*R_PHYSICS_DAY_SECONDS, .tilt=0, .state={vec3(0,0,0),0,0}, .parent=NULL},
-        {.name="MERCURY", .radius=2439.7, .orbit={57909227.0,87.9691*R_PHYSICS_DAY_SECONDS,252.25084*(R_PI/180.0)}, .inclination=7.005*(R_PI/180.0), .node=48.331*(R_PI/180.0), .spin=58.646*R_PHYSICS_DAY_SECONDS, .tilt=0.034*(R_PI/180.0), .state={vec3(0,0,0),0,0}, .parent=&planets[0]},
-        {.name="VENUS", .radius=6051.8, .orbit={108209475.0,224.701*R_PHYSICS_DAY_SECONDS,181.97973*(R_PI/180.0)}, .inclination=3.3947*(R_PI/180.0), .node=76.680*(R_PI/180.0), .spin=-243.025*R_PHYSICS_DAY_SECONDS, .tilt=177.36*(R_PI/180.0), .state={vec3(0,0,0),0,0}, .parent=&planets[0]},
-        {.name="EARTH", .radius=6371.0, .orbit={149597870.7,365.256*R_PHYSICS_DAY_SECONDS,100.46435*(R_PI/180.0)}, .inclination=0.00005*(R_PI/180.0), .node=-11.26064*(R_PI/180.0), .spin=R_PHYSICS_DAY_SECONDS, .tilt=23.44*(R_PI/180.0), .state={vec3(0,0,0),0,0}, .parent=&planets[0]},
-        {.name="MARS", .radius=3389.5, .orbit={227939200.0,686.980*R_PHYSICS_DAY_SECONDS,355.45332*(R_PI/180.0)}, .inclination=1.850*(R_PI/180.0), .node=49.558*(R_PI/180.0), .spin=1.025957*R_PHYSICS_DAY_SECONDS, .tilt=25.19*(R_PI/180.0), .state={vec3(0,0,0),0,0}, .parent=&planets[0]},
-        {.name="JUPITER", .radius=69911.0, .orbit={778340821.0,4332.589*R_PHYSICS_DAY_SECONDS,34.40438*(R_PI/180.0)}, .inclination=1.304*(R_PI/180.0), .node=100.464*(R_PI/180.0), .spin=9.925*3600.0, .tilt=3.13*(R_PI/180.0), .state={vec3(0,0,0),0,0}, .parent=&planets[0]},
-        {.name="SATURN", .radius=58232.0, .orbit={1426666422.0,10759.22*R_PHYSICS_DAY_SECONDS,49.94432*(R_PI/180.0)}, .inclination=2.485*(R_PI/180.0), .node=113.665*(R_PI/180.0), .spin=10.656*3600.0, .tilt=26.73*(R_PI/180.0), .state={vec3(0,0,0),0,0}, .parent=&planets[0]},
-        {.name="URANUS", .radius=25362.0, .orbit={2870658186.0,30685.4*R_PHYSICS_DAY_SECONDS,313.23218*(R_PI/180.0)}, .inclination=0.773*(R_PI/180.0), .node=74.006*(R_PI/180.0), .spin=-17.24*3600.0, .tilt=97.77*(R_PI/180.0), .state={vec3(0,0,0),0,0}, .parent=&planets[0]},
-        {.name="NEPTUNE", .radius=24622.0, .orbit={4498396441.0,60189.0*R_PHYSICS_DAY_SECONDS,304.88003*(R_PI/180.0)}, .inclination=1.770*(R_PI/180.0), .node=131.784*(R_PI/180.0), .spin=16.11*3600.0, .tilt=28.32*(R_PI/180.0), .state={vec3(0,0,0),0,0}, .parent=&planets[0]},
-        {.name="PLUTO", .radius=1188.3, .orbit={5906380000.0,90560.0*R_PHYSICS_DAY_SECONDS,238.92881*(R_PI/180.0)}, .inclination=17.16*(R_PI/180.0), .node=110.299*(R_PI/180.0), .spin=-6.387*R_PHYSICS_DAY_SECONDS, .tilt=119.61*(R_PI/180.0), .state={vec3(0,0,0),0,0}, .parent=&planets[0]}
+        {.name = "SUN", .color = vec3(1.00f, 1.00f, 1.00f), .radius_equatorial = 695700.0, .orbit = {0.0, 0.0, 0.0, 0.0}, .inclination = 0, .long_asc_node = 0, .period_rotation = 25.38 * R_PHYSICS_DAY_SECONDS, .obliquity = 0, .state = {vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f}, .parent = NULL},
+        {.name = "MERCURY", .color = vec3(0.50f, 0.50f, 0.50f), .radius_equatorial = 2439.7, .orbit = {57909227.0, 87.9691 * R_PHYSICS_DAY_SECONDS, 252.25084 * (R_PI / 180.0), 0.205630}, .inclination = 7.005 * (R_PI / 180.0), .long_asc_node = 48.331 * (R_PI / 180.0), .period_rotation = 58.646 * R_PHYSICS_DAY_SECONDS, .obliquity = 0.034 * (R_PI / 180.0), .state = {vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f}, .parent = &planets[0]},
+        {.name = "VENUS", .color = vec3(1.00f, 0.70f, 0.20f), .radius_equatorial = 6051.8, .orbit = {108209475.0, 224.701 * R_PHYSICS_DAY_SECONDS, 181.97973 * (R_PI / 180.0), 0.006772}, .inclination = 3.3947 * (R_PI / 180.0), .long_asc_node = 76.680 * (R_PI / 180.0), .period_rotation = -243.025 * R_PHYSICS_DAY_SECONDS, .obliquity = 177.36 * (R_PI / 180.0), .state = {vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f}, .parent = &planets[0]},
+        {.name = "EARTH", .color = vec3(0.10f, 0.30f, 1.00f), .radius_equatorial = 6371.0, .orbit = {149597870.7, 365.256 * R_PHYSICS_DAY_SECONDS, 100.46435 * (R_PI / 180.0), 0.016708}, .inclination = 0.00005 * (R_PI / 180.0), .long_asc_node = -11.26064 * (R_PI / 180.0), .period_rotation = R_PHYSICS_DAY_SECONDS, .obliquity = 23.44 * (R_PI / 180.0), .state = {vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f}, .parent = &planets[0]},
+        {.name = "MARS", .color = vec3(1.00f, 0.20f, 0.10f), .radius_equatorial = 3389.5, .orbit = {227939200.0, 686.980 * R_PHYSICS_DAY_SECONDS, 355.45332 * (R_PI / 180.0), 0.093400}, .inclination = 1.850 * (R_PI / 180.0), .long_asc_node = 49.558 * (R_PI / 180.0), .period_rotation = 1.025957 * R_PHYSICS_DAY_SECONDS, .obliquity = 25.19 * (R_PI / 180.0), .state = {vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f}, .parent = &planets[0]},
+        {.name = "JUPITER", .color = vec3(0.80f, 0.50f, 0.20f), .radius_equatorial = 69911.0, .orbit = {778340821.0, 4332.589 * R_PHYSICS_DAY_SECONDS, 34.40438 * (R_PI / 180.0), 0.048498}, .inclination = 1.304 * (R_PI / 180.0), .long_asc_node = 100.464 * (R_PI / 180.0), .period_rotation = 9.925 * 3600.0, .obliquity = 3.13 * (R_PI / 180.0), .state = {vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f}, .parent = &planets[0]},
+        {.name = "SATURN", .color = vec3(0.90f, 0.80f, 0.30f), .radius_equatorial = 58232.0, .orbit = {1426666422.0, 10759.22 * R_PHYSICS_DAY_SECONDS, 49.94432 * (R_PI / 180.0), 0.055546}, .inclination = 2.485 * (R_PI / 180.0), .long_asc_node = 113.665 * (R_PI / 180.0), .period_rotation = 10.656 * 3600.0, .obliquity = 26.73 * (R_PI / 180.0), .state = {vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f}, .parent = &planets[0]},
+        {.name = "URANUS", .color = vec3(0.30f, 0.80f, 0.90f), .radius_equatorial = 25362.0, .orbit = {2870658186.0, 30685.4 * R_PHYSICS_DAY_SECONDS, 313.23218 * (R_PI / 180.0), 0.047318}, .inclination = 0.773 * (R_PI / 180.0), .long_asc_node = 74.006 * (R_PI / 180.0), .period_rotation = -17.24 * 3600.0, .obliquity = 97.77 * (R_PI / 180.0), .state = {vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f}, .parent = &planets[0]},
+        {.name = "NEPTUNE", .color = vec3(0.10f, 0.20f, 0.90f), .radius_equatorial = 24622.0, .orbit = {4498396441.0, 60189.0 * R_PHYSICS_DAY_SECONDS, 304.88003 * (R_PI / 180.0), 0.008606}, .inclination = 1.770 * (R_PI / 180.0), .long_asc_node = 131.784 * (R_PI / 180.0), .period_rotation = 16.11 * 3600.0, .obliquity = 28.32 * (R_PI / 180.0), .state = {vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f}, .parent = &planets[0]},
+        {.name = "PLUTO", .color = vec3(0.50f, 0.40f, 0.35f), .radius_equatorial = 1188.3, .orbit = {5906380000.0, 90560.0 * R_PHYSICS_DAY_SECONDS, 238.92881 * (R_PI / 180.0), 0.2488}, .inclination = 17.16 * (R_PI / 180.0), .long_asc_node = 110.299 * (R_PI / 180.0), .period_rotation = -6.387 * R_PHYSICS_DAY_SECONDS, .obliquity = 119.61 * (R_PI / 180.0), .state = {vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f}, .parent = &planets[0]}
     };
-
     for (int i = 0; i < 10; i++) {
         planets[i].object = &context.renderer.objects[i];
     }
@@ -404,14 +399,13 @@ void g_game_update(void) {
             r_set_int(context.scene.planets[i].object -> shader, "u_Emissive", i == 0);
 
             mat4_t model = mat4(1.0f);
-            model = r_rotate(model, context.scene.planets[i].tilt * (180.0f / R_PI), vec3(0.0f, 0.0f, 1.0f));
-            model = r_rotate(model, context.scene.planets[i].state.spin_angle * (180.0f / R_PI), vec3(0.0f, 1.0f, 0.0f));
+            model = r_rotate(model, context.scene.planets[i].obliquity * (180.0f / R_PI), vec3(0.0f, 0.0f, 1.0f));
+            model = r_rotate(model, context.scene.planets[i].state.rotation * (180.0f / R_PI), vec3(0.0f, 1.0f, 0.0f));
             float scale = (i == 0) ? 0.8f : 1.6f;
-            model = r_scale(model, vec3_mul(vec3(context.scene.planets[i].radius * scale, context.scene.planets[i].radius * scale, context.scene.planets[i].radius * scale), R_PHYSICS_PLANET_SCALE));
+            model = r_scale(model, vec3_mul(vec3(context.scene.planets[i].radius_equatorial * scale, context.scene.planets[i].radius_equatorial * scale, context.scene.planets[i].radius_equatorial * scale), R_PHYSICS_PLANET_SCALE));
             model = r_translate(model, vec3_mul(context.scene.planets[i].state.position, R_PHYSICS_ORBIT_SCALE));
 
             r_set_mat4(context.scene.planets[i].object -> shader, "u_Model", model);
-
             r_set_vec3(context.scene.planets[i].object -> shader, "u_Light", vec3_mul(context.scene.planets[0].state.position, R_PHYSICS_ORBIT_SCALE));
 
             r_renderer_object_draw(context.scene.planets[i].object);
@@ -439,10 +433,10 @@ void g_game_update(void) {
             // markers
             mat4_t model_marker = mat4(1.0f);
             model_marker = r_translate(model_marker, vec3_mul(context.scene.planets[i].state.position, R_PHYSICS_ORBIT_SCALE));
-            model_marker = r_scale(model_marker, vec3(context.scene.planets[6].radius * R_PHYSICS_PLANET_SCALE * 1.6f, 0.0f, context.scene.planets[6].radius * R_PHYSICS_PLANET_SCALE * 1.6f));
+            model_marker = r_scale(model_marker, vec3(context.scene.planets[6].radius_equatorial * R_PHYSICS_PLANET_SCALE * 1.6f, 0.0f, context.scene.planets[6].radius_equatorial * R_PHYSICS_PLANET_SCALE * 1.6f));
             r_set_mat4(context.scene.ui.orbits.shader, "u_Model", model_marker);
 
-            r_set_vec3(context.scene.ui.orbits.shader, "u_Color", vec3(1.0f, 1.0f, 1.0f));
+            r_set_vec3(context.scene.ui.orbits.shader, "u_Color", context.scene.planets[i].color);
             r_set_float(context.scene.ui.orbits.shader, "u_Brightness", 4.0f);
             
             glBindVertexArray(context.scene.ui.markers.vao);

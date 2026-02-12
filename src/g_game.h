@@ -44,10 +44,9 @@ static struct {
     arena_t arena;
 
     struct {
-        object_t *objects; // change to dynamic array
-        shader_t *shaders; // change to dynamic array
-        uint32_t *textures; // change to dynamic array
-        // sounds?
+        object_t *objects;
+        shader_t *shaders;
+        uint32_t *textures;
     } renderer;
 
     struct {

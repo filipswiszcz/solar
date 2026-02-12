@@ -105,7 +105,7 @@ date_max="31 DECEMBER 2049"
 
 ** TASKS **
 - Jupiter is smaller than previously estimated (as of feb 2026)
-- add current data in ui
+- add current date in ui
 - add current speed in ui
 - add planet labels
 - load materials in object_init
@@ -113,6 +113,7 @@ date_max="31 DECEMBER 2049"
 - add material_t values in blender to make planets look better
 - try to modify planet_t variable names
 - upate planet_t details
+- fix other distros support (+ windows)
 
 
 ** DOCS **
@@ -144,7 +145,7 @@ date_max="31 DECEMBER 2049"
 
 
 ** CHECK **
-- are planets in j2000 at init?
++ are planets in j2000 at init?
 - (docs) what does j key do? (it should return to default speed)
 - (docs) update _game functions names
 - (docs) update planet_t variable names

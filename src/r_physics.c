@@ -11,8 +11,8 @@ vec3_t r_physics_orbit_to_local(planet_t *planet, vec3_t position) {
     position.y = y;
     position.z = z;
 
-    float cn = cos(planet -> node);
-    float sn = sin(planet -> node);
+    float cn = cos(planet -> long_asc_node);
+    float sn = sin(planet -> long_asc_node);
 
     float x = position.x * cn + position.z * sn;
     z = -position.x * sn + position.z * cn;
@@ -22,19 +22,38 @@ vec3_t r_physics_orbit_to_local(planet_t *planet, vec3_t position) {
     return vec3_add(position, planet -> parent -> state.position);
 }
 
+double _r_physics_kepler_solve(double mean, double eccentric) {
+    double E = mean;
+    for (uint32_t i = 0; i < 5; i++) {
+        double delta = E - eccentric * sin(E) - mean;
+        E = E - delta / (1.0 - eccentric * cos(E));
+    }
+    return E;
+}
+
 void r_physics_planet_state_update(planet_t *planet, double time) {
     if (planet -> parent != NULL) {
-        planet -> state.orbit_angle = -(2.0f * R_PI * time / planet -> orbit.period) + planet -> orbit.phase;
-        planet -> state.position = r_physics_orbit_to_local(planet, 
-            vec3(planet->orbit.radius * cos(planet -> state.orbit_angle), 0.0f, planet->orbit.radius * sin(planet -> state.orbit_angle)));
+        double M = -(2.0 * R_PI * time / planet -> orbit.period_orbital) + planet -> orbit.mean_anomaly_epoch;
+        planet -> state.anomaly = _r_physics_kepler_solve(M, planet -> orbit.eccentricity);
+        planet -> state.position = r_physics_orbit_to_local(planet, vec3(planet -> orbit.semi_major_axis * (cos(planet -> state.anomaly) - planet -> orbit.eccentricity), 
+            0.0f, planet -> orbit.semi_major_axis * sqrt(1.0 - planet -> orbit.eccentricity * planet -> orbit.eccentricity) * sin(planet -> state.anomaly)));
     } else {
         planet -> state.position = vec3(0.0f, 0.0f, 0.0f);
-        planet -> state.orbit_angle = 0.0f;
+        planet -> state.anomaly = 0.0f;
     }
+
+    // if (planet -> parent != NULL) {
+    //     planet -> state.anomaly = -(2.0f * R_PI * time / planet -> orbit.period_orbital) + planet -> orbit.mean_anomaly_epoch;
+    //     planet -> state.position = r_physics_orbit_to_local(planet, 
+    //         vec3(planet -> orbit.semi_major_axis * cos(planet -> state.anomaly), 0.0f, planet -> orbit.semi_major_axis * sin(planet -> state.anomaly)));
+    // } else {
+    //     planet -> state.position = vec3(0.0f, 0.0f, 0.0f);
+    //     planet -> state.anomaly = 0.0f;
+    // }
     
     double sign = 1.0; 
     if (strcmp(planet -> name, "VENUS") == 0 || !strcmp(planet -> name, "URANUS") == 0 || !strcmp(planet -> name, "PLUTO") == 0) sign = -1.0;
-    planet -> state.spin_angle = sign * 2.0f * R_PI * time / planet -> spin;
+    planet -> state.rotation = sign * 2.0f * R_PI * time / planet -> period_rotation;
 }
 
 struct tm r_physics_clock_to_tm(double time) {
