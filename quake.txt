@@ -108,30 +108,30 @@ date_min="31 DECEMBER 1949"
 date_max="31 DECEMBER 2049"
 
 
-** PROBLEMS **
+** TASKS **
 - Jupiter is smaller than previously estimated (as of feb 2026)
-- should i include Pluto?
+- add current data in ui
+- add current speed in ui
+- add planet labels
+- load materials in object_init
+- add materials pass to shaders
 - add material_t values in blender to make planets look better
--..
+- try to modify planet_t variable names
+- upate planet_t details
 
 
-** OTHER **
-object:
-- mesh (shape?, material)
-- transform (pos, rot, scale)
--..
-
-
-** THINGS I WANT TO WRITE ABOUT **
+** DOCS **
 - can i estimate ram usage, load differences with/without custom orb files, etc?
-    - how otob.c works
-- Lambert point light (shaders that imitate planet getting light from the Sun)
-- emissive light Sun
 - solar system used scales
-- how i calculated positions on orbits etc
 - moore's law and low level engineering (and current ram state)
-- simulation is separate to renderer (engine), changes to one should not affect the other
--..
+- results of address sanitizer
+
+
+** CHECK **
+- are planets init in j2000?
+- (docs) what does j key do? (it should return to default speed)
+- (docs) update _game functions names
+- (docs) update planet_t variable names
 
 
 RENDERER:
