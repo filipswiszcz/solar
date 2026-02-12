@@ -57,6 +57,8 @@ typedef struct {
 
 void __r_mat4_read(mat4_t m);
 
+mat4_t r_orthographic(float l, float r, float b, float t, float znear, float zfar);
+
 mat4_t r_perspective(float fovy, float aspect, float znear, float zfar);
 
 mat4_t r_translate(mat4_t m, vec3_t v);

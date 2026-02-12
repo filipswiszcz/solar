@@ -38,6 +38,18 @@ void __r_mat4_read(mat4_t m) {
     printf("\n");
 }
 
+mat4_t r_orthographic(float l, float r, float b, float t, float znear, float zfar) {
+    mat4_t res = mat4(0);
+    res.m[0][0] = 2.0f / (r - l);
+    res.m[1][1] = 2.0f / (t - b);
+    res.m[2][2] = -2.0f / (zfar / znear);
+    res.m[3][0] = -(r + l) / (r - l);
+    res.m[3][1] = -(t + b) / (t - b);
+    res.m[3][2] = -(zfar + znear) / (zfar - znear);
+    res.m[3][3] = 1.0f;
+    return res;
+}
+
 mat4_t r_perspective(float fovy, float aspect, float znear, float zfar) {
     float rad = fovy;
     float tan_half_fovy = tan(rad / 2);
