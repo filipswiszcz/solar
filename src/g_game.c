@@ -7,7 +7,7 @@
 
 // FPS
 
-void g_game_record_fps(void) {
+void _g_game_fps_record(void) {
     double current_time = glfwGetTime();
     context.fps.time_between_frames = (float) (current_time - context.fps.time_of_last_frame);
     context.fps.time_of_last_frame = current_time;
@@ -24,7 +24,7 @@ void g_game_record_fps(void) {
 
 // INPUTS
 
-void g_game_handle_mouse(void) {
+void _g_game_mouse_handle(void) {
     double mouse_x, mouse_y;
     glfwGetCursorPos(context.window, &mouse_x, &mouse_y);
 
@@ -52,7 +52,7 @@ void g_game_handle_mouse(void) {
     context.camera.target_position = r_normalize(target);
 }
 
-void g_game_handle_keyboard(void) {
+void _g_game_keyboard_handle(void) {
     int clock_key_h = glfwGetKey(context.window, GLFW_KEY_H);
     int clock_key_j = glfwGetKey(context.window, GLFW_KEY_J);
     int clock_key_k = glfwGetKey(context.window, GLFW_KEY_K);
@@ -70,7 +70,7 @@ void g_game_handle_keyboard(void) {
         if (context.scene.clock.cursor > 0) context.scene.clock.cursor--;
     }
     if (clock_key_j == GLFW_PRESS && context.scene.clock.keys.j == GLFW_RELEASE) {
-        if (context.scene.clock.cursor > 0) context.scene.clock.cursor = 17;
+        context.scene.clock.cursor = 17;
     }
     if (clock_key_k == GLFW_PRESS && context.scene.clock.keys.k == GLFW_RELEASE) {
         if (context.scene.clock.cursor < 21) context.scene.clock.cursor++;
@@ -94,7 +94,7 @@ void g_game_handle_keyboard(void) {
 }
 
 // SCENE
-void g_game_clock_update(void) {
+void _g_game_clock_update(void) {
     context.scene.clock.time += context.fps.time_between_frames * context.scene.clock.speeds[context.scene.clock.cursor];
     struct tm current_date = r_physics_clock_to_tm(context.scene.clock.time);
     static double time_of_last_log = 0.0;
@@ -106,7 +106,7 @@ void g_game_clock_update(void) {
     }
 }
 
-void g_game_ui_orbits_init(void) {
+void _g_game_ui_orbits_init(void) {
     vec3_t vertices[10 * context.scene.ui.orbits.size];
     uint32_t cursor = 0;
     for (uint32_t i = 1; i < 10; i++) {
@@ -135,7 +135,7 @@ void g_game_ui_orbits_init(void) {
     glBindVertexArray(0);
 }
 
-void g_game_ui_markers_init(void) {
+void _g_game_ui_markers_init(void) {
     vec3_t vertices[context.scene.ui.markers.size];
     for (size_t i = 0; i < context.scene.ui.markers.size; i++) {
         double angle = (2.0 * R_PI * i) / 128;
@@ -191,25 +191,25 @@ void g_game_init(void) {
     //..
 
     // SHADERS
-    context.renderer.shaders = calloc(3, sizeof(shader_t)); // swap to dynamic array
+    context.renderer.shaders = calloc(3, sizeof(shader_t));
     r_create_program(&context.renderer.shaders[0], "shader/default.vs", "shader/default.fs");
     r_create_program(&context.renderer.shaders[1], "shader/orbit.vs", "shader/orbit.fs");
     r_create_program(&context.renderer.shaders[2], "shader/skybox.vs", "shader/skybox.fs");
 
     // TEXTURES
-    context.renderer.textures = calloc(11, sizeof(uint32_t)); // swap to dynamic array
-    context.renderer.textures[0] = d_texture_read("assets/texture/model/sun.jpg");
-    context.renderer.textures[1] = d_texture_read("assets/texture/model/mercury.jpg");
-    context.renderer.textures[2] = d_texture_read("assets/texture/model/venus.jpg");
-    context.renderer.textures[3] = d_texture_read("assets/texture/model/earth.jpg");
-    context.renderer.textures[4] = d_texture_read("assets/texture/model/mars.jpg");
-    context.renderer.textures[5] = d_texture_read("assets/texture/model/jupiter.jpg");
-    context.renderer.textures[6] = d_texture_read("assets/texture/model/saturn.jpg");
-    context.renderer.textures[7] = d_texture_read("assets/texture/model/uranus.jpg");
-    context.renderer.textures[8] = d_texture_read("assets/texture/model/neptune.jpg");
-    context.renderer.textures[9] = d_texture_read("assets/texture/model/pluto.jpg");
+    context.renderer.textures = calloc(11, sizeof(uint32_t));
+    d_util_texture_read(&context.renderer.textures[0], "assets/texture/model/sun.jpg");
+    d_util_texture_read(&context.renderer.textures[1], "assets/texture/model/mercury.jpg");
+    d_util_texture_read(&context.renderer.textures[2], "assets/texture/model/venus.jpg");
+    d_util_texture_read(&context.renderer.textures[3], "assets/texture/model/earth.jpg");
+    d_util_texture_read(&context.renderer.textures[4], "assets/texture/model/mars.jpg");
+    d_util_texture_read(&context.renderer.textures[5], "assets/texture/model/jupiter.jpg");
+    d_util_texture_read(&context.renderer.textures[6], "assets/texture/model/saturn.jpg");
+    d_util_texture_read(&context.renderer.textures[7], "assets/texture/model/uranus.jpg");
+    d_util_texture_read(&context.renderer.textures[8], "assets/texture/model/neptune.jpg");
+    d_util_texture_read(&context.renderer.textures[9], "assets/texture/model/pluto.jpg");
 
-    char *skybox_texture_filepaths[6] = {
+    const char *skybox_texture_filepaths[6] = {
         "assets/texture/skybox/right.png",
         "assets/texture/skybox/left.png",
         "assets/texture/skybox/top.png",
@@ -217,8 +217,7 @@ void g_game_init(void) {
         "assets/texture/skybox/front.png",
         "assets/texture/skybox/back.png"
     };
-    // context.scene.skybox.object -> texture = d_cubemap_read(skybox_texture_filepaths);
-    context.renderer.textures[10] = d_cubemap_read(skybox_texture_filepaths);
+    d_util_cubemap_read(&context.renderer.textures[10], skybox_texture_filepaths);
 
     // CAMERA
     context.camera.position = vec3(0.0f, 128.0f, 512.0f);
@@ -231,7 +230,7 @@ void g_game_init(void) {
 
     // SCENE
     context.scene.clock.time = 0.0; // 1 january 2000
-    context.scene.clock.cursor = 17; // 24h (- reverses time, 0 pauses, + moves forward)
+    context.scene.clock.cursor = 17; // default 24h = 1s (- reverses time, 0 pauses, + moves forward)
 
     static double speeds[] = {
         -R_PHYSICS_YEAR_SECONDS, -10 * R_PHYSICS_MONTH_SECONDS, -R_PHYSICS_MONTH_SECONDS,
@@ -257,12 +256,12 @@ void g_game_init(void) {
     context.renderer.objects[0].texture = &context.renderer.textures[0];
     r_renderer_object_upload(&context.renderer.objects[0]);
 
-    r_renderer_object_read(&context.renderer.objects[1], "assets/model/earth.orb");
+    r_renderer_object_read(&context.renderer.objects[1], "assets/model/mercury.orb");
     context.renderer.objects[1].shader = &context.renderer.shaders[0];
     context.renderer.objects[1].texture = &context.renderer.textures[1];
     r_renderer_object_upload(&context.renderer.objects[1]);
 
-    r_renderer_object_read(&context.renderer.objects[2], "assets/model/earth.orb");
+    r_renderer_object_read(&context.renderer.objects[2], "assets/model/venus.orb");
     context.renderer.objects[2].shader = &context.renderer.shaders[0];
     context.renderer.objects[2].texture = &context.renderer.textures[2];
     r_renderer_object_upload(&context.renderer.objects[2]);
@@ -272,32 +271,32 @@ void g_game_init(void) {
     context.renderer.objects[3].texture = &context.renderer.textures[3];
     r_renderer_object_upload(&context.renderer.objects[3]);
 
-    r_renderer_object_read(&context.renderer.objects[4], "assets/model/earth.orb");
+    r_renderer_object_read(&context.renderer.objects[4], "assets/model/mars.orb");
     context.renderer.objects[4].shader = &context.renderer.shaders[0];
     context.renderer.objects[4].texture = &context.renderer.textures[4];
     r_renderer_object_upload(&context.renderer.objects[4]);
 
-    r_renderer_object_read(&context.renderer.objects[5], "assets/model/earth.orb");
+    r_renderer_object_read(&context.renderer.objects[5], "assets/model/jupiter.orb");
     context.renderer.objects[5].shader = &context.renderer.shaders[0];
     context.renderer.objects[5].texture = &context.renderer.textures[5];
     r_renderer_object_upload(&context.renderer.objects[5]);
 
-    r_renderer_object_read(&context.renderer.objects[6], "assets/model/earth.orb");
+    r_renderer_object_read(&context.renderer.objects[6], "assets/model/saturn.orb");
     context.renderer.objects[6].shader = &context.renderer.shaders[0];
     context.renderer.objects[6].texture = &context.renderer.textures[6];
     r_renderer_object_upload(&context.renderer.objects[6]);
 
-    r_renderer_object_read(&context.renderer.objects[7], "assets/model/earth.orb");
+    r_renderer_object_read(&context.renderer.objects[7], "assets/model/uranus.orb");
     context.renderer.objects[7].shader = &context.renderer.shaders[0];
     context.renderer.objects[7].texture = &context.renderer.textures[7];
     r_renderer_object_upload(&context.renderer.objects[7]);
 
-    r_renderer_object_read(&context.renderer.objects[8], "assets/model/earth.orb");
+    r_renderer_object_read(&context.renderer.objects[8], "assets/model/neptune.orb");
     context.renderer.objects[8].shader = &context.renderer.shaders[0];
     context.renderer.objects[8].texture = &context.renderer.textures[8];
     r_renderer_object_upload(&context.renderer.objects[8]);
 
-    r_renderer_object_read(&context.renderer.objects[9], "assets/model/earth.orb");
+    r_renderer_object_read(&context.renderer.objects[9], "assets/model/pluto.orb");
     context.renderer.objects[9].shader = &context.renderer.shaders[0];
     context.renderer.objects[9].texture = &context.renderer.textures[9];
     r_renderer_object_upload(&context.renderer.objects[9]);
@@ -331,12 +330,12 @@ void g_game_init(void) {
     context.scene.ui.orbits.size = 2048;
     context.scene.ui.orbits.shader = &context.renderer.shaders[1];
     context.scene.ui.orbits.visible = 1;
-    g_game_ui_orbits_init();
+    _g_game_ui_orbits_init();
     
     context.scene.ui.markers.size = 256;
     context.scene.ui.markers.shader = &context.renderer.shaders[1];
     context.scene.ui.markers.visible = 1;
-    g_game_ui_markers_init();
+    _g_game_ui_markers_init();
 
     // skybox
     r_renderer_object_read(&context.scene.skybox.object, "assets/model/default/cube.orb");
@@ -363,18 +362,18 @@ void g_game_update(void) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // FPS
-        g_game_record_fps();
+        _g_game_fps_record();
 
         // INPUTS
-        g_game_handle_mouse();
-        g_game_handle_keyboard();
+        _g_game_mouse_handle();
+        _g_game_keyboard_handle();
 
         // SCENE
         mat4_t projection = r_perspective(r_radians(60.0f), (float) WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.01f, 1000000.0f);
         mat4_t view = r_look_at(context.camera.position, vec3_add(context.camera.position, context.camera.target_position), context.camera.head_position);
 
         // clock
-        g_game_clock_update();
+        _g_game_clock_update();
 
         // physics
         for (uint32_t i = 0; i < 10; i++) {
