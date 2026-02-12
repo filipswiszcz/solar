@@ -12,10 +12,14 @@
     #include <GLFW/glfw3.h>
 #endif
 
+#include "d_arena.h"
 #include "d_util.h"
 #include "r_physics.h"
 #include "r_renderer.h"
 #include "r_shader.h"
+
+#define GAME_MEMORY_CAPACITY (128 * 1024 * 1024) // 128 MB
+static uint8_t GAME_MEMORY[GAME_MEMORY_CAPACITY];
 
 // xycida
 
@@ -36,6 +40,8 @@ static struct {
       float yaw, pitch;
       float speed, sensitivity;
     } camera;
+
+    arena_t arena;
 
     struct {
         object_t *objects; // change to dynamic array

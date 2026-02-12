@@ -128,7 +128,7 @@ date_max="31 DECEMBER 2049"
 
 
 ** CHECK **
-- are planets init in j2000?
+- are planets in j2000 at init?
 - (docs) what does j key do? (it should return to default speed)
 - (docs) update _game functions names
 - (docs) update planet_t variable names

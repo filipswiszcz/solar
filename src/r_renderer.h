@@ -14,13 +14,9 @@
     #include <GLFW/glfw3.h>
 #endif
 
-#include "d_array.h"
+#include "d_arena.h"
 #include "r_math.h"
 #include "r_shader.h"
-
-#define R_RENDERER_ASSETS_DIR_PATH "assets/"
-#define R_RENDERER_ASSETS_MODEL_DIR_PATH "assets/model/"
-#define R_RENDERER_ASSETS_TEXTURE_DIR_PATH "assets/texture/"
 
 // OBJECT
 
@@ -65,7 +61,7 @@ typedef struct object {
     void *params;
 } object_t;
 
-void r_renderer_object_read(object_t *object, char *filepath);
+void r_renderer_object_read(arena_t *arena, object_t *object, char *filepath);
 
 void r_renderer_object_upload(object_t *object);
 

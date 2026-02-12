@@ -8,7 +8,6 @@
 #include <math.h>
 
 #include <stb/stb_image.h>
-#include <stb/stb_easy_font.h>
 
 #ifdef __APPLE__
     #define GL_SILENCE_DEPRECATION

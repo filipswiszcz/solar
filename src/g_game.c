@@ -189,15 +189,21 @@ void g_game_init(void) {
 
     // ICON
     //..
+    
+    // MEMORY
+    d_arena_init(&context.arena, GAME_MEMORY, GAME_MEMORY_CAPACITY);
+    d_arena_stats(&context.arena);
 
     // SHADERS
-    context.renderer.shaders = calloc(3, sizeof(shader_t));
+    // context.renderer.shaders = calloc(3, sizeof(shader_t));
+    context.renderer.shaders = d_arena_alloc(&context.arena, 3 * sizeof(shader_t));
     r_create_program(&context.renderer.shaders[0], "shader/default.vs", "shader/default.fs");
     r_create_program(&context.renderer.shaders[1], "shader/orbit.vs", "shader/orbit.fs");
     r_create_program(&context.renderer.shaders[2], "shader/skybox.vs", "shader/skybox.fs");
 
     // TEXTURES
-    context.renderer.textures = calloc(11, sizeof(uint32_t));
+    // context.renderer.textures = calloc(11, sizeof(uint32_t));
+    context.renderer.textures = d_arena_alloc(&context.arena, 11 * sizeof(shader_t));
     d_util_texture_read(&context.renderer.textures[0], "assets/texture/model/sun.jpg");
     d_util_texture_read(&context.renderer.textures[1], "assets/texture/model/mercury.jpg");
     d_util_texture_read(&context.renderer.textures[2], "assets/texture/model/venus.jpg");
@@ -250,56 +256,59 @@ void g_game_init(void) {
     context.scene.clock.keys.k = GLFW_RELEASE;
 
     // load orbs (HANDLE ENDIANNESS (and use in the report))
-    context.renderer.objects = calloc(10, sizeof(object_t));
-    r_renderer_object_read(&context.renderer.objects[0], "assets/model/sun.orb");
+    // context.renderer.objects = calloc(10, sizeof(object_t));
+    context.renderer.objects = d_arena_alloc(&context.arena, 10 * sizeof(object_t));
+    r_renderer_object_read(&context.arena, &context.renderer.objects[0], "assets/model/sun.orb");
     context.renderer.objects[0].shader = &context.renderer.shaders[0];
     context.renderer.objects[0].texture = &context.renderer.textures[0];
     r_renderer_object_upload(&context.renderer.objects[0]);
 
-    r_renderer_object_read(&context.renderer.objects[1], "assets/model/mercury.orb");
+    r_renderer_object_read(&context.arena, &context.renderer.objects[1], "assets/model/mercury.orb");
     context.renderer.objects[1].shader = &context.renderer.shaders[0];
     context.renderer.objects[1].texture = &context.renderer.textures[1];
     r_renderer_object_upload(&context.renderer.objects[1]);
 
-    r_renderer_object_read(&context.renderer.objects[2], "assets/model/venus.orb");
+    r_renderer_object_read(&context.arena, &context.renderer.objects[2], "assets/model/venus.orb");
     context.renderer.objects[2].shader = &context.renderer.shaders[0];
     context.renderer.objects[2].texture = &context.renderer.textures[2];
     r_renderer_object_upload(&context.renderer.objects[2]);
 
-    r_renderer_object_read(&context.renderer.objects[3], "assets/model/earth.orb");
+    r_renderer_object_read(&context.arena, &context.renderer.objects[3], "assets/model/earth.orb");
     context.renderer.objects[3].shader = &context.renderer.shaders[0];
     context.renderer.objects[3].texture = &context.renderer.textures[3];
     r_renderer_object_upload(&context.renderer.objects[3]);
 
-    r_renderer_object_read(&context.renderer.objects[4], "assets/model/mars.orb");
+    r_renderer_object_read(&context.arena, &context.renderer.objects[4], "assets/model/mars.orb");
     context.renderer.objects[4].shader = &context.renderer.shaders[0];
     context.renderer.objects[4].texture = &context.renderer.textures[4];
     r_renderer_object_upload(&context.renderer.objects[4]);
 
-    r_renderer_object_read(&context.renderer.objects[5], "assets/model/jupiter.orb");
+    r_renderer_object_read(&context.arena, &context.renderer.objects[5], "assets/model/jupiter.orb");
     context.renderer.objects[5].shader = &context.renderer.shaders[0];
     context.renderer.objects[5].texture = &context.renderer.textures[5];
     r_renderer_object_upload(&context.renderer.objects[5]);
 
-    r_renderer_object_read(&context.renderer.objects[6], "assets/model/saturn.orb");
+    r_renderer_object_read(&context.arena, &context.renderer.objects[6], "assets/model/saturn.orb");
     context.renderer.objects[6].shader = &context.renderer.shaders[0];
     context.renderer.objects[6].texture = &context.renderer.textures[6];
     r_renderer_object_upload(&context.renderer.objects[6]);
 
-    r_renderer_object_read(&context.renderer.objects[7], "assets/model/uranus.orb");
+    r_renderer_object_read(&context.arena, &context.renderer.objects[7], "assets/model/uranus.orb");
     context.renderer.objects[7].shader = &context.renderer.shaders[0];
     context.renderer.objects[7].texture = &context.renderer.textures[7];
     r_renderer_object_upload(&context.renderer.objects[7]);
 
-    r_renderer_object_read(&context.renderer.objects[8], "assets/model/neptune.orb");
+    r_renderer_object_read(&context.arena, &context.renderer.objects[8], "assets/model/neptune.orb");
     context.renderer.objects[8].shader = &context.renderer.shaders[0];
     context.renderer.objects[8].texture = &context.renderer.textures[8];
     r_renderer_object_upload(&context.renderer.objects[8]);
 
-    r_renderer_object_read(&context.renderer.objects[9], "assets/model/pluto.orb");
+    r_renderer_object_read(&context.arena, &context.renderer.objects[9], "assets/model/pluto.orb");
     context.renderer.objects[9].shader = &context.renderer.shaders[0];
     context.renderer.objects[9].texture = &context.renderer.textures[9];
     r_renderer_object_upload(&context.renderer.objects[9]);
+
+    d_arena_stats(&context.arena);
 
     // planets
 
@@ -338,7 +347,7 @@ void g_game_init(void) {
     _g_game_ui_markers_init();
 
     // skybox
-    r_renderer_object_read(&context.scene.skybox.object, "assets/model/default/cube.orb");
+    r_renderer_object_read(&context.arena, &context.scene.skybox.object, "assets/model/default/cube.orb");
     r_renderer_object_upload(&context.scene.skybox.object);
     context.scene.skybox.object.shader = &context.renderer.shaders[2];
     context.scene.skybox.object.texture = &context.renderer.textures[2];
@@ -476,18 +485,7 @@ void g_game_stop(void) {
     glDeleteBuffers(1, &context.scene.ui.markers.vbo);
 
     // RENDERER
-    // for (int i = 0; i < 10; i++) {
-    //     r_renderer_object_destroy(&context.renderer.objects[i]);
-    // }
-    free(context.renderer.objects);
-
-    glDeleteTextures(11, context.renderer.textures);
-    free(context.renderer.textures);
-
-    // for (int i = 0; i < 3; i++) {
-    //     r_shader_destroy(&context.renderer.shaders[i]);
-    // }
-    free(context.renderer.shaders);
+    d_arena_reset(&context.arena);
 
     // GLFW
     glfwDestroyWindow(context.window);
