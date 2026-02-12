@@ -203,7 +203,7 @@ void g_game_init(void) {
 
     // TEXTURES
     // context.renderer.textures = calloc(11, sizeof(uint32_t));
-    context.renderer.textures = d_arena_alloc(&context.arena, 11 * sizeof(shader_t));
+    context.renderer.textures = d_arena_alloc(&context.arena, 11 * sizeof(uint32_t));
     d_util_texture_read(&context.renderer.textures[0], "assets/texture/model/sun.jpg");
     d_util_texture_read(&context.renderer.textures[1], "assets/texture/model/mercury.jpg");
     d_util_texture_read(&context.renderer.textures[2], "assets/texture/model/venus.jpg");
