@@ -178,7 +178,7 @@ void g_game_init(void) {
 
 #ifndef __APPLE__
     glewExperimental = 1;
-    QSSERT(glewInit(), "Failed to initialize GLEW\n");
+    QSSERT(glewInit() == GLEW_OK, "Failed to initialize GLEW\n");
 #endif
 
     // OPENGL
