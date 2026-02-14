@@ -11,7 +11,7 @@
      Decyzja ta, choć może wydawać się nietypowa w dobie wysokopoziomowych języków obiektowych, była podyktowana specyficznymi wymaganiami inżynierii gier i symulacji fizycznych. 
      Język C oferuje bezkompromisową wydajność oraz niskopoziomowy dostęp do pamięci operacyjnej, co jest krytyczne przy przetwarzaniu tysięcy wierzchołków i obliczaniu fizyki orbitalnej w każdej klatce obrazu. 
      W przeciwieństwie do języków wyposażonych w automatyczne odśmiecanie pamięci (Garbage Collection), C wymusza na programiście ręczne zarządzanie alokacją i dealokacją zasobów. 
-     W projekcie wykorzystano ten fakt do zaimplementowania własnego, zoptymalizowanego mechanizmu zarządzania pamięcią, opartego na koncepcji alokatora liniowego (tzw. Memory Arena).
+     W projekcie wykorzystano ten fakt do zaimplementowania własnego, zoptymalizowanego mechanizmu zarządzania pamięcią, opartego na koncepcji alokatora liniowego (tzw. Memory Arena) \cite{article_berger_custom_allocators, article_wilson_memory_management}.
      Rozwiązanie to, zdefiniowane w module \file{d\_arena}, pozwala na wydzielenie dużego, ciągłego bloku pamięci i przydzielanie w nim przestrzeni dla poszczególnych obiektów, co drastycznie minimalizuje narzut czasowy wywołań systemowych oraz niemal całkowicie eliminuje zjawisko fragmentacji sterty, krytyczne dla aplikacji działających w czasie rzeczywistym.
 
      \newpage
@@ -19,7 +19,7 @@
     % 2.2
     \section{Biblioteka graficzna OpenGL 4.1 Core Profile}
 
-     Warstwa wizualna aplikacji została oparta na bibliotece OpenGL w wersji 4.1 Core Profile. Jest to otwarty standard interfejsu programistycznego, służący do generowania grafiki dwu- i trójwymiarowej. Wybór wersji 4.1 stanowił świadomy kompromis pomiędzy dostępem do nowoczesnych funkcji a kompatybilnością sprzętową. Wersja ta jest ostatnią natywnie wspieraną przez systemy operacyjne macOS, co zapewnia przenośność aplikacji między platformami Windows, Linux i Apple bez konieczności modyfikacji kodu źródłowego. Zastosowanie profilu rdzennego (Core Profile) oznacza całkowitą rezygnację z przestarzałego modelu "Fixed Function Pipeline" na rzecz w pełni programowalnego potoku renderującego. Wymusiło to implementację własnych shaderów w języku GLSL (OpenGL Shading Language), odpowiedzialnych za transformację geometrii oraz obliczanie oświetlenia pikseli bezpośrednio na procesorze graficznym (GPU). Takie podejście pozwala na uzyskanie znacznie wyższej wydajności i elastyczności w kreowaniu efektów wizualnych niż w przypadku gotowych rozwiązań.
+     Warstwa wizualna aplikacji została oparta na bibliotece OpenGL w wersji 4.1 Core Profile. Jest to otwarty standard interfejsu programistycznego, służący do generowania grafiki dwu- i trójwymiarowej. Wybór wersji 4.1 stanowił świadomy kompromis pomiędzy dostępem do nowoczesnych funkcji a kompatybilnością sprzętową. Wersja ta jest ostatnią natywnie wspieraną przez systemy operacyjne macOS, co zapewnia przenośność aplikacji między platformami Windows, Linux i Apple bez konieczności modyfikacji kodu źródłowego. Zastosowanie profilu rdzennego (Core Profile) \cite{online_opengl_spec_41} oznacza całkowitą rezygnację z przestarzałego modelu "Fixed Function Pipeline" na rzecz w pełni programowalnego potoku renderującego \cite{book_wright_opengl_superbible}. Wymusiło to implementację własnych shaderów w języku GLSL (OpenGL Shading Language), odpowiedzialnych za transformację geometrii oraz obliczanie oświetlenia pikseli bezpośrednio na procesorze graficznym (GPU). Takie podejście pozwala na uzyskanie znacznie wyższej wydajności i elastyczności w kreowaniu efektów wizualnych niż w przypadku gotowych rozwiązań.
 
    \newpage
 
@@ -30,7 +30,7 @@
 
         \subsection{GLFW}
 
-         Biblioteka GLFW posłużyła do utworzenia kontekstu OpenGL, zarządzania oknem aplikacji oraz obsługi urządzeń wejścia (mysz, klawiatura).
+         Biblioteka GLFW \cite{online_glfw_docs} posłużyła do utworzenia kontekstu OpenGL, zarządzania oknem aplikacji oraz obsługi urządzeń wejścia (mysz, klawiatura).
          W pliku \texttt{g\_game.c} wykorzystano funkcje takie jak glfwGetCursorPos do sterowania kamerą oraz glfwGetKey do obsługi poruszania się w przestrzeni. GLFW zapewnia abstrakcję warstwy systemowej, dzięki czemu aplikacja może być kompilowana zarówno na systemach Windows, Linux, jak i macOS.
 
         \subsection{GLEW / GLCoreARB}
@@ -39,13 +39,13 @@
 
          \bigbreak
 
-         - Na systemach Windows/Linux wykorzystano bibliotekę GLEW
+         - Na systemach Windows/Linux wykorzystano bibliotekę GLEW \cite{online_glew_docs}
 
          - Na systemie macOS (zdefiniowanym makrem \_\_APPLE\_\_) wykorzystano nagłówki GLCoreARB
 
         \subsection{stb\_image}
         
-         Do wczytywania tekstur (formaty .jpg, .png) użyto biblioteki \texttt{stb\_image}. Jest to biblioteka typu "header-only" (zawarta w jednym pliku nagłówkowym), co znacząco upraszcza proces kompilacji. W module \texttt{d\_util.c} funkcja stbi\_load dekoduje pliki graficzne do surowej tablicy bajtów, która następnie jest przesyłana do pamięci karty graficznej funkcją glTexImage2D.
+         Do wczytywania tekstur (formaty .jpg, .png) użyto biblioteki \texttt{stb\_image} \cite{online_stb_image}. Jest to biblioteka typu "header-only" (zawarta w jednym pliku nagłówkowym), co znacząco upraszcza proces kompilacji. W module \texttt{d\_util.c} funkcja stbi\_load dekoduje pliki graficzne do surowej tablicy bajtów, która następnie jest przesyłana do pamięci karty graficznej funkcją glTexImage2D.
 
    \newpage
 

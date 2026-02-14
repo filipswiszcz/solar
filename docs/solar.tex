@@ -87,39 +87,32 @@
 
 % wstęp
 \introduction
-
-% Tu wprowadzenie w tematykę, motywacja, cel pracy, układ rozdziałów.
-
-% Rozwój grafiki komputerowej w ostatnich dekadach otworzył nowe możliwości w dziedzinie edukacji i popularyzacji nauki. Symulacje systemów planetarnych pozwalają na zrozumienie skomplikowanych zależności przestrzennych i czasowych, które są trudne do wyobrażenia na podstawie statycznych ilustracji w podręcznikach. W kontekście inżynierii oprogramowania, tworzenie silników graficznych od podstaw jest doskonałym sposobem na zrozumienie niskopoziomowych aspektów działania sprzętu oraz optymalizacji kodu.
-
-Grafika komputerowa i symulacje fizyczne stanowią jeden z najbardziej dynamicznie rozwijających się obszarów informatyki. Choć współczesny rynek oprogramowania zdominowany jest przez zaawansowane silniki gier (takie jak Unity czy Unreal Engine), które automatyzują większość procesów renderowania, dogłębne zrozumienie zasad działania potoku graficznego wymaga zejścia do poziomu niskopoziomowego programowania.
+Grafika komputerowa i symulacje fizyczne stanowią jeden z najbardziej dynamicznie rozwijających się obszarów informatyki. Choć współczesny rynek oprogramowania zdominowany jest przez zaawansowane silniki gier (takie jak Unity czy Unreal Engine), które automatyzują większość procesów renderowania \cite{book_gregory_game_engine}, dogłębne zrozumienie zasad działania potoku graficznego wymaga zejścia do poziomu niskopoziomowego programowania \cite{book_moller_real_time_rendering}.
 
 Celem niniejszej pracy inżynierskiej jest zaprojektowanie i implementacja interaktywnej wizualizacji Układu Słonecznego („SOLAR”), wykonanej w języku C z wykorzystaniem biblioteki graficznej OpenGL. Projekt ten nie jest jedynie wizualizacją astronomiczną, lecz przede wszystkim próba stworzenia autorskiego, minimalistycznego silnika graficznego. Kluczowym założeniem pracy jest rezygnacja z gotowych bibliotek wspomagających obliczenia matematyczne (takich jak GLM) na rzecz własnej implementacji algebry liniowej oraz stworzenie dedykowanego formatu plików modeli 3D (.orb), zoptymalizowanego pod kątem czasu ładowania i zużycia pamięci.
 
 Wybór języka C podyktowany był chęcią uzyskania pełnej kontroli nad zarządzaniem pamięcią oraz wydajnością aplikacji, co jest kluczowe w systemach czasu rzeczywistego. Aplikacja umożliwia użytkownikowi swobodną eksplorację przestrzeni kosmicznej, manipulację upływem czasu oraz obserwację ruchu planet po orbitach wyznaczonych zgodnie z prawami mechaniki nieba.
 
-% Praca została podzielona na sześć rozdziałów. W rozdziale pierwszym przedstawiono analizę tematu, przegląd istniejących rozwiązań oraz specyfikację wymagań. Rozdział drugi opisuje wykorzystane technologie i narzędzia, uzasadniając wybór języka C i OpenGL. Rozdział trzeci poświęcony jest architekturze systemu i strukturom danych, ze szczególnym uwzględnieniem autorskiego formatu plików. Rozdziały czwarty i piąty zawierają szczegółowy opis implementacji warstwy logicznej (matematyka, fizyka) oraz wizualnej (renderowanie, shadery). Pracę kończy rozdział szósty, prezentujący wyniki testów wydajnościowych oraz podsumowanie.
-Praca została podzielona na sześć rozdziałów. W rozdziale pierwszym przedstawiono podstawy teoretyczne, analizę istniejących rozwiązań oraz specyfikację wymagań projektowych. Rozdział drugi charakteryzuje środowisko programistyczne i uzasadnia wybór technologii (język C, OpenGL). Rozdział trzeci omawia ogólną architekturę systemu, cykl życia aplikacji oraz organizację struktur danych. Rozdział czwarty stanowi dokumentację techniczną warstwy silnika, obejmującą autorską bibliotekę matematyczną, podsystem renderowania oraz zarządzanie zasobami. Całość zamyka rozdział piąty poświęcony implementacji właściwej symulacji, w tym modelowi fizycznemu ciał niebieskich, systemowi czasu oraz interfejsowi użytkownika.
+Praca została podzielona na pięć rozdziałów. W rozdziale pierwszym przedstawiono podstawy teoretyczne, analizę istniejących rozwiązań oraz specyfikację wymagań projektowych. Rozdział drugi charakteryzuje środowisko programistyczne i uzasadnia wybór technologii (język C, OpenGL). Rozdział trzeci omawia ogólną architekturę systemu, cykl życia aplikacji oraz organizację struktur danych. Rozdział czwarty stanowi dokumentację techniczną warstwy silnika, obejmującą autorską bibliotekę matematyczną, podsystem renderowania oraz zarządzanie zasobami. Całość zamyka rozdział piąty poświęcony implementacji właściwej symulacji, w tym modelowi fizycznemu ciał niebieskich, systemowi czasu oraz interfejsowi użytkownika.
 
-\cite{
-    book_gregory_game_engine,
-    book_moller_real_time_rendering,
-    book_wright_opengl_superbible,
-    book_bate_astrodynamics,
-    book_lengyel_math_3d,
-    article_leblanc_mechanics,
-    article_fowler_fnv_hash,
-    article_nijenhuis_kepler_equation,
-    article_berger_custom_allocators,
-    article_wilson_memory_management,
-    online_learnopengl,
-    online_library_framework_engine_difference,
-    online_opengl_spec_41,
-    online_glfw_docs,
-    online_glew_docs,
-    online_nasa_jpl_horizons,
-    online_stb_image,
-}
+% \cite{
+%     book_gregory_game_engine,
+%     book_moller_real_time_rendering,
+%     book_wright_opengl_superbible,
+%     book_bate_astrodynamics,
+%     book_lengyel_math_3d,
+%     article_leblanc_mechanics,
+%     article_fowler_fnv_hash,
+%     article_nijenhuis_kepler_equation,
+%     article_berger_custom_allocators,
+%     article_wilson_memory_management,
+%     online_learnopengl,
+%     online_opengl_spec_41,
+%     online_glfw_docs,
+%     online_glew_docs,
+%     online_nasa_jpl_horizons,
+%     online_stb_image,
+% }
 
 \input{chapters/chapter1}
 \input{chapters/chapter2}

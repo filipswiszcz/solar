@@ -29,7 +29,7 @@
         \vspace{1em}
         \begin{table}[htpb]
         \centering
-        \caption{Wybrane parametry fizyczne i orbitalne ciał niebieskich zaimplementowane w kodzie symulacji}
+        \caption{Wybrane parametry fizyczne i orbitalne ciał niebieskich zaimplementowane w kodzie symulacji na podstawie bazy JPL Horizons \cite{online_nasa_jpl_horizons}}
         \label{tab:planets_data}
         \resizebox{\textwidth}{!}{% Skalowanie tabeli do szerokości strony
         \begin{tabular}{|l|r|r|r|r|r|}
@@ -115,7 +115,7 @@
          \end{equation}
 
          Równanie to jest równaniem przestępnym i nie posiada jawnego rozwiązania analitycznego.
-         W celu jego rozwiązania w czasie rzeczywistym, w module fizycznym (\func{\_r\_physics\_kepler\_solve}) zaimplementowano numeryczną metodę Newtona-Raphsona.
+         W celu jego rozwiązania w czasie rzeczywistym, w module fizycznym (\func{\_r\_physics\_kepler\_solve}) zaimplementowano numeryczną metodę Newtona-Raphsona \cite{article_nijenhuis_kepler_equation}.
          W kolejnych iteracjach pętli, przybliżona wartość $E$ jest korygowana zgodnie ze wzorem:
 
          \begin{equation}

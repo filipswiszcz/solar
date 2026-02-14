@@ -5,7 +5,7 @@ W niniejszym rozdziale przedstawiono teoretyczne podstawy zagadnienia, analizę 
     % 1.1
     \section{Podstawy teoretyczne}
 
-     Projekt łączy w sobie zagadnienia z dwóch dziedzin: mechaniki nieba oraz grafiki komputerowej. W kontekście astronomicznym, ruch ciał niebieskich w symulacji opiera się na uproszczonym modelu keplerowskim. Pozycja planety w przestrzeni trójwymiarowej wyznaczana jest na podstawie parametrów orbitalnych, takich jak: promień orbity, okres obiegu, inklinacja (nachylenie orbity względem płaszczyzny odniesienia) oraz długość węzła wstępującego.
+     Projekt łączy w sobie zagadnienia z dwóch dziedzin: mechaniki nieba oraz grafiki komputerowej. W kontekście astronomicznym, ruch ciał niebieskich w symulacji opiera się na uproszczonym modelu keplerowskim \cite{book_bate_astrodynamics}. Pozycja planety w przestrzeni trójwymiarowej wyznaczana jest na podstawie parametrów orbitalnych, takich jak: promień orbity, okres obiegu, inklinacja (nachylenie orbity względem płaszczyzny odniesienia) oraz długość węzła wstępującego.
 
      % Rysunek 1.1
     \begin{figure}[htpb]
@@ -46,7 +46,7 @@ W niniejszym rozdziale przedstawiono teoretyczne podstawy zagadnienia, analizę 
 
     \begin{enumerate}
         \item \textbf{Epoka J2000:} standardowa epoka astronomiczna używana jako punkt odniesienia dla współrzędnych niebieskich. W projekcie odpowiada dacie 1 stycznia 2000, godzina 12:00 czasu ziemskiego (TT). W kodzie symulacji (\file{r\_physics.c}) czas liczony jest jako liczba sekund, które upłynęły od tego momentu.
-        \item \textbf{Pętla główna:} fundamentalny wzorzec architektoniczny w silnikach czasu rzeczywistego, polegający na cyklicznym wykonywaniu operacji obsługi wejścia, aktualizacji stanu logicznego (Update) oraz renderowania obrazu (Render). W projekcie realizowana przez funkcję \func{g\_game\_update} w pętli while (\func{!glfwWindowShouldClose}).
+        \item \textbf{Pętla główna:} fundamentalny wzorzec architektoniczny w silnikach czasu rzeczywistego \cite{book_gregory_game_engine}, polegający na cyklicznym wykonywaniu operacji obsługi wejścia, aktualizacji stanu logicznego (Update) oraz renderowania obrazu (Render). W projekcie realizowana przez funkcję \func{g\_game\_update} w pętli while (\func{!glfwWindowShouldClose}).
         \item \textbf{Inklinacja (Nachylenie orbity):}  jeden z elementów orbitalnych Keplera, określający kąt pomiędzy płaszczyzną orbity ciała niebieskiego a płaszczyzną odniesienia (w tym przypadku ekliptyką).
         \item \textbf{Kwaterion:} czterowymiarowa liczba zespolona używana w grafice komputerowej do reprezentacji obrotów w przestrzeni 3D.
         \item \textbf{Mapa sześcienna (Cube Map):} rodzaj tekstury składającej się z sześciu kwadratowych obrazów, reprezentujących ściany sześcianu otaczającego obserwatora. W projekcie wykorzystywana do renderowania tła (Skybox), obsługiwana w shaderze przez typ zmiennej \var{samplerCube}.

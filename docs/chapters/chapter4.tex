@@ -4,7 +4,7 @@
 
     % 4.1
     \section{Dedykowana biblioteka matematyczna (\file{r\_math})}
-     W celu uniknięcia zewnętrznych zależności (takich jak biblioteka GLM) oraz pełnego zrozumienia transformacji geometrycznych zachodzących w potoku graficznym, zaimplementowano autorski moduł matematyczny \file{r\_math}. 
+     W celu uniknięcia zewnętrznych zależności (takich jak biblioteka GLM) oraz pełnego zrozumienia transformacji geometrycznych zachodzących w potoku graficznym, zaimplementowano autorski moduł matematyczny \file{r\_math} \cite{book_lengyel_math_3d}. 
      Biblioteka ta operuje bezpośrednio na surowych strukturach danych, co zapewnia kompatybilność binarną z układem pamięci oczekiwanym przez shadery GLSL.
 
         % 4.1.1
@@ -99,7 +99,7 @@
          Zaimplementowano dwa główne potoki renderowania:
 
          \begin{enumerate}
-          \item \textbf{Rendering obiektów (Default Shader):} Shader fragmentów (\file{default.fs}) implementuje model oświetlenia Phonga/Blinna. Kolor finalny piksela obliczany jest na podstawie tekstury albedo (\var{u\_Texture}) oraz kąta padania światła (iloczyn skalarny wektora normalnego i wektora światła). Dodatkowo obsłużono parametr \var{u\_Emissive} (uniform typu int), który pozwala na renderowanie obiektów świecących własnym światłem (Słońce), ignorując obliczenia cieniowania.
+          \item \textbf{Rendering obiektów (Default Shader):} Shader fragmentów (\file{default.fs}) implementuje model oświetlenia Phonga/Blinna \cite{online_learnopengl}. Kolor finalny piksela obliczany jest na podstawie tekstury albedo (\var{u\_Texture}) oraz kąta padania światła (iloczyn skalarny wektora normalnego i wektora światła). Dodatkowo obsłużono parametr \var{u\_Emissive} (uniform typu int), który pozwala na renderowanie obiektów świecących własnym światłem (Słońce), ignorując obliczenia cieniowania.
           
          \newpage
 
@@ -154,7 +154,7 @@
          Kluczowym wyzwaniem implementacyjnym była różnica w sposobie indeksowania: format OBJ stosuje oddzielne indeksy dla pozycji, normalnych i UV, podczas gdy OpenGL wymaga jednego indeksu per wierzchołek (unikalna kombinacja wszystkich atrybutów).
 
 
-         Algorytm konwersji wykorzystuje autorską implementację tablicy haszującej (\var{map\_t}) z algorytmem haszującym FNV-1a.
+         Algorytm konwersji wykorzystuje autorską implementację tablicy haszującej (\var{map\_t}) z algorytmem haszującym FNV-1a \cite{article_fowler_fnv_hash}.
 
          \begin{enumerate}
          \item Program parsuje ściany (\var{f}) pliku OBJ, odczytując tryplety indeksów (\var{v/vt/vn}).
