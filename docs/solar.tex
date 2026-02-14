@@ -1,0 +1,176 @@
+\documentclass[xodstep]{wnspt}
+
+\author      {Filip Świszcz}
+\nralbumu    {80236}
+\kierunek    {Informatyka}
+\specjalnosc {Inżynieria oprogramowania}
+\date        {2026}
+\miejsce     {Częstochowa,}
+\opiekun     {prof. Andrzeja Zbrzeznego}
+\opiekunpom  {mgr. inż. Jolanty Podolszańskiej}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage{polski}
+\usepackage{times}
+\usepackage{colortbl}
+% \usepackage{hyperref}
+\usepackage{url}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{listingsutf8}
+\usepackage{beramono}
+\usepackage[section]{placeins}
+\usepackage{csquotes}
+\usepackage[%
+    backend=biber,
+    % defernumbers=true,
+]{biblatex}
+
+\usepackage{fontspec}
+\setmainfont{Carlito}
+
+\addbibresource{literatura.bib}
+
+\lstset {
+    language=csh,                   % choose the language of the code
+    basicstyle=\ttfamily,           % the fonts that are used for the code
+    numbers=left,                   % where to put the line-numbers
+    numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
+    stepnumber=1,                   % the step between two line-numbers. If it's 1 each line will be
+    numbersep=5pt,                  % how far the line-numbers are from the code
+    showspaces=false,               % show spaces adding particular underscores
+    showstringspaces=false,         % underline spaces within strings
+    showtabs=false,                 % show tabs within strings adding particular underscores
+    frame=single,                   % adds a frame around the code
+    tabsize=4,                      % sets default tabsize to 2 spaces
+    captionpos=b,                   % sets the caption-position to bottom
+    breaklines=true,                % sets automatic line breaking
+    breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+    escapeinside={\%*}{*)}          % if you want to add a comment within your code 
+}
+
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\dir}[1]{\texttt{#1}}
+\newcommand{\func}[1]{\lstinline|#1()|}
+\newcommand{\var}[1]{\lstinline|#1|}
+
+\newcommand{\R}{mathbb{R}}
+
+\renewcommand{\lstlistlistingname}{Spis listingów}
+\renewcommand{\lstlistingname}{Listing}
+
+\newtheorem{lemat}{Lemat}
+\newtheorem{twierdzenie}{Twierdzenie}
+
+\title{Interaktywna wizualizacja systemu słonecznego \\{~} Interactive visualization of the solar system}
+
+\frenchspacing
+
+\begin{document}
+
+% streszczenie
+\begin{abstract}
+    Aplikacja desktopowa będąca symulatorem systemu słonecznego ma na celu dostarczenie interaktywnego narzędzia edukacyjnego, pozwalającego użytkownikowi na eksplorację kosmosu w czasie rzeczywistym. Program umożliwia swobodne poruszanie się w przestrzeni trójwymiarowej, manipulację upływem czasu oraz obserwację ruchu planet po orbitach obliczonych na podstawie praw fizyki. W pracy omówiono proces projektowania silnika graficznego od podstaw w języku C, implementację własnej biblioteki matematycznej, obsługę shaderów oraz stworzenie autorskiego formatu plików modeli (.orb) w celu optymalizacji ładowania danych.
+\end{abstract}
+
+% słowa kluczowe
+\keywords{C, GLSL, OpenGL, GLFW, GLEW, Git, Make, Symulacja fizyczna}
+
+\maketitle
+\onehalfspacing
+
+% wstęp
+\introduction
+
+% Tu wprowadzenie w tematykę, motywacja, cel pracy, układ rozdziałów.
+
+% Rozwój grafiki komputerowej w ostatnich dekadach otworzył nowe możliwości w dziedzinie edukacji i popularyzacji nauki. Symulacje systemów planetarnych pozwalają na zrozumienie skomplikowanych zależności przestrzennych i czasowych, które są trudne do wyobrażenia na podstawie statycznych ilustracji w podręcznikach. W kontekście inżynierii oprogramowania, tworzenie silników graficznych od podstaw jest doskonałym sposobem na zrozumienie niskopoziomowych aspektów działania sprzętu oraz optymalizacji kodu.
+
+Grafika komputerowa i symulacje fizyczne stanowią jeden z najbardziej dynamicznie rozwijających się obszarów informatyki. Choć współczesny rynek oprogramowania zdominowany jest przez zaawansowane silniki gier (takie jak Unity czy Unreal Engine), które automatyzują większość procesów renderowania, dogłębne zrozumienie zasad działania potoku graficznego wymaga zejścia do poziomu niskopoziomowego programowania.
+
+Celem niniejszej pracy inżynierskiej jest zaprojektowanie i implementacja interaktywnej wizualizacji Układu Słonecznego („SOLAR”), wykonanej w języku C z wykorzystaniem biblioteki graficznej OpenGL. Projekt ten nie jest jedynie wizualizacją astronomiczną, lecz przede wszystkim próba stworzenia autorskiego, minimalistycznego silnika graficznego. Kluczowym założeniem pracy jest rezygnacja z gotowych bibliotek wspomagających obliczenia matematyczne (takich jak GLM) na rzecz własnej implementacji algebry liniowej oraz stworzenie dedykowanego formatu plików modeli 3D (.orb), zoptymalizowanego pod kątem czasu ładowania i zużycia pamięci.
+
+Wybór języka C podyktowany był chęcią uzyskania pełnej kontroli nad zarządzaniem pamięcią oraz wydajnością aplikacji, co jest kluczowe w systemach czasu rzeczywistego. Aplikacja umożliwia użytkownikowi swobodną eksplorację przestrzeni kosmicznej, manipulację upływem czasu oraz obserwację ruchu planet po orbitach wyznaczonych zgodnie z prawami mechaniki nieba.
+
+% Praca została podzielona na sześć rozdziałów. W rozdziale pierwszym przedstawiono analizę tematu, przegląd istniejących rozwiązań oraz specyfikację wymagań. Rozdział drugi opisuje wykorzystane technologie i narzędzia, uzasadniając wybór języka C i OpenGL. Rozdział trzeci poświęcony jest architekturze systemu i strukturom danych, ze szczególnym uwzględnieniem autorskiego formatu plików. Rozdziały czwarty i piąty zawierają szczegółowy opis implementacji warstwy logicznej (matematyka, fizyka) oraz wizualnej (renderowanie, shadery). Pracę kończy rozdział szósty, prezentujący wyniki testów wydajnościowych oraz podsumowanie.
+Praca została podzielona na sześć rozdziałów. W rozdziale pierwszym przedstawiono podstawy teoretyczne, analizę istniejących rozwiązań oraz specyfikację wymagań projektowych. Rozdział drugi charakteryzuje środowisko programistyczne i uzasadnia wybór technologii (język C, OpenGL). Rozdział trzeci omawia ogólną architekturę systemu, cykl życia aplikacji oraz organizację struktur danych. Rozdział czwarty stanowi dokumentację techniczną warstwy silnika, obejmującą autorską bibliotekę matematyczną, podsystem renderowania oraz zarządzanie zasobami. Całość zamyka rozdział piąty poświęcony implementacji właściwej symulacji, w tym modelowi fizycznemu ciał niebieskich, systemowi czasu oraz interfejsowi użytkownika.
+
+\cite{
+    book_gregory_game_engine,
+    book_moller_real_time_rendering,
+    book_wright_opengl_superbible,
+    book_bate_astrodynamics,
+    book_lengyel_math_3d,
+    article_leblanc_mechanics,
+    article_fowler_fnv_hash,
+    article_nijenhuis_kepler_equation,
+    article_berger_custom_allocators,
+    article_wilson_memory_management,
+    online_learnopengl,
+    online_library_framework_engine_difference,
+    online_opengl_spec_41,
+    online_glfw_docs,
+    online_glew_docs,
+    online_nasa_jpl_horizons,
+    online_stb_image,
+}
+
+\input{chapters/chapter1}
+\input{chapters/chapter2}
+\input{chapters/chapter3}
+\input{chapters/chapter4}
+\input{chapters/chapter5}
+
+% zakończenie
+\summary
+Celem niniejszej pracy inżynierskiej było zaprojektowanie oraz implementacja interaktywnej wizualizacji Układu Słonecznego „SOLAR”, działającej w czasie rzeczywistym. Założenie to zostało w pełni zrealizowane poprzez stworzenie autorskiego silnika graficznego opartego na standardzie języka C oraz bibliotece graficznej OpenGL 4.1 Core Profile. Projekt udowodnił, że możliwe jest zbudowanie wydajnego, stabilnego i edukacyjnie wartościowego oprogramowania bez uciekania się do wykorzystania gotowych, komercyjnych silników gier, co wymagało jednak głębokiego zrozumienia niskopoziomowych mechanizmów działania potoku renderującego oraz matematyki trójwymiarowej.
+
+W ramach warstwy technologicznej z sukcesem zaimplementowano własną bibliotekę matematyczną do obsługi macierzy i kwaternionów, zrezygnowano ze standardowej, dynamicznej alokacji pamięci na rzecz wysoce zoptymalizowanego mechanizmu alokatora liniowego (Memory Arena) oraz opracowano autorski, binarny format modeli 3D (\file{.orb}). Dzięki stworzeniu dedykowanego narzędzia konwertującego \var{otob}, wykorzystującego algorytm haszujący FNV-1a do deduplikacji wierzchołków, drastycznie zredukowano czas ładowania zasobów oraz zoptymalizowano wykorzystanie pamięci karty graficznej.
+
+W warstwie logicznej symulacji zaimplementowano deterministyczny model mechaniki nieba oparty na parametrach orbitalnych Keplera. Wykorzystanie numerycznej metody Newtona-Raphsona pozwoliło na precyzyjne wyznaczanie pozycji planet w przestrzeni na podstawie równania Keplera, a zintegrowany system czasu umożliwił użytkownikowi płynną manipulację chronologią wydarzeń w skali od pojedynczych sekund do całych lat. Całość została dopełniona interfejsem użytkownika obejmującym proceduralnie generowane linie orbit, zaawansowany system nawigacji przestrzennej (Free Look) oraz dynamicznie skalujące się markery, które rozwiązują problem nawigacji w ogromnej skali kosmicznej.
+
+Przeprowadzone testy działania aplikacji potwierdzają spełnienie wszystkich zdefiniowanych na początku pracy wymagań funkcjonalnych i niefunkcjonalnych. Program utrzymuje płynność renderowania na wysokim poziomie (znacznie powyżej wymaganych 60 klatek na sekundę) nawet przy symulacji całego układu planetarnego, nie wykazuje wycieków pamięci dzięki scentralizowanemu zarządzaniu zasobami, a jego architektura pozostaje wysoce modularna, co ułatwia ewentualną rozbudowę.
+
+\newpage
+
+\vspace{1em}
+\noindent \textbf{\Large Możliwe kierunki dalszego rozwoju}
+\vspace{0.5em}
+
+Architektura stworzonego silnika stanowi solidny fundament, który w przyszłości może zostać rozbudowany o kolejne, zaawansowane moduły technologiczne i symulacyjne:
+
+\begin{itemize}
+    \item \textbf{Implementacja cieni dynamicznych (Shadow Mapping):} Wprowadzenie algorytmów rzutowania cieni z punktowego źródła światła (Słońca) pozwoliłoby na realistyczne symulowanie zjawisk astronomicznych, takich jak zaćmienia planet czy rzucanie cieni przez księżyce na powierzchnie gazowych gigantów.
+    
+    \item \textbf{Rozszerzenie modelu fizycznego o grawitację n-ciał:} Przejście z deterministycznego, "sztywnego" modelu keplerowskiego na dynamiczną symulację numeryczną (np. z wykorzystaniem integratora Verleta lub metody Rungego-Kutty) umożliwiłoby badanie perturbacji orbitalnych i stabilności nowo dodawanych układów gwiezdnych.
+    
+    \item \textbf{Proceduralne generowanie atmosfery:} Zastąpienie statycznych tekstur na modelach planet posiadających gęstą atmosferę (Ziemia, Wenus) zaawansowanymi programami cieniującymi (shaderami), realizującymi fizyczne rozpraszanie Rayleigha i Mie. Drastycznie podniosłoby to fotorealizm wizualizacji.
+    
+    \item \textbf{Implementacja wielowątkowości do ładowania zasobów:} Wykorzystanie systemowych wątków (np. standardu POSIX Threads) do asynchronicznego wczytywania modeli i tekstur w tle. Wyeliminowałoby to ewentualne zacięcia głównej pętli renderującej (stuttering) podczas dynamicznej rozbudowy symulacji o tysiące obiektów, takich jak pasy asteroid.
+    
+    \item \textbf{Rozbudowa zawartości astronomicznej i interfejsu:} Implementacja algorytmów renderowania czcionek (SDF Fonts) w celu wyświetlania na ekranie precyzyjnych etykiet informacyjnych oraz telemetrycznych układów UI. Ponadto, wygenerowanie tła kosmicznego na podstawie rzeczywistych katalogów gwiazd (np. Hipparcos) zamiast wykorzystania statycznej mapy sześciennej (Skybox).
+    
+    \item \textbf{System dźwięku przestrzennego:} Integracja lekkiej, niskopoziomowej biblioteki audio (np. OpenAL) w celu dodania udźwiękowienia interfejsu użytkownika oraz symulowania przestrzennych zjawisk dźwiękowych, co znacząco wpłynęłoby na immersję płynącą z użytkowania aplikacji.
+\end{itemize}
+
+
+\printbibliography[type=book,title={Bibliografia - książki}]
+\printbibliography[type=article,title={Bibliografia - artykuły}]
+\printbibliography[type=online,title={Bibliografia - strony internetowe}]
+
+% spis tabel
+\listoftables
+
+% spis rysunków
+\listoffigures
+
+% spis listingów
+\lstlistoflistings
+
+\end{document}

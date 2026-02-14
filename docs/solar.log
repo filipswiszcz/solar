@@ -1,0 +1,951 @@
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2026.1.18)  13 FEB 2026 19:30
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**c:/Users/Filip/Desktop/mechanic/solar
+(c:/Users/Filip/Desktop/mechanic/solar.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2025-12-29>
+(./wnspt.cls
+Document Class: wnspt 2009/06/19 v1.10, Praca magisterska/licencjacka
+(d:/TeX/texmf-dist/tex/latex/base/report.cls
+Document Class: report 2025/01/22 v1.4n Standard LaTeX document class
+(d:/TeX/texmf-dist/tex/latex/base/size11.clo
+File: size11.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count271
+\c@chapter=\count272
+\c@section=\count273
+\c@subsection=\count274
+\c@subsubsection=\count275
+\c@paragraph=\count276
+\c@subparagraph=\count277
+\c@figure=\count278
+\c@table=\count279
+\abovecaptionskip=\skip49
+\belowcaptionskip=\skip50
+\bibindent=\dimen148
+) (d:/TeX/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
+ (d:/TeX/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks17
+) (d:/TeX/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
+ (d:/TeX/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
+) (d:/TeX/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: xetex.def on input line 106.
+ (d:/TeX/texmf-dist/tex/latex/graphics-def/xetex.def
+File: xetex.def 2025/11/01 v5.0p Graphics/color driver for xetex
+))
+\Gin@req@height=\dimen149
+\Gin@req@width=\dimen150
+) (d:/TeX/texmf-dist/tex/latex/polski/polski.sty
+Package: polski 2021/08/25 v1.3.6 Polish language package
+) (d:/TeX/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2025-07-12 v7.01o Hypertext links for LaTeX
+ (d:/TeX/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2024/12/12 v1.0g TeX engine tests
+) (d:/TeX/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
+Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
+) (d:/TeX/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+) (d:/TeX/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+ (d:/TeX/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
+) (d:/TeX/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO)
+ (d:/TeX/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode not found.
+)) (d:/TeX/texmf-dist/tex/latex/hycolor/hycolor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+) (d:/TeX/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2025-06-21 v2.57 Cross-referencing by name of section
+ (d:/TeX/texmf-dist/tex/latex/refcount/refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+) (d:/TeX/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+ (d:/TeX/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
+))
+\c@section@level=\count280
+) (d:/TeX/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2025/10/02 v2.5m e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count281
+) (d:/TeX/texmf-dist/tex/generic/stringenc/stringenc.sty
+Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO)
+)
+\@linkdim=\dimen151
+\Hy@linkcounter=\count282
+\Hy@pagecounter=\count283
+ (d:/TeX/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2025-07-12 v7.01o Hyperref: PDFDocEncoding definition (HO)
+) (d:/TeX/texmf-dist/tex/generic/intcalc/intcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+)
+\Hy@SavedSpaceFactor=\count284
+ (d:/TeX/texmf-dist/tex/latex/hyperref/puenc.def
+File: puenc.def 2025-07-12 v7.01o Hyperref: PDF Unicode definition (HO)
+)
+Package hyperref Info: Option `breaklinks' set `true' on input line 4066.
+Package hyperref Info: Hyper figures OFF on input line 4195.
+Package hyperref Info: Link nesting OFF on input line 4200.
+Package hyperref Info: Hyper index ON on input line 4203.
+Package hyperref Info: Plain pages OFF on input line 4210.
+Package hyperref Info: Backreferencing OFF on input line 4215.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4462.
+\c@Hy@tempcnt=\count285
+ (d:/TeX/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip17
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 4801.
+\XeTeXLinkMargin=\dimen152
+ (d:/TeX/texmf-dist/tex/generic/bitset/bitset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+ (d:/TeX/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO)
+))
+\Fld@menulength=\count286
+\Field@Width=\dimen153
+\Fld@charsize=\dimen154
+Package hyperref Info: Hyper figures OFF on input line 6078.
+Package hyperref Info: Link nesting OFF on input line 6083.
+Package hyperref Info: Hyper index ON on input line 6086.
+Package hyperref Info: backreferencing OFF on input line 6093.
+Package hyperref Info: Link coloring OFF on input line 6098.
+Package hyperref Info: Link coloring with OCG OFF on input line 6103.
+Package hyperref Info: PDF/A mode OFF on input line 6108.
+\Hy@abspage=\count287
+\c@Item=\count288
+\c@Hfootnote=\count289
+)
+Package hyperref Info: Driver (autodetected): hxetex.
+ (d:/TeX/texmf-dist/tex/latex/hyperref/hxetex.def
+File: hxetex.def 2025-07-12 v7.01o Hyperref driver for XeTeX
+\pdfm@box=\box53
+\c@Hy@AnnotLevel=\count290
+\HyField@AnnotCount=\count291
+\Fld@listcount=\count292
+\c@bookmark@seq@number=\count293
+ (d:/TeX/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+Package: rerunfilecheck 2025-06-21 v1.11 Rerun checks for auxiliary files (HO)
+ (d:/TeX/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 284.
+)
+\Hy@SectionHShift=\skip51
+)
+\authornumber=\count294
+\count@@=\count295
+\abspagebox=\box54
+) (d:/TeX/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2025/07/09 v2.17z AMS math features
+\@mathmargin=\skip52
+
+For additional information on amsmath, use the `?' option.
+(d:/TeX/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2024/11/17 v2.01 AMS text
+ (d:/TeX/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks18
+\ex@=\dimen155
+)) (d:/TeX/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen156
+) (d:/TeX/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 2022/04/08 v2.04 operator names
+)
+\inf@bad=\count296
+LaTeX Info: Redefining \frac on input line 233.
+\uproot@=\count297
+\leftroot@=\count298
+LaTeX Info: Redefining \overline on input line 398.
+LaTeX Info: Redefining \colon on input line 409.
+\classnum@=\count299
+\DOTSCASE@=\count300
+LaTeX Info: Redefining \ldots on input line 495.
+LaTeX Info: Redefining \dots on input line 498.
+LaTeX Info: Redefining \cdots on input line 619.
+\Mathstrutbox@=\box55
+\strutbox@=\box56
+LaTeX Info: Redefining \big on input line 721.
+LaTeX Info: Redefining \Big on input line 722.
+LaTeX Info: Redefining \bigg on input line 723.
+LaTeX Info: Redefining \Bigg on input line 724.
+\big@size=\dimen157
+LaTeX Font Info:    Redeclaring font encoding OML on input line 742.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 743.
+\macc@depth=\count301
+LaTeX Info: Redefining \bmod on input line 904.
+LaTeX Info: Redefining \pmod on input line 909.
+LaTeX Info: Redefining \smash on input line 939.
+LaTeX Info: Redefining \relbar on input line 969.
+LaTeX Info: Redefining \Relbar on input line 970.
+\c@MaxMatrixCols=\count302
+\dotsspace@=\muskip18
+\c@parentequation=\count303
+\dspbrk@lvl=\count304
+\tag@help=\toks19
+\row@=\count305
+\column@=\count306
+\maxfields@=\count307
+\andhelp@=\toks20
+\eqnshift@=\dimen158
+\alignsep@=\dimen159
+\tagshift@=\dimen160
+\tagwidth@=\dimen161
+\totwidth@=\dimen162
+\lineht@=\dimen163
+\@envbody=\toks21
+\multlinegap=\skip53
+\multlinetaggap=\skip54
+\mathdisplay@stack=\toks22
+LaTeX Info: Redefining \[ on input line 2950.
+LaTeX Info: Redefining \] on input line 2951.
+) (d:/TeX/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+) (d:/TeX/texmf-dist/tex/latex/amscls/amsthm.sty
+Package: amsthm 2020/05/29 v2.20.6
+\thm@style=\toks23
+\thm@bodyfont=\toks24
+\thm@headfont=\toks25
+\thm@notefont=\toks26
+\thm@headpunct=\toks27
+\thm@preskip=\skip55
+\thm@postskip=\skip56
+\thm@headsep=\skip57
+\dth@everypar=\toks28
+) (d:/TeX/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+) (d:/TeX/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2025/07/18 v2.1d Standard LaTeX package
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 116.
+ (d:/TeX/texmf-dist/tex/latex/lm/t1lmr.fd
+File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)) (d:/TeX/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2024/02/08 v1.3d Input encoding file
+\inpenc@prehook=\toks29
+\inpenc@posthook=\toks30
+
+
+Package inputenc Warning: inputenc package ignored with utf8 based engines.
+
+) (d:/TeX/texmf-dist/tex/generic/babel/babel.sty
+Package: babel 2025/12/30 v25.18 The multilingual framework for LuaLaTeX, pdfLaTeX and XeLaTeX
+\babel@savecnt=\count308
+LaTeX Encoding Info:    Redeclaring text command \ij (encoding OT1) on input line 2068.
+LaTeX Encoding Info:    Redeclaring text command \IJ (encoding OT1) on input line 2070.
+LaTeX Encoding Info:    Redeclaring text command \ij (encoding T1) on input line 2072.
+LaTeX Encoding Info:    Redeclaring text command \IJ (encoding T1) on input line 2073.
+LaTeX Encoding Info:    Ignoring declaration for text command \ij (encoding ?) on input line 2074.
+LaTeX Encoding Info:    Ignoring declaration for text command \IJ (encoding ?) on input line 2076.
+LaTeX Encoding Info:    Ignoring declaration for text command \SS (encoding ?) on input line 2101.
+\U@D=\dimen164
+\l@unhyphenated=\language90
+ (d:/TeX/texmf-dist/tex/generic/babel/xebabel.def)
+\bbl@readstream=\read2
+\bbl@dirlevel=\count309
+ (d:/TeX/texmf-dist/tex/generic/babel/locale/pl/babel-polish.tex)
+Package babel Info: Importing font and identification data for polish
+(babel)             from babel-pl.ini. Reported on input line 4321.
+ (d:/TeX/texmf-dist/tex/generic/babel-polish/polish.ldf
+Language: polish 2022/03/12 1.3 Babel support for Polish
+Package babel Info: Making " an active character on input line 101.
+)) (d:/TeX/texmf-dist/tex/latex/psnfss/times.sty
+Package: times 2020/03/25 PSNFSS-v9.3 (SPQR) 
+) (d:/TeX/texmf-dist/tex/latex/colortbl/colortbl.sty
+Package: colortbl 2024/10/29 v1.0k Color table columns (DPC)
+ (d:/TeX/texmf-dist/tex/latex/tools/array.sty
+Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
+\col@sep=\dimen165
+\ar@mcellbox=\box57
+\extrarowheight=\dimen166
+\NC@list=\toks31
+\extratabsurround=\skip58
+\backup@length=\skip59
+\ar@cellbox=\box58
+) (d:/TeX/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2025/01/14 v1.3e Standard LaTeX Color (DPC)
+ (d:/TeX/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package color Info: Driver file: xetex.def on input line 149.
+ (d:/TeX/texmf-dist/tex/latex/graphics/mathcolor.ltx))
+\everycr=\toks32
+\minrowclearance=\skip60
+\rownum=\count310
+) (d:/TeX/texmf-dist/tex/latex/setspace/setspace.sty
+Package: setspace 2022/12/04 v6.7b set line spacing
+) (d:/TeX/texmf-dist/tex/latex/tools/indentfirst.sty
+Package: indentfirst 2023/07/02 v1.03 Indent first paragraph (DPC)
+) (d:/TeX/texmf-dist/tex/latex/listingsutf8/listingsutf8.sty
+Package: listingsutf8 2019-12-10 v1.5 Allow UTF-8 in listings input (HO)
+ (d:/TeX/texmf-dist/tex/latex/listings/listings.sty
+\lst@mode=\count311
+\lst@gtempboxa=\box59
+\lst@token=\toks33
+\lst@length=\count312
+\lst@currlwidth=\dimen167
+\lst@column=\count313
+\lst@pos=\count314
+\lst@lostspace=\dimen168
+\lst@width=\dimen169
+\lst@newlines=\count315
+\lst@lineno=\count316
+\lst@maxwidth=\dimen170
+ (d:/TeX/texmf-dist/tex/latex/listings/lstpatch.sty
+File: lstpatch.sty 2025/11/14 1.11b (Carsten Heinz)
+) (d:/TeX/texmf-dist/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2025/11/14 1.11b (Carsten Heinz)
+\c@lstnumber=\count317
+\lst@skipnumbers=\count318
+\lst@framebox=\box60
+) (d:/TeX/texmf-dist/tex/latex/listings/listings.cfg
+File: listings.cfg 2025/11/14 1.11b listings configuration
+))
+Package: listings 2025/11/14 1.11b (Carsten Heinz)
+
+==> First Aid for listings.sty no longer applied!
+    Expected:
+        2024/09/23 1.10c (Carsten Heinz)
+    but found:
+        2025/11/14 1.11b (Carsten Heinz)
+    so I'm assuming it got fixed.
+
+Package listingsutf8 Warning: Package loading is aborted because of missing \pdf@unescapehex.
+(listingsutf8)                It is provided by pdfTeX >= 1.30.
+
+) (d:/TeX/texmf-dist/tex/latex/bera/beramono.sty
+Package: beramono 2004/01/31 (WaS)
+) (d:/TeX/texmf-dist/tex/latex/placeins/placeins.sty
+Package: placeins 2005/04/18  v 2.2
+) (d:/TeX/texmf-dist/tex/latex/csquotes/csquotes.sty
+Package: csquotes 2024-04-04 v5.2o context-sensitive quotations (JAW)
+\csq@reset=\count319
+\csq@gtype=\count320
+\csq@glevel=\count321
+\csq@qlevel=\count322
+\csq@maxlvl=\count323
+\csq@tshold=\count324
+\csq@ltx@everypar=\toks34
+ (d:/TeX/texmf-dist/tex/latex/csquotes/csquotes.def
+File: csquotes.def 2024-04-04 v5.2o csquotes generic definitions (JAW)
+)
+Package csquotes Info: Trying to load configuration file 'csquotes.cfg'...
+Package csquotes Info: ... configuration file loaded successfully.
+ (d:/TeX/texmf-dist/tex/latex/csquotes/csquotes.cfg
+File: csquotes.cfg 
+)) (d:/TeX/texmf-dist/tex/latex/biblatex/biblatex.sty
+Package: biblatex 2025/07/10 v3.21 programmable bibliographies (PK/MW)
+ (d:/TeX/texmf-dist/tex/latex/logreq/logreq.sty
+Package: logreq 2010/08/04 v1.0 xml request logger
+\lrq@indent=\count325
+ (d:/TeX/texmf-dist/tex/latex/logreq/logreq.def
+File: logreq.def 2010/08/04 v1.0 logreq spec v1.0
+)) (d:/TeX/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2024/03/16 v1.1e Standard LaTeX ifthen package (DPC)
+)
+\c@tabx@nest=\count326
+\c@listtotal=\count327
+\c@listcount=\count328
+\c@liststart=\count329
+\c@liststop=\count330
+\c@citecount=\count331
+\c@citetotal=\count332
+\c@multicitecount=\count333
+\c@multicitetotal=\count334
+\c@instcount=\count335
+\c@maxnames=\count336
+\c@minnames=\count337
+\c@maxitems=\count338
+\c@minitems=\count339
+\c@citecounter=\count340
+\c@maxcitecounter=\count341
+\c@savedcitecounter=\count342
+\c@uniquelist=\count343
+\c@uniquename=\count344
+\c@refsection=\count345
+\c@refsegment=\count346
+\c@maxextratitle=\count347
+\c@maxextratitleyear=\count348
+\c@maxextraname=\count349
+\c@maxextradate=\count350
+\c@maxextraalpha=\count351
+\c@abbrvpenalty=\count352
+\c@highnamepenalty=\count353
+\c@lownamepenalty=\count354
+\c@maxparens=\count355
+\c@parenlevel=\count356
+\blx@tempcnta=\count357
+\blx@tempcntb=\count358
+\blx@tempcntc=\count359
+\c@blx@maxsection=\count360
+\blx@maxsegment@0=\count361
+\blx@notetype=\count362
+\blx@parenlevel@text=\count363
+\blx@parenlevel@foot=\count364
+\blx@sectionciteorder@0=\count365
+\blx@sectionciteorderinternal@0=\count366
+\blx@entrysetcounter=\count367
+\blx@biblioinstance=\count368
+\labelnumberwidth=\skip61
+\labelalphawidth=\skip62
+\biblabelsep=\skip63
+\bibitemsep=\skip64
+\bibnamesep=\skip65
+\bibinitsep=\skip66
+\bibparsep=\skip67
+\bibhang=\skip68
+\blx@bcfin=\read3
+\blx@bcfout=\write3
+\blx@langwohyphens=\language91
+\c@mincomprange=\count369
+\c@maxcomprange=\count370
+\c@mincompwidth=\count371
+Package biblatex Info: Trying to load biblatex default data model...
+Package biblatex Info: ... file 'blx-dm.def' found.
+ (d:/TeX/texmf-dist/tex/latex/biblatex/blx-dm.def
+File: blx-dm.def 2025/07/10 v3.21 biblatex datamodel (PK/MW)
+)
+Package biblatex Info: Trying to load biblatex custom data model...
+Package biblatex Info: ... file 'biblatex-dm.cfg' not found.
+\c@afterword=\count372
+\c@savedafterword=\count373
+\c@annotator=\count374
+\c@savedannotator=\count375
+\c@author=\count376
+\c@savedauthor=\count377
+\c@bookauthor=\count378
+\c@savedbookauthor=\count379
+\c@commentator=\count380
+\c@savedcommentator=\count381
+\c@editor=\count382
+\c@savededitor=\count383
+\c@editora=\count384
+\c@savededitora=\count385
+\c@editorb=\count386
+\c@savededitorb=\count387
+\c@editorc=\count388
+\c@savededitorc=\count389
+\c@foreword=\count390
+\c@savedforeword=\count391
+\c@holder=\count392
+\c@savedholder=\count393
+\c@introduction=\count394
+\c@savedintroduction=\count395
+\c@namea=\count396
+\c@savednamea=\count397
+\c@nameb=\count398
+\c@savednameb=\count399
+\c@namec=\count400
+\c@savednamec=\count401
+\c@translator=\count402
+\c@savedtranslator=\count403
+\c@shortauthor=\count404
+\c@savedshortauthor=\count405
+\c@shorteditor=\count406
+\c@savedshorteditor=\count407
+\c@labelname=\count408
+\c@savedlabelname=\count409
+\c@institution=\count410
+\c@savedinstitution=\count411
+\c@lista=\count412
+\c@savedlista=\count413
+\c@listb=\count414
+\c@savedlistb=\count415
+\c@listc=\count416
+\c@savedlistc=\count417
+\c@listd=\count418
+\c@savedlistd=\count419
+\c@liste=\count420
+\c@savedliste=\count421
+\c@listf=\count422
+\c@savedlistf=\count423
+\c@location=\count424
+\c@savedlocation=\count425
+\c@organization=\count426
+\c@savedorganization=\count427
+\c@origlocation=\count428
+\c@savedoriglocation=\count429
+\c@origpublisher=\count430
+\c@savedorigpublisher=\count431
+\c@publisher=\count432
+\c@savedpublisher=\count433
+\c@language=\count434
+\c@savedlanguage=\count435
+\c@origlanguage=\count436
+\c@savedoriglanguage=\count437
+\c@pageref=\count438
+\c@savedpageref=\count439
+\shorthandwidth=\skip69
+\shortjournalwidth=\skip70
+\shortserieswidth=\skip71
+\shorttitlewidth=\skip72
+\shortauthorwidth=\skip73
+\shorteditorwidth=\skip74
+\locallabelnumberwidth=\skip75
+\locallabelalphawidth=\skip76
+\localshorthandwidth=\skip77
+\localshortjournalwidth=\skip78
+\localshortserieswidth=\skip79
+\localshorttitlewidth=\skip80
+\localshortauthorwidth=\skip81
+\localshorteditorwidth=\skip82
+Package biblatex Info: Trying to load enhanced support for Unicode engines...
+Package biblatex Info: ... file 'blx-unicode.def' found.
+ (d:/TeX/texmf-dist/tex/latex/biblatex/blx-unicode.def)
+Package biblatex Info: Trying to load compatibility code...
+Package biblatex Info: ... file 'blx-compat.def' found.
+ (d:/TeX/texmf-dist/tex/latex/biblatex/blx-compat.def
+File: blx-compat.def 2025/07/10 v3.21 biblatex compatibility (PK/MW)
+)
+Package biblatex Info: Trying to load generic definitions...
+Package biblatex Info: ... file 'biblatex.def' found.
+ (d:/TeX/texmf-dist/tex/latex/biblatex/biblatex.def
+File: biblatex.def 2025/07/10 v3.21 biblatex compatibility (PK/MW)
+\c@textcitecount=\count440
+\c@textcitetotal=\count441
+\c@textcitemaxnames=\count442
+\c@biburlbigbreakpenalty=\count443
+\c@biburlbreakpenalty=\count444
+\c@biburlnumpenalty=\count445
+\c@biburlucpenalty=\count446
+\c@biburllcpenalty=\count447
+\biburlbigskip=\muskip19
+\biburlnumskip=\muskip20
+\biburlucskip=\muskip21
+\biburllcskip=\muskip22
+\c@smartand=\count448
+)
+Package biblatex Info: Trying to load bibliography style 'numeric'...
+Package biblatex Info: ... file 'numeric.bbx' found.
+ (d:/TeX/texmf-dist/tex/latex/biblatex/bbx/numeric.bbx
+File: numeric.bbx 2025/07/10 v3.21 biblatex bibliography style (PK/MW)
+Package biblatex Info: Trying to load bibliography style 'standard'...
+Package biblatex Info: ... file 'standard.bbx' found.
+ (d:/TeX/texmf-dist/tex/latex/biblatex/bbx/standard.bbx
+File: standard.bbx 2025/07/10 v3.21 biblatex bibliography style (PK/MW)
+\c@bbx:relatedcount=\count449
+\c@bbx:relatedtotal=\count450
+))
+Package biblatex Info: Trying to load citation style 'numeric'...
+Package biblatex Info: ... file 'numeric.cbx' found.
+ (d:/TeX/texmf-dist/tex/latex/biblatex/cbx/numeric.cbx
+File: numeric.cbx 2025/07/10 v3.21 biblatex citation style (PK/MW)
+Package biblatex Info: Redefining '\cite'.
+Package biblatex Info: Redefining '\parencite'.
+Package biblatex Info: Redefining '\footcite'.
+Package biblatex Info: Redefining '\footcitetext'.
+Package biblatex Info: Redefining '\smartcite'.
+Package biblatex Info: Redefining '\supercite'.
+Package biblatex Info: Redefining '\textcite'.
+Package biblatex Info: Redefining '\textcites'.
+Package biblatex Info: Redefining '\cites'.
+Package biblatex Info: Redefining '\parencites'.
+Package biblatex Info: Redefining '\smartcites'.
+)
+Package biblatex Info: Trying to load configuration file...
+Package biblatex Info: ... file 'biblatex.cfg' found.
+ (d:/TeX/texmf-dist/tex/latex/biblatex/biblatex.cfg
+File: biblatex.cfg 
+)
+Package biblatex Info: XeTeX detected.
+(biblatex)             Assuming input encoding 'utf8'.
+Package biblatex Info: Document encoding is UTF8 ....
+ (d:/TeX/texmf-dist/tex/latex/l3kernel/expl3.sty
+Package: expl3 2025-12-29 L3 programming layer (loader) 
+ (d:/TeX/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
+File: l3backend-xetex.def 2025-10-09 L3 backend support: XeTeX
+\g__graphics_track_int=\count451
+\g__pdfannot_backend_int=\count452
+\g__pdfannot_backend_link_int=\count453
+))
+Package biblatex Info: ... and expl3
+(biblatex)             2025-12-29 L3 programming layer (loader) 
+(biblatex)             is new enough (at least 2020/04/06),
+(biblatex)             setting 'casechanger=expl3'.
+ (d:/TeX/texmf-dist/tex/latex/biblatex/blx-case-expl3.sty (d:/TeX/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+Package: xparse 2025-10-09 L3 Experimental document command parser
+)
+Package: blx-case-expl3 2025/07/10 v3.21 expl3 case changing code for biblatex
+)) (d:/TeX/texmf-dist/tex/latex/fontspec/fontspec.sty
+Package: fontspec 2025/09/29 v2.9g Font selection for XeLaTeX and LuaLaTeX
+ (d:/TeX/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
+Package: fontspec-xetex 2025/09/29 v2.9g Font selection for XeLaTeX and LuaLaTeX
+\l__fontspec_script_int=\count454
+\l__fontspec_language_int=\count455
+\l__fontspec_strnum_int=\count456
+\l__fontspec_tmp_int=\count457
+\l__fontspec_tmpa_int=\count458
+\l__fontspec_tmpb_int=\count459
+\l__fontspec_tmpc_int=\count460
+\l__fontspec_em_int=\count461
+\l__fontspec_emdef_int=\count462
+\l__fontspec_strong_int=\count463
+\l__fontspec_strongdef_int=\count464
+\l__fontspec_tmpa_dim=\dimen171
+\l__fontspec_tmpb_dim=\dimen172
+\l__fontspec_tmpc_dim=\dimen173
+ (d:/TeX/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2025/07/18 v2.1d Standard LaTeX package
+) (d:/TeX/texmf-dist/tex/latex/fontspec/fontspec.cfg)))
+
+Package fontspec Info: 
+(fontspec)             Font family 'Carlito(0)' created for font 'Carlito'
+(fontspec)             with options [Ligatures=TeX].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->"Carlito/OT:script=latn;language=dflt;mapping=tex-text;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->"Carlito/B/OT:script=latn;language=dflt;mapping=tex-text;"
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->"Carlito/I/OT:script=latn;language=dflt;mapping=tex-text;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->"Carlito/BI/OT:script=latn;language=dflt;mapping=tex-text;"
+
+ (d:/TeX/texmf-dist/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2025/11/14 1.11b listings language file
+)
+\c@lemat=\count465
+\c@twierdzenie=\count466
+Package csquotes Info: Checking for multilingual support...
+Package csquotes Info: ... found 'babel' package.
+Package csquotes Info: Adjusting default style.
+Package csquotes Info: Redefining alias 'default' -> 'polish'.
+ (./solar.aux
+Package babel Info: 'polish' activates 'polish' shorthands.
+(babel)             Reported on input line 9.
+)
+\openout1 = `solar.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 75.
+LaTeX Font Info:    ... okay on input line 75.
+Package hyperref Info: Link coloring OFF on input line 75.
+ (./solar.out) (./solar.out)
+\@outlinefile=\write4
+\openout4 = `solar.out'.
+
+\c@lstlisting=\count467
+Package biblatex Info: Trying to load language 'polish'...
+Package biblatex Info: ... file 'polish.lbx' found.
+ (d:/TeX/texmf-dist/tex/latex/biblatex/lbx/polish.lbx
+File: polish.lbx 2025/07/10 v3.21 biblatex localization (PK/MW)
+)
+Package biblatex Info: XeTeX detected.
+(biblatex)             Assuming input encoding 'utf8'.
+Package biblatex Info: Automatic encoding selection.
+(biblatex)             Assuming data encoding 'utf8'.
+\openout3 = `solar.bcf'.
+
+Package biblatex Info: Trying to load bibliographic data...
+Package biblatex Info: ... file 'solar.bbl' found.
+ (./solar.bbl)
+Package biblatex Info: Reference section=0 on input line 75.
+Package biblatex Info: Reference segment=0 on input line 75.
+
+Package fontspec Info: 
+(fontspec)             Adjusting the maths setup (use [no-math] to avoid
+(fontspec)             this).
+
+\symlegacymaths=\mathgroup6
+LaTeX Font Info:    Overwriting symbol font `legacymaths' in version `bold'
+(Font)                  OT1/cmr/m/n --> OT1/cmr/bx/n on input line 75.
+LaTeX Font Info:    Redeclaring math accent \acute on input line 75.
+LaTeX Font Info:    Redeclaring math accent \grave on input line 75.
+LaTeX Font Info:    Redeclaring math accent \ddot on input line 75.
+LaTeX Font Info:    Redeclaring math accent \tilde on input line 75.
+LaTeX Font Info:    Redeclaring math accent \bar on input line 75.
+LaTeX Font Info:    Redeclaring math accent \breve on input line 75.
+LaTeX Font Info:    Redeclaring math accent \check on input line 75.
+LaTeX Font Info:    Redeclaring math accent \hat on input line 75.
+LaTeX Font Info:    Redeclaring math accent \dot on input line 75.
+LaTeX Font Info:    Redeclaring math accent \mathring on input line 75.
+LaTeX Font Info:    Redeclaring math symbol \Gamma on input line 75.
+LaTeX Font Info:    Redeclaring math symbol \Delta on input line 75.
+LaTeX Font Info:    Redeclaring math symbol \Theta on input line 75.
+LaTeX Font Info:    Redeclaring math symbol \Lambda on input line 75.
+LaTeX Font Info:    Redeclaring math symbol \Xi on input line 75.
+LaTeX Font Info:    Redeclaring math symbol \Pi on input line 75.
+LaTeX Font Info:    Redeclaring math symbol \Sigma on input line 75.
+LaTeX Font Info:    Redeclaring math symbol \Upsilon on input line 75.
+LaTeX Font Info:    Redeclaring math symbol \Phi on input line 75.
+LaTeX Font Info:    Redeclaring math symbol \Psi on input line 75.
+LaTeX Font Info:    Redeclaring math symbol \Omega on input line 75.
+LaTeX Font Info:    Redeclaring math symbol \mathdollar on input line 75.
+LaTeX Font Info:    Redeclaring symbol font `operators' on input line 75.
+LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
+(Font)              `operators' in the math version `normal' on input line 75.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/cmr/m/n --> TU/Carlito(0)/m/n on input line 75.
+LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
+(Font)              `operators' in the math version `bold' on input line 75.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/cmr/bx/n --> TU/Carlito(0)/m/n on input line 75.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  TU/Carlito(0)/m/n --> TU/Carlito(0)/m/n on input line 75.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/cmr/m/it --> TU/Carlito(0)/m/it on input line 75.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> TU/Carlito(0)/b/n on input line 75.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
+(Font)                  OT1/cmss/m/n --> TU/lmss/m/n on input line 75.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/cmtt/m/n --> TU/lmtt/m/n on input line 75.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  TU/Carlito(0)/m/n --> TU/Carlito(0)/b/n on input line 75.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/cmr/bx/it --> TU/Carlito(0)/b/it on input line 75.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/cmss/bx/n --> TU/lmss/b/n on input line 75.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/cmtt/m/n --> TU/lmtt/b/n on input line 75.
+File: logo_ujd.png Graphic file (type bmp)
+<logo_ujd.png>
+LaTeX Font Info:    Trying to load font information for U+msa on input line 85.
+ (d:/TeX/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 85.
+ (d:/TeX/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+) [1
+
+] [2
+
+] (./solar.toc [3
+
+])
+\tf@toc=\write5
+\openout5 = `solar.toc'.
+
+ [4] (./chapters/chapter1.tex [5
+
+]
+Rozdział 1.
+File: images/kepler_elements.png Graphic file (type bmp)
+<images/kepler_elements.png>
+[6
+
+]
+File: images/opengl_pipeline.png Graphic file (type bmp)
+<images/opengl_pipeline.png>
+ [7]
+Overfull \hbox (13.965pt too wide) in paragraph at lines 35--38
+[]\TU/Carlito(0)/m/n/10.95 Na rynku istnieje wiele zaawansowanych symulatorów kosmosu, takich jak [][][][], []
+ []
+
+
+Overfull \hbox (28.55989pt too wide) in paragraph at lines 49--50
+\TU/Carlito(0)/m/n/10.95 (Update) oraz renderowania obrazu (Render). W projekcie realizowana przez funkcję []
+ []
+
+[8] [9] [10]) (./chapters/chapter2.tex [11]
+Rozdział 2.
+[12
+
+] [13] [14]) (./chapters/chapter3.tex [15]
+Rozdział 3.
+LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <14.4> not available
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 7.
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\lstinline' on input line 7.
+
+[16
+
+] [17]
+File: images/flow.png Graphic file (type bmp)
+<images/flow.png>
+ [18] [19] (d:/TeX/texmf-dist/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2025/11/14 1.11b listings language file
+) (d:/TeX/texmf-dist/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2025/11/14 1.11b (Carsten Heinz)
+)
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 92.
+LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10.95> not available
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 93.
+) (./chapters/chapter4.tex [20]
+Rozdział 4.
+[21
+
+]
+File: images/camera_frustum.jpg Graphic file (type bmp)
+<images/camera_frustum.jpg>
+ [22]
+LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <12> not available
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 68.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\lstinline' on input line 68.
+
+
+Overfull \hbox (2.27182pt too wide) in paragraph at lines 73--74
+[]\TU/Carlito(0)/b/n/10.95 Siatkę ([][][][]): \TU/Carlito(0)/m/n/10.95 Zawiera bufory wierzchołków i indeksów oraz identyfikatory obiektów OpenGL
+ []
+
+[23] [24] [25]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\lstinline' on input line 135.
+
+
+Overfull \hbox (4.03871pt too wide) in paragraph at lines 142--143
+[]\TU/Carlito(0)/b/n/10.95 Definicja materiału:\TU/Carlito(0)/m/n/10.95 : Blok danych odpowiadający strukturze [][][][] (współczynniki oświe-
+ []
+
+[26]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\lstinline' on input line 152.
+
+) (./chapters/chapter5.tex [27]
+Rozdział 5.
+[28
+
+] [29] [30]
+Overfull \hbox (32.99568pt too wide) in paragraph at lines 91--93
+[]\TU/Carlito(0)/m/n/10.95 Wyznaczanie pozycji ciał niebieskich realizowane jest przez funkcję []
+ []
+
+[31] [32]
+Overfull \hbox (1.58572pt too wide) in paragraph at lines 147--149
+[]\TU/Carlito(0)/m/n/10.95 Wewnętrzny zegar symulacji ([][][][][][][][][][][][][][][][]) reprezentowany jest przez zmienną
+ []
+
+
+Overfull \hbox (48.71338pt too wide) in paragraph at lines 182--208
+ [][] 
+ []
+
+[33] [34]
+File: images/orbits.png Graphic file (type bmp)
+<images/orbits.png>
+ [35]
+File: images/markers.png Graphic file (type bmp)
+<images/markers.png>
+) [36] [37
+
+]
+
+Package biblatex Warning: Split bibliography detected.
+(biblatex)                Many simple split bibliography setups with
+(biblatex)                non-overlapping bibliographies benefit from
+(biblatex)                setting 'defernumbers=true'.
+(biblatex)                See the documentation for details.
+(biblatex)                This warning can be suppressed with
+(biblatex)                '\BiblatexSplitbibDefernumbersWarningOff'.
+
+[38]
+
+Package biblatex Warning: Split bibliography detected.
+(biblatex)                Many simple split bibliography setups with
+(biblatex)                non-overlapping bibliographies benefit from
+(biblatex)                setting 'defernumbers=true'.
+(biblatex)                See the documentation for details.
+(biblatex)                This warning can be suppressed with
+(biblatex)                '\BiblatexSplitbibDefernumbersWarningOff'.
+
+[39
+
+]
+
+Package biblatex Warning: Split bibliography detected.
+(biblatex)                Many simple split bibliography setups with
+(biblatex)                non-overlapping bibliographies benefit from
+(biblatex)                setting 'defernumbers=true'.
+(biblatex)                See the documentation for details.
+(biblatex)                This warning can be suppressed with
+(biblatex)                '\BiblatexSplitbibDefernumbersWarningOff'.
+
+[40
+
+] [41
+
+] (./solar.lot)
+\tf@lot=\write6
+\openout6 = `solar.lot'.
+
+ [42
+
+] (./solar.lof
+Overfull \hbox (3.1744pt too wide) in paragraph at lines 3--3
+ [][] [][]\TU/Carlito(0)/m/n/10.95 Wizualizacja klasycznych elementów orbitalnych Keplera określających pozycję i orien- 
+ []
+
+)
+\tf@lof=\write7
+\openout7 = `solar.lof'.
+
+ [43
+
+] (./solar.lol
+Overfull \hbox (3.68231pt too wide) in paragraph at lines 3--3
+ [][] [][]\TU/Carlito(0)/m/n/10.95 Główna funkcja shadera fragmentów (default.fs) odpowiedzialna za oświetlenie obiek- 
+ []
+
+)
+\tf@lol=\write8
+\openout8 = `solar.lol'.
+
+ [44
+
+] (./solar.aux)
+ ***********
+LaTeX2e <2025-11-01>
+L3 programming layer <2025-12-29>
+ ***********
+Package rerunfilecheck Info: File `solar.out' has not changed.
+(rerunfilecheck)             Checksum: FC48CCE8813FC1883BDE87BDF2967873;10602.
+Package logreq Info: Writing requests to 'solar.run.xml'.
+\openout1 = `solar.run.xml'.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 23409 strings out of 468179
+ 448201 string characters out of 5441015
+ 1507618 words of memory out of 5000000
+ 51792 multiletter control sequences out of 15000+600000
+ 637552 words of font info for 102 fonts, out of 8000000 for 9000
+ 1348 hyphenation exceptions out of 8191
+ 87i,17n,93p,1142b,5054s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+Output written on solar.pdf (44 pages).

@@ -1,0 +1,110 @@
+\chapter{Architektura systemu i przepływ danych}
+ Projekt aplikacji został oparty na modularnej architekturze, charakterystycznej dla silników czasu rzeczywistego napisanych w języku C.
+ Kluczowym założeniem projektowym było rozdzielenie warstwy danych symulacyjnych od warstwy prezentacji graficznej oraz centralizacja zarządzania stanem aplikacji.
+ W niniejszym rozdziale omówiono strukturę danych, przepływ sterowania oraz metody zarządzania pamięcią.
+
+    % 3.1
+    \section{Struktura kontekstu programu (\var{static struct context})}
+     Fundamentem architektury oprogramowania jest statyczna struktura danych context, zdefiniowana w pliku nagłówkowym \file{g\_game.h}.
+     Pełni ona rolę głównego kontenera stanu aplikacji, agregując w sobie podsystemy odpowiedzialne za okno, wejście, renderowanie oraz logikę sceny.
+
+        % 3.1.1
+        \subsection{Centralny punkt dostępu do danych}
+         Zdecydowano się na wykorzystanie wzorca zbliżonego do Singletona, gdzie instancja context jest zmienną statyczną dostępną w obrębie modułu gry, a dostęp do niej odbywa się bezpośrednio, bez konieczności przekazywania wskaźników do każdej funkcji pomocniczej.
+         Takie podejście upraszcza sygnatury funkcji i przyspiesza dostęp do kluczowych zmiennych w pętli głównej.
+
+         \bigbreak
+
+         Struktura dzieli się na logiczne sekcje:
+         
+         \begin{itemize}
+         \item[---] \textbf{fps:} Przechowuje dane diagnostyczne o wydajności, takie jak czas między klatkami (delta time) i liczbę klatek na sekundę.
+         \item[---] \textbf{camera:} Zawiera wektory pozycji i orientacji obserwatora oraz parametry sterowania (czułość myszy, prędkość ruchu).
+         \item[---] \textbf{arena:} Instancja struktury \var{arena\_t}, pełniąca rolę głównego alokatora liniowego (Memory Arena), służąca do scentralizowanego i wydajnego zarządzania pamięcią operacyjną wykorzystywaną przez zasoby gry.
+         \item[---] \textbf{renderer:} Grupuje zasoby niskopoziomowe, takie jak shadery, tekstury i bufory obiektów graficznych.
+         \item[---] \textbf{scene:} Przechowuje wysokopoziomowy stan symulacji, w tym obiekty ciał niebieskich (planets), zegar symulacji (clock) oraz elementy interfejsu (ui).
+         \end{itemize}
+
+        % 3.1.2
+        \subsection{Separacja domen: podział na niezależny podsystem graficzny i logiczny}
+         Jednym z najważniejszych założeń architektonicznych projektu jest ścisła separacja danych graficznych od danych logicznych. 
+         Zrealizowano to poprzez podział na struktury renderer oraz scene.
+
+
+         Podsystem graficzny (\var{struct renderer}) operuje na abstrakcji obiektu renderowalnego object\_t.
+         Obiekt ten jest kontenerem przechowującym surowe dane geometryczne (siatkę \var{mesh\_t}), właściwości materiału (\var{material\_t}) oraz wskaźniki do zasobów OpenGL (shadery, tekstury).
+         Renderer iteruje po tablicy obiektów i rysuje te, które posiadają flagę visible ustawioną na wartość pozytywną, nie posiadając wiedzy na temat tego, co dany obiekt reprezentuje w świecie symulacji.
+
+
+         Podsystem logiczny (\var{struct scene}) operuje na obiektach typu \var{planet\_t} (zdefiniowanych w \file{r\_physics.h}).
+         Struktura ta zawiera parametry fizyczne i orbitalne, takie jak masa, promień, inklinacja czy węzeł wstępujący.
+         Połączenie między tymi dwoma światami realizowane jest wyłącznie poprzez wskaźnik \var{object\_t} *object zawarty w strukturze planety.
+         Dzięki temu logika symulacji oblicza pozycję ciała niebieskiego, a następnie aktualizuje macierz modelu w powiązanym obiekcie graficznym, nie ingerując w proces samego rysowania.
+         
+         \newpage
+
+    % 3.2
+    \section{Cykl życia aplikacji}
+     Aplikacja działa w oparciu o klasyczny schemat pętli gry (Game Loop), sterowany z poziomu funkcji main, która sekwencyjnie wywołuje trzy główne procedury: inicjalizację (\func{g\_game\_init}), pętlę aktualizacji (\func{g\_game\_update}) oraz czyszczenie zasobów (\func{g\_game\_stop}).
+
+        % Rysunek 3.2 Schemat drzewka plików projektu
+      \begin{figure}[htpb]
+         \centering
+         \includegraphics[width=0.6\textwidth]{images/flow.png}
+         \caption{Schemat cyklu życia aplikacji}
+         \label{fig:game_loop}
+      \end{figure}
+
+        % 3.2.1
+        \subsection{Faza inicjalizacji}
+         Funkcja \func{g\_game\_init} odpowiada za przygotowanie środowiska pracy przed wejściem w pętlę główną. 
+         Proces ten przebiega etapowo:
+
+         \begin{enumerate}
+         \item \textbf{Inicjalizacja kontekstu OpenGL:} Konfiguracja biblioteki GLFW, utworzenie okna i załadowanie wskaźników na funkcje OpenGL za pomocą GLEW.
+         \item \textbf{Kompilacja shaderów:} Wczytanie kodu źródłowego shaderów wierzchołków (\_vs) i fragmentów (\_fs), ich kompilacja oraz linkowanie do programów GPU.
+         \item \textbf{Ładowanie zasobów:} Import tekstur za pomocą biblioteki \file{stb\_image} oraz wczytanie modeli 3D z dedykowanego formatu binarnego .orb do pamięci operacyjnej.
+         \item \textbf{Konfiguracja sceny:} Inicjalizacja struktur planetarnych, powiązanie ich z obiektami graficznymi oraz wygenerowanie geometrii orbit i markerów.
+         \end{enumerate}
+
+        % 3.2.2
+        \subsection{Pętla główna}
+         Centralnym elementem sterującym jest funkcja \func{g\_game\_update}. W każdej iteracji pętli while (!glfwWindowShouldClose) wykonywane są następujące kroki:
+
+         \begin{enumerate}
+         \item \textbf{Obsługa wejścia:} Odczyt pozycji myszy i stanu klawiatury w celu aktualizacji kamery oraz sterowania czasem (funkcje \func{\_g\_game\_mouse\_handle} i \func{\_g\_game\_keyboard\_handle}).
+         \item \textbf{Aktualizacja logiczna:} Przeliczenie czasu symulacji (\func{\_g\_game\_clock\_update}) oraz aktualizacja stanu fizycznego planet (\func{r\_physics\_planet\_state\_update}). W tym kroku obliczane są nowe współrzędne kartezjańskie na podstawie elementów orbitalnych.
+         \item \textbf{Renderowanie:} Wyczyszczenie buforów ekranu, ustawienie zmiennych uniform (macierze projekcji i widoku), a następnie rysowanie obiektów sceny: planet, orbit, markerów oraz tła (Skybox).
+         \end{enumerate}
+
+        % 3.2.3
+        \subsection{Zarządzanie pamięcią}
+         Ze względu na wymóg ręcznego zarządzania pamięcią w języku C oraz w celu maksymalizacji wydajności, w projekcie zrezygnowano ze standardowych, powtarzalnych wywołań funkcji \func{malloc} i \func{free} na rzecz autorskiego alokatora liniowego (Memory Arena).
+         Biblioteka \file{d\_arena.h} definiuje strukturę \var{arena_t}, która zarządza jednym, wstępnie zaalokowanym blokiem ciągłej pamięci o określonej pojemności (\var{capacity}).
+
+         Proces alokacji, realizowany przez funkcję \func{d\_arena\_alloc}, polega na szybkim przesunięciu wewnętrznego wskaźnika zajętości (\var{size}) o żądany rozmiar.
+         Funkcja ta automatycznie dba o optymalne, 8-bajtowe wyrównanie pamięci (memory alignment), co jest kluczowe dla szybkości dostępu do danych przez procesor.
+         W celu zapewnienia stabilności symulacji, wprowadzono rygorystyczną kontrolę dostępnego miejsca, próba alokacji przekraczająca pojemność areny kończy się jawnym przerwaniem programu za pomocą własnego makra asercji (\var{QSSERT}).
+
+         \newpage
+
+         \vspace{1em}
+         \begin{lstlisting}[language=C, caption={Funkcja alokująca ciągły blok pamięci z 8-bajtowym wyrównaniem w strukturze Memory Arena}, label={lst:arena_alloc}]
+      void *d_arena_alloc(arena_t *arena, size_t capacity) {
+         size_t aligment = 8;
+         size_t padding = (aligment - (arena -> size % aligment)) % aligment;
+
+         QSSERT(arena -> size + capacity <= arena -> capacity, "Game out of memory!\n");
+
+         arena -> size += padding;
+         void *head = arena -> head + arena -> size;
+         arena -> size += capacity;
+
+         return head;
+      }
+         \end{lstlisting}
+
+         Takie podejście niesie za sobą ogromne korzyści w cyklu życia aplikacji. 
+         Zwalnianie zasobów staje się operacją trywialną i natychmiastową (\func{d\_arena\_reset}), polegającą jedynie na wyzerowaniu licznika rozmiaru, co skutecznie zapobiega problemom wycieków pamięci (memory leaks).
+         Ponadto, w module zaimplementowano funkcję diagnostyczną \func{d\_arena\_stats}, która umożliwia precyzyjne monitorowanie zużycia pamięci operacyjnej przez program w czasie rzeczywistym, wyrażone w megabajtach oraz ujęciu procentowym.
+         Podejście oparte na arenie jest w inżynierii silników gier powszechnie uznawane za rozwiązanie najbezpieczniejsze i najszybsze w kontekście operacji na zasobach tymczasowych oraz buforach graficznych.
