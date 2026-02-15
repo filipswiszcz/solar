@@ -155,37 +155,7 @@ Architektura stworzonego silnika stanowi solidny fundament, który w przyszłoś
 \end{itemize}
 
 \appendix
-\chapter{Dokumentacja użytkownika i kod źródłowy}
-
-    \section{Materiały projektowe}
-    Kod źródłowy projektu, wraz ze wszystkimi zasobami graficznymi oraz pełną historią zmian, udostępniony został w publicznym repozytorium w serwisie GitHub pod adresem: \url{https://github.com/filipswiszcz/solar}.
-
-    Struktura katalogów została zaprojektowana w sposób modułowy, kładąc nacisk na separację kodu źródłowego od zasobów i narzędzi pomocniczych:
-
-        \vspace{0.5cm}
-        \dirtree{%
-            .1 solar/.
-            .2 assets/\DTcomment{Zasoby wykorzystywane w symulacji}.
-            .3 model/\DTcomment{Modele w dedykowanym formacie binarnego zrzutu (.orb)}.
-            .3 texture/\DTcomment{Tekstury modeli planet i tła przestrzennego (Skybox)}.
-            .2 docs/\DTcomment{Dokumentacja szczegółowa projektu}.
-            .2 lib/\DTcomment{Zewnętrzne biblioteki typu header-only}.
-            .3 stb/\DTcomment{Biblioteka stb\_image.h}.
-            .2 shader/\DTcomment{Kody programów cieniujących w języku GLSL (.vs, .fs)}.
-            .2 src/\DTcomment{Główny kod źródłowy silnika (standard C99)}.
-            .3 d\_arena.c / .h\DTcomment{Alokator liniowy pamięci (Memory Arena) zapobiegający jej fragmentacji}.
-            .3 d\_util.c / .h\DTcomment{Funkcje narzędziowe, m.in. wczytywanie plików graficznych z użyciem stb\_image}.
-            .3 g\_game.c / .h\DTcomment{Główna pętla, logika i stan symulacji}.
-            .3 main.c\DTcomment{Punkt wejścia aplikacji}.
-            .3 r\_math.c / .h\DTcomment{Dedykowana biblioteka algebry liniowej}.
-            .3 r\_physics.c / .h\DTcomment{Moduł fizyki i mechaniki nieba}.
-            .3 r\_renderer.c / .h\DTcomment{Abstrakcja potoku graficznego OpenGL}.
-            .3 r\_shader.c / .h\DTcomment{Moduł odpowiedzialny za wczytywanie, kompilację kodu GLSL i linkowanie programów GPU}.
-            .2 tools/\DTcomment{Narzędzia pomocnicze (m.in. kod źródłowy konwertera otob)}.
-            .2 Makefile\DTcomment{Skrypt automatyzujący proces budowania}.
-            .2 README.md\DTcomment{Podstawowa dokumentacja opisowa projektu}.
-        }
-        \vspace{0.5cm}
+\chapter{Instrukcja}
 
     \section{Wymagania systemowe i zależności}
     Aplikacja została zaprojektowana z myślą o środowiskach uniksowych i jest w pełni wspierana na systemach operacyjnych \textbf{macOS} oraz \textbf{Linux}. Do poprawnej kompilacji i uruchomienia programu wymagana jest instalacja następujących pakietów i narzędzi:
@@ -199,16 +169,16 @@ Architektura stworzonego silnika stanowi solidny fundament, który w przyszłoś
             \item \textbf{Linux:}
                 \begin{itemize}
                     \item \textbf{build-essential} (zawierający kompilator GCC i program Make)
-                    \item \texttt{GLEW}
+                    \item \textbf{GLEW}
                 \end{itemize}
             \item \textbf{macOS:}
                 \begin{itemize}
-                    \item \texttt{Xcode Command Line Tools}
-                    \item \texttt{Homebrew} (zalecany do instalacji GLFW: \texttt{brew install glfw})
+                    \item \textbf{Xcode Command Line Tools}
+                    \item \textbf{Homebrew} (zalecany do instalacji GLFW: \texttt{brew install glfw})
                 \end{itemize}
         \end{itemize}
 
-    \section{Instrukcja kompilacji}
+    \section{Kompilacja}
     Proces budowania aplikacji realizowany jest z poziomu wiersza poleceń terminala. W celu pobrania repozytorium i skompilowania kodu w plik wykonywalny, należy pobrać powyższe zależności i wykonać poniższą sekwencję poleceń:
 
         \begin{lstlisting}[language=bash, frame=single, numbers=none]
@@ -245,6 +215,43 @@ Architektura stworzonego silnika stanowi solidny fundament, który w przyszłoś
             \caption{Zestawienie skrótów klawiszowych i nawigacji w aplikacji}
             \label{tab:sterowanie_dodatek}
         \end{table}
+
+\appendix
+\chapter{Materiały projektowe}
+Kod źródłowy projektu, wraz ze wszystkimi zasobami graficznymi oraz pełną historią zmian, udostępniony został w publicznym repozytorium w serwisie GitHub pod adresem: 
+
+\bigbreak
+
+\url{https://github.com/filipswiszcz/solar}.
+
+\bigbreak
+
+Struktura katalogów została zaprojektowana w sposób modułowy, kładąc nacisk na separację kodu źródłowego od zasobów i narzędzi pomocniczych:
+
+    \vspace{0.5cm}
+    \dirtree{%
+        .1 solar/.
+        .2 assets/\DTcomment{Zasoby wykorzystywane w symulacji}.
+        .3 model/\DTcomment{Modele w dedykowanym formacie binarnego zrzutu (.orb)}.
+        .3 texture/\DTcomment{Tekstury modeli planet i tła przestrzennego (Skybox)}.
+        .2 docs/\DTcomment{Dokumentacja szczegółowa projektu}.
+        .2 lib/\DTcomment{Zewnętrzne biblioteki typu header-only}.
+        .3 stb/\DTcomment{Biblioteka stb\_image.h}.
+        .2 shader/\DTcomment{Kody programów cieniujących w języku GLSL (.vs, .fs)}.
+        .2 src/\DTcomment{Główny kod źródłowy silnika (standard C99)}.
+        .3 d\_arena.c / .h\DTcomment{Alokator liniowy pamięci (Memory Arena) zapobiegający jej fragmentacji}.
+        .3 d\_util.c / .h\DTcomment{Funkcje narzędziowe, m.in. wczytywanie plików graficznych z użyciem stb\_image}.
+        .3 g\_game.c / .h\DTcomment{Główna pętla, logika i stan symulacji}.
+        .3 main.c\DTcomment{Punkt wejścia aplikacji}.
+        .3 r\_math.c / .h\DTcomment{Dedykowana biblioteka algebry liniowej}.
+        .3 r\_physics.c / .h\DTcomment{Moduł fizyki i mechaniki nieba}.
+        .3 r\_renderer.c / .h\DTcomment{Abstrakcja potoku graficznego OpenGL}.
+        .3 r\_shader.c / .h\DTcomment{Moduł odpowiedzialny za wczytywanie, kompilację kodu GLSL i linkowanie programów GPU}.
+        .2 tools/\DTcomment{Narzędzia pomocnicze (m.in. kod źródłowy konwertera otob)}.
+        .2 Makefile\DTcomment{Skrypt automatyzujący proces budowania}.
+        .2 README.md\DTcomment{Podstawowa dokumentacja opisowa projektu}.
+    }
+    \vspace{0.5cm}
 
 \printbibliography[type=book,title={Bibliografia - książki}]
 \printbibliography[type=article,title={Bibliografia - artykuły}]
