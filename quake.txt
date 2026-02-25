@@ -81,7 +81,7 @@
 
 
 ** OBJECTIVES **
-- posix
++ posix
 + structure design
 + obj to orb converter (for faster mesh load) (custom file type)
 + texture support (meshes properly use textures)
@@ -99,8 +99,6 @@
 
 ** CONSTANTS **
 time_flow_speeds=[-1yr, -10mo, -1mo, -10d, -1d, -10h, -1h, -10m, -1m, -10s, -1s, 1s (LIVE), 10s, 1m, 10m, 1h, 10h, 1d, 10d, 1mo, 10mo, 1yr] // time has to match outside of simulation time (our world)
-date_min="31 DECEMBER 1949"
-date_max="31 DECEMBER 2049"
 
 
 ** TASKS **
@@ -113,42 +111,7 @@ date_max="31 DECEMBER 2049"
 - add material_t values in blender to make planets look better
 - try to modify planet_t variable names
 - upate planet_t details
-- fix other distros support (+ windows)
-
-
-** DOCS **
-- swap dynamic arrays to memory arena
-- compare with existing solutions (different apps)
-- get references to standards (movement integration, transformations, matrices, camera, culling, data formats?, performance)
-- 5-6 books, articles, listings references
-- photos
-- fix GLFW/glfw.h error
-- can i estimate ram usage, load differences with/without custom orb files, etc?
-- solar system used scales
-- moore's law and low level engineering (and current ram state)
-- results of address sanitizer
-
-** PHOTOS **
-- [1.1] r_physics.h code
-- [1.2] default.vs code, [1.3]default.fs code
-- [2.1] arena_t code
-- [2.2] opengl flow (programmable pipeline)
-- [3.1] static struct context code
-- [3.2] project tree
-- [3.3] d_arena_alloc() code,  context.renderer.textures = d_arena_alloc(&context.arena, 11 * sizeof(shader_t));?
-- [4.1] camera frustrum
-- [4.2] vertex buffer object
-- [4.3] example.orb
-- [5.1] kepler orbit elements
-- [5.2] in-game orbits screen
-- [5.3] in-game marker screen
-
-
-** CHECK **
-+ are planets in j2000 at init?
-- (docs) what does j key do? (it should return to default speed)
-- (docs) update _game functions names
-- (docs) update planet_t variable names
+- fix winows support
 
 
 RENDERER:
