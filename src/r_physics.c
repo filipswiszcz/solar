@@ -41,22 +41,13 @@ void r_physics_planet_state_update(planet_t *planet, double time) {
         planet -> state.position = vec3(0.0f, 0.0f, 0.0f);
         planet -> state.anomaly = 0.0f;
     }
-
-    // if (planet -> parent != NULL) {
-    //     planet -> state.anomaly = -(2.0f * R_PI * time / planet -> orbit.period_orbital) + planet -> orbit.mean_anomaly_epoch;
-    //     planet -> state.position = r_physics_orbit_to_local(planet, 
-    //         vec3(planet -> orbit.semi_major_axis * cos(planet -> state.anomaly), 0.0f, planet -> orbit.semi_major_axis * sin(planet -> state.anomaly)));
-    // } else {
-    //     planet -> state.position = vec3(0.0f, 0.0f, 0.0f);
-    //     planet -> state.anomaly = 0.0f;
-    // }
     
     double sign = 1.0; 
     if (strcmp(planet -> name, "VENUS") == 0 || !strcmp(planet -> name, "URANUS") == 0 || !strcmp(planet -> name, "PLUTO") == 0) sign = -1.0;
     planet -> state.rotation = sign * 2.0f * R_PI * time / planet -> period_rotation;
 }
 
-struct tm r_physics_clock_to_tm(double time) {
+struct tm r_physics_clock_to_tm(double time) { // move it to d_util
     struct tm tm_origin = {0};
     tm_origin.tm_year = 2000 - 1900;
     tm_origin.tm_mon = 0;

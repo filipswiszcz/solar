@@ -3,42 +3,32 @@
 
 #include <string.h>
 
-#ifdef __APPLE__
-    #define GL_SILENCE_DEPRECATION
-    #define GLFW_INCLUDE_GLCOREARB
-    #include <GLFW/glfw3.h>
-#else
-    #include <GL/glew.h>
-    #include <GLFW/glfw3.h>
-#endif
-
 #include "d_arena.h"
-#include "d_util.h"
 #include "r_physics.h"
-#include "r_renderer.h"
 #include "r_shader.h"
+#include "r_ui.h"
 
 #define GAME_MEMORY_CAPACITY (128 * 1024 * 1024) // 128 MB
-static uint8_t GAME_MEMORY[GAME_MEMORY_CAPACITY];
+extern uint8_t GAME_MEMORY[GAME_MEMORY_CAPACITY];
 
 // xycida
 
-static struct {
+typedef struct game_context {
     GLFWwindow *window;
 
     struct {
         double time_of_last_frame;
         double time_between_frames;
         double time_accumulated;
-        uint32_t frames; // change to counter or smth similar
+        uint32_t frames;
     } fps;
 
     struct {
-      vec3_t position;
-      vec3_t target_position, head_position;
-      float mouse_x, mouse_y;
-      float yaw, pitch;
-      float speed, sensitivity;
+        vec3_t position;
+        vec3_t target_position, head_position;
+        float mouse_x, mouse_y;
+        float yaw, pitch;
+        float speed, sensitivity;
     } camera;
 
     arena_t arena;
@@ -59,32 +49,18 @@ static struct {
             } keys;
         } clock;
 
-        planet_t *planets; // planets (planet contains pointer to object/sound)
+        planet_t *planets;
 
         struct {
             object_t object;
         } skybox;
 
-        struct {
-            struct {
-                uint32_t vao, vbo;
-                uint32_t size;
-                shader_t *shader;
-                uint8_t visible;
-            } orbits;
-
-            struct {
-                uint32_t vao, vbo;
-                uint32_t size;
-                shader_t *shader;
-                uint8_t visible;
-            } markers;
-
-            // labels
-        } ui;
+        ui_t ui;
     } scene;
 
-} context;
+} game_context_t;
+
+extern game_context_t context;
 
 void g_game_init(void);
 

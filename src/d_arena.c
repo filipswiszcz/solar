@@ -22,11 +22,11 @@ void *d_arena_alloc(arena_t *arena, size_t capacity) {
     return head;
 }
 
-void d_arena_reset(arena_t *arena) {
+void d_arena_free(arena_t *arena) {
     arena -> size = 0;
 }
 
 void d_arena_stats(arena_t *arena) {
-    printf("GAME MEMORY: Used %.2f MB / %.2f MB (%.1f%%)\n", ((float) (arena -> size) / (1024.0f * 1024.0f)), 
+    printf("GAME_MEMORY: Used %.2f MB / %.2f MB (%.1f%%)\n", ((float) (arena -> size) / (1024.0f * 1024.0f)), 
         ((float) (arena -> capacity) / (1024.0f * 1024.0f)), (double) arena -> size / (double) arena -> capacity * 100.0);
 }

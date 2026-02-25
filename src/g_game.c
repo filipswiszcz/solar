@@ -3,7 +3,11 @@
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
 
-#define WINDOW_NAME "SOLAR (Build v1.1.8)"
+#define WINDOW_NAME "SOLAR (Build v1.2.2)"
+
+uint8_t GAME_MEMORY[GAME_MEMORY_CAPACITY];
+
+game_context_t context;
 
 // FPS
 
@@ -80,10 +84,6 @@ void _g_game_keyboard_handle(void) {
         context.camera.speed = 128.0f;
     if (glfwGetKey(context.window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE) // release is called every loop, so thats why it breaks
         context.camera.speed = 8.0f;
-    // if (glfwGetKey(context.window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-    //     context.camera.speed = 2.0f;
-    // if (glfwGetKey(context.window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE)
-    //     context.camera.speed = 16.0f;
 
     if (glfwGetKey(context.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(context.window, 1);
@@ -104,56 +104,6 @@ void _g_game_clock_update(void) {
         //     current_date.tm_year + 1900, current_date.tm_mon + 1, current_date.tm_mday, current_date.tm_hour, current_date.tm_min, current_date.tm_sec, context.scene.clock.cursor);
         time_of_last_log = 0.0;
     }
-}
-
-void _g_game_ui_orbits_init(void) {
-    vec3_t vertices[10 * context.scene.ui.orbits.size];
-    uint32_t cursor = 0;
-    for (uint32_t i = 1; i < 10; i++) {
-        for (uint32_t j = 0; j < context.scene.ui.orbits.size; j++) {
-            double angle = (2.0 * R_PI * j) / context.scene.ui.orbits.size;
-            vec3_t position = {
-                context.scene.planets[i].orbit.semi_major_axis * R_PHYSICS_ORBIT_SCALE * (cos(angle) - context.scene.planets[i].orbit.eccentricity),
-                0.0f,
-                context.scene.planets[i].orbit.semi_major_axis * R_PHYSICS_ORBIT_SCALE * sqrt(1.0 - context.scene.planets[i].orbit.eccentricity * context.scene.planets[i].orbit.eccentricity) * sin(angle)
-            };
-            vertices[cursor++] = r_physics_orbit_to_local(&context.scene.planets[i], position);
-        }
-    }
-
-    glGenVertexArrays(1, &context.scene.ui.orbits.vao);
-    glGenBuffers(1, &context.scene.ui.orbits.vbo);
-
-    glBindVertexArray(context.scene.ui.orbits.vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, context.scene.ui.orbits.vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3_t), (void*) 0);
-    glEnableVertexAttribArray(0);
-
-    glBindVertexArray(0);
-}
-
-void _g_game_ui_markers_init(void) {
-    vec3_t vertices[context.scene.ui.markers.size];
-    for (size_t i = 0; i < context.scene.ui.markers.size; i++) {
-        double angle = (2.0 * R_PI * i) / 128;
-        vertices[i] = vec3(cos(angle), 0.0f, sin(angle));
-    }
-
-    glGenVertexArrays(1, &context.scene.ui.markers.vao);
-    glGenBuffers(1, &context.scene.ui.markers.vbo);
-
-    glBindVertexArray(context.scene.ui.markers.vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, context.scene.ui.markers.vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3_t), (void*) 0);
-    glEnableVertexAttribArray(0);
-
-    glBindVertexArray(0);
 }
 
 // GAME
@@ -335,12 +285,12 @@ void g_game_init(void) {
     context.scene.ui.orbits.size = 2048;
     context.scene.ui.orbits.shader = &context.renderer.shaders[1];
     context.scene.ui.orbits.visible = 1;
-    _g_game_ui_orbits_init();
+    r_ui_orbits_init();
     
     context.scene.ui.markers.size = 256;
     context.scene.ui.markers.shader = &context.renderer.shaders[1];
     context.scene.ui.markers.visible = 1;
-    _g_game_ui_markers_init();
+    r_ui_markers_init();
 
     // skybox
     r_renderer_object_read(&context.arena, &context.scene.skybox.object, "assets/model/default/cube.orb");
@@ -348,16 +298,6 @@ void g_game_init(void) {
     context.scene.skybox.object.shader = &context.renderer.shaders[2];
     context.scene.skybox.object.texture = &context.renderer.textures[2];
     r_set_int(context.scene.skybox.object.shader, "u_Map", 0);
-
-    //..
-    // orb file contains all mesh and planet info
-    // correct planet position to date
-    // time fast-forward/fast-reverse 
-    // each orbit has own color
-    // each planet has own texture
-    // each planet has label
-    // earth has a moon
-    // camera zoom?
 }
 
 void g_game_update(void) {
@@ -410,7 +350,6 @@ void g_game_update(void) {
             r_set_vec3(context.scene.planets[i].object -> shader, "u_Light", vec3_mul(context.scene.planets[0].state.position, R_PHYSICS_ORBIT_SCALE));
 
             r_renderer_object_draw(context.scene.planets[i].object);
-            // glDrawElements(GL_TRIANGLES, context.scene.planets[i].object -> mesh.indices.size, GL_UNSIGNED_INT, 0);
         }
 
         // ui
@@ -419,30 +358,8 @@ void g_game_update(void) {
         r_set_mat4(context.scene.ui.orbits.shader, "u_Projection", projection);
         r_set_mat4(context.scene.ui.orbits.shader, "u_View", view);
 
-        uint32_t offset_orbit = 0;
-        for (uint32_t i = 1; i < 10; i++) {
-            // orbits
-            r_set_mat4(context.scene.ui.orbits.shader, "u_Model", mat4(1.0f));
-
-            r_set_vec3(context.scene.ui.orbits.shader, "u_Color", vec3(1.0f, 1.0f, 1.0f));
-            r_set_float(context.scene.ui.orbits.shader, "u_Brightness", 0.2f);
-            
-            glBindVertexArray(context.scene.ui.orbits.vao);
-            glDrawArrays(GL_LINE_LOOP, offset_orbit, context.scene.ui.orbits.size);
-            offset_orbit += context.scene.ui.orbits.size;
-
-            // markers
-            mat4_t model_marker = mat4(1.0f);
-            model_marker = r_translate(model_marker, vec3_mul(context.scene.planets[i].state.position, R_PHYSICS_ORBIT_SCALE));
-            model_marker = r_scale(model_marker, vec3(context.scene.planets[6].radius_equatorial * R_PHYSICS_PLANET_SCALE * 1.6f, 0.0f, context.scene.planets[6].radius_equatorial * R_PHYSICS_PLANET_SCALE * 1.6f));
-            r_set_mat4(context.scene.ui.orbits.shader, "u_Model", model_marker);
-
-            r_set_vec3(context.scene.ui.orbits.shader, "u_Color", context.scene.planets[i].color);
-            r_set_float(context.scene.ui.orbits.shader, "u_Brightness", 4.0f);
-            
-            glBindVertexArray(context.scene.ui.markers.vao);
-            glDrawArrays(GL_LINE_LOOP, 0, context.scene.ui.markers.size);
-        }
+        r_ui_orbits_draw();
+        r_ui_markers_draw();
 
         // skybox
         glDepthFunc(GL_LEQUAL);
@@ -480,7 +397,7 @@ void g_game_stop(void) {
     glDeleteBuffers(1, &context.scene.ui.markers.vbo);
 
     // RENDERER
-    d_arena_reset(&context.arena);
+    d_arena_free(&context.arena);
 
     // GLFW
     glfwDestroyWindow(context.window);

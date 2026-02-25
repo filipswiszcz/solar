@@ -16,7 +16,7 @@ void d_arena_init(arena_t *arena, void *head, size_t capacity);
 
 void *d_arena_alloc(arena_t *arena, size_t capacity);
 
-void d_arena_reset(arena_t *arena);
+void d_arena_free(arena_t *arena);
 
 void d_arena_stats(arena_t *arena);
 
