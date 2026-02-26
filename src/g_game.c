@@ -146,10 +146,11 @@ void g_game_init(void) {
     // d_arena_stats(&context.arena);
 
     // SHADERS
-    context.renderer.shaders = d_arena_alloc(&context.arena, 3 * sizeof(shader_t));
+    context.renderer.shaders = d_arena_alloc(&context.arena, 4 * sizeof(shader_t));
     r_create_program(&context.renderer.shaders[0], "shader/default.vs", "shader/default.fs");
     r_create_program(&context.renderer.shaders[1], "shader/orbit.vs", "shader/orbit.fs");
     r_create_program(&context.renderer.shaders[2], "shader/skybox.vs", "shader/skybox.fs");
+    r_create_program(&context.renderer.shaders[3], "shader/text.vs", "shader/text.fs");
 
     // TEXTURES
     context.renderer.textures = d_arena_alloc(&context.arena, 11 * sizeof(uint32_t));
@@ -292,6 +293,9 @@ void g_game_init(void) {
     context.scene.ui.markers.visible = 1;
     r_ui_markers_init();
 
+    context.scene.ui.labels.shader = &context.renderer.shaders[3];
+    r_ui_labels_init();
+
     // skybox
     r_renderer_object_read(&context.arena, &context.scene.skybox.object, "assets/model/default/cube.orb");
     r_renderer_object_upload(&context.scene.skybox.object);
@@ -352,7 +356,7 @@ void g_game_update(void) {
             r_renderer_object_draw(context.scene.planets[i].object);
         }
 
-        // ui
+        // orbits
         glUseProgram(context.scene.ui.orbits.shader -> program);
 
         r_set_mat4(context.scene.ui.orbits.shader, "u_Projection", projection);
@@ -377,10 +381,27 @@ void g_game_update(void) {
 
         r_renderer_object_draw(&context.scene.skybox.object);
 
-        // OPENGL
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
 
+        // text
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_DEPTH_TEST);
+
+        mat4_t orojection = r_orthographic(0.0f, (float) WINDOW_WIDTH, (float) WINDOW_HEIGHT, 0.0f, -1.0f, 1.0f);
+
+        glUseProgram(context.scene.ui.labels.shader -> program);
+        r_set_mat4(context.scene.ui.labels.shader, "u_Projection", orojection);
+        r_set_vec3(context.scene.ui.labels.shader, "u_Color", vec3(1.0f, 1.0f, 1.0f));
+        r_set_int(context.scene.ui.labels.shader, "u_Texture", 0);
+
+        r_ui_labels_draw();
+
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+
+        // OPENGL
         glfwSwapBuffers(context.window);
         glfwPollEvents();
 

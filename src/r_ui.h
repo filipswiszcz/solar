@@ -8,7 +8,11 @@
 typedef struct ui {
     struct {} date; 
 
-    struct {} labels;
+    struct {
+        uint32_t vao, vbo;
+        shader_t *shader;
+        uint32_t texture;
+    } labels;
 
     struct {
         uint32_t vao, vbo;
@@ -28,6 +32,8 @@ typedef struct ui {
 void r_ui_date_init(void);
 
 void r_ui_labels_init(void);
+
+void r_ui_labels_draw(void);
 
 void r_ui_orbits_init(void);
 
